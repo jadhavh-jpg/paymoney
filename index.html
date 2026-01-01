@@ -70,6 +70,25 @@ nav a{
   border-color:#1e88e5;
   box-shadow:0 0 0 4px rgba(30,136,229,.2);
 }
+.btn-primary{
+  display:inline-block;
+  padding:14px 28px;
+  background:#ffffff;
+  color:#0d3b66;
+  font-weight:800;
+  border-radius:30px;
+  text-decoration:none;          /* 🔥 underline remove */
+  border:2px solid transparent;  /* default no border */
+  transition:all .3s ease;
+}
+
+/* HOVER EFFECT – PREMIUM */
+.btn-primary:hover{
+  background:transparent;
+  color:#ffffff;
+  border:2px solid #ffffff;      /* 🔵 proper border */
+  box-shadow:0 8px 25px rgba(0,0,0,.25);
+}
 
 /* HERO VISUAL */
 .hero-visual{position:relative}
@@ -228,7 +247,8 @@ nav a{
       <h1>Create a Link.<br>Share it.<br>Get Paid Instantly.</h1>
       <p>Razorpay se simpler. Google Pay se smarter.<br>
       No gateway charges, yet full business-level control.</p>
-      <a href="builder.html" class="btn">Create Payment Link</a>
+      <a href="builder.html" class="btn-primary">Create Payment Link</a>
+
 
     </div>
 
@@ -394,6 +414,7 @@ setInterval(()=>{
 
 </body>
 </html>
+
 
 
 
