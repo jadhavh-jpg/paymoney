@@ -6,56 +6,43 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 
 <style>
-/* ===== EXISTING STYLES (unchanged) ===== */
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,sans-serif;background:#f5f7fb}
 .wrap{max-width:1100px;margin:20px auto;padding:0 14px}
-.flex{display:flex;gap:20px;align-items:flex-start}
+.flex{display:flex;gap:20px}
 .box{background:#fff;border-radius:16px;padding:20px;width:50%}
 h2,h3{margin-top:0}
 label{font-weight:600;margin-top:14px;display:block}
-input,textarea{width:100%;padding:12px;border-radius:8px;border:1px solid #ccc;margin-top:6px;font-size:15px}
+input,textarea{
+  width:100%;padding:12px;border-radius:8px;
+  border:1px solid #ccc;margin-top:6px;font-size:15px
+}
 textarea{min-height:90px}
-button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;font-weight:600;cursor:pointer;margin-top:16px}
+button{
+  width:100%;padding:14px;border:none;
+  border-radius:14px;font-size:16px;
+  font-weight:600;cursor:pointer;
+  margin-top:16px;
+}
 .primary{background:#0D3B66;color:#fff}
 .copy{background:#2FB344;color:#fff}
 .wa{background:#25D366;color:#fff}
-.anim{position:relative;overflow:hidden}
-.anim::after{content:"";position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(120deg,transparent,rgba(255,255,255,.35),transparent);animation:shine 2.8s infinite}
-@keyframes shine{0%{left:-100%}100%{left:100%}}
 .preview{border:1px solid #ddd;border-radius:16px;overflow:hidden}
 .poster{aspect-ratio:2/3;background:#eee}
 .poster img{width:100%;height:100%;object-fit:cover}
 .c{padding:16px;text-align:center}
-.brand-btn{background:#0D3B66;color:#fff;margin-top:8px}
-.title-btn{background:#1f6fd6;color:#fff;margin-top:8px}
-.date-line{margin-top:10px;font-size:14px;color:#555;display:flex;justify-content:center;align-items:center;gap:8px}
-.pay{margin-top:14px;padding:14px;border-radius:14px;background:#2FB344;color:#fff;text-align:center}
-.disabled{opacity:.35;pointer-events:none}
-.video iframe{width:100%;aspect-ratio:16/9;border-radius:12px;border:none;margin-top:12px}
-.actions{margin-top:14px;display:none}
+.pay{margin-top:14px;padding:14px;border-radius:14px;background:#2FB344;color:#fff;font-weight:700;cursor:pointer}
+.actions{display:none;margin-top:14px}
 @media(max-width:900px){.flex{flex-direction:column}.box{width:100%}}
 
-/* ===== QR MODAL ===== */
 .qr-modal{
-  position:fixed;inset:0;
-  background:rgba(0,0,0,.6);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:999;
+  position:fixed;inset:0;background:rgba(0,0,0,.6);
+  display:none;align-items:center;justify-content:center;z-index:999
 }
-.qr-box{
-  background:#fff;
-  padding:20px;
-  border-radius:16px;
-  text-align:center;
-  width:280px;
-}
-.qr-box canvas{margin:10px auto}
-.close{margin-top:10px;background:#0D3B66;color:#fff}
+.qr-box{background:#fff;padding:20px;border-radius:16px;text-align:center;width:280px}
 </style>
 </head>
 
@@ -64,53 +51,45 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
 <div class="wrap" id="builder">
 <div class="flex">
 
-<!-- LEFT -->
+<!-- BUILDER -->
 <div class="box">
 <h2>Create Landing</h2>
 
 <label>Brand</label>
-<input id="brand" oninput="sync()">
+<input id="brand">
 
-<label>Poster Image (Required)</label>
+<label>Poster Image</label>
 <input type="file" accept="image/*" onchange="loadImg(event)">
 
 <label>Title</label>
-<input id="title" oninput="sync()">
+<input id="title">
 
-<label>Date & Time</label>
-<input type="datetime-local" id="dt" oninput="sync()">
-
-<label>YouTube Link (Optional)</label>
-<input id="yt" oninput="sync()">
+<label>Description</label>
+<textarea id="desc"></textarea>
 
 <label>UPI ID</label>
 <input id="upi" placeholder="example@upi">
 
-<label>Amount (INR)</label>
+<label>Amount</label>
 <input id="amount" type="number">
 
-<label>Description</label>
-<textarea id="desc" oninput="sync()"></textarea>
-
-<button class="primary anim" onclick="generate()">Generate Landing Page</button>
+<button class="primary" onclick="generate()">Generate Landing Page</button>
 
 <div class="actions" id="actions">
-  <button class="copy anim" onclick="copyLink()">Copy Landing Link</button>
-  <button class="wa anim" onclick="shareWA()">Share on WhatsApp</button>
+  <button class="copy" onclick="copyLink()">Copy Landing Link</button>
+  <button class="wa" onclick="shareWA()">Share on WhatsApp</button>
 </div>
 </div>
 
-<!-- RIGHT -->
+<!-- PREVIEW -->
 <div class="box">
-<h3>Live Preview</h3>
+<h3>Preview</h3>
 <div class="preview">
   <div class="poster" id="pimg"></div>
   <div class="c">
-    <button class="brand-btn anim" id="pBrandBtn">Brand</button>
-    <button class="title-btn anim" id="pTitleBtn">Title</button>
-    <div class="date-line"><i class="fa-solid fa-calendar-days"></i><span id="pdt"></span></div>
+    <h3 id="ptitle">Title</h3>
     <p id="pdesc"></p>
-    <div class="pay disabled">Pay Now</div>
+    <div class="pay">Pay Now (Preview)</div>
   </div>
 </div>
 </div>
@@ -123,11 +102,9 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
   <div class="qr-box">
     <h3>Scan to Pay</h3>
     <canvas id="qr"></canvas>
-    <button class="close" onclick="closeQR()">Close</button>
+    <button onclick="closeQR()">Close</button>
   </div>
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 
 <script>
 let imageURL="", landingLink="";
@@ -136,52 +113,63 @@ function loadImg(e){
   imageURL=URL.createObjectURL(e.target.files[0]);
   pimg.innerHTML=`<img src="${imageURL}">`;
 }
-function sync(){
-  pBrandBtn.innerText=brand.value||"Brand";
-  pTitleBtn.innerText=title.value||"Title";
-  pdt.innerText=dt.value;
-  pdesc.innerText=desc.value;
-}
 
 function generate(){
-  if(!imageURL||!upi.value||!amount.value) return alert("Image, UPI & Amount required");
+  if(!imageURL || !upi.value || !amount.value){
+    alert("Image, UPI & Amount required");
+    return;
+  }
 
-  const upiLink=`upi://pay?pa=${upi.value}&am=${amount.value}&cu=INR&tn=PayMoney`;
+  const upiLink =
+    "upi://pay?pa="+encodeURIComponent(upi.value)+
+    "&am="+encodeURIComponent(amount.value)+
+    "&cu=INR&tn=PayMoney";
 
   const id=Date.now();
   localStorage.setItem("landing_"+id,JSON.stringify({
-    brand:brand.value,title:title.value,dt:dt.value,
-    desc:desc.value,img:imageURL,upiLink
+    brand:brand.value,
+    title:title.value,
+    desc:desc.value,
+    img:imageURL,
+    upiLink:upiLink
   }));
 
-  landingLink=location.origin+location.pathname+"?view=landing&id="+id;
+  landingLink =
+    location.origin +
+    location.pathname +
+    "?view=landing&id=" +
+    id;
+
   actions.style.display="block";
+  alert("Landing created. Open the link to test payment.");
 }
 
-function copyLink(){navigator.clipboard.writeText(landingLink);alert("Link copied")}
-function shareWA(){window.open("https://wa.me/?text="+encodeURIComponent(landingLink))}
+function copyLink(){
+  navigator.clipboard.writeText(landingLink);
+  alert("Link copied");
+}
+function shareWA(){
+  window.open("https://wa.me/?text="+encodeURIComponent(landingLink));
+}
 
-/* ===== LANDING MODE ===== */
+/* LANDING MODE */
 const q=new URLSearchParams(location.search);
 if(q.get("view")==="landing"){
   const d=JSON.parse(localStorage.getItem("landing_"+q.get("id")));
-  if(!d) document.body.innerHTML="Invalid Link";
-  else{
-    document.getElementById("builder").innerHTML=`
-      <div class="box">
-        <img src="${d.img}" style="width:100%;border-radius:16px">
-        <button class="brand-btn anim">${d.brand}</button>
-        <button class="title-btn anim">${d.title}</button>
-        <div class="date-line">${d.dt}</div>
-        <p>${d.desc}</p>
-        <div class="pay anim" onclick="pay('${d.upiLink}')">Pay Now</div>
-      </div>`;
-  }
+  if(!d){document.body.innerHTML="Invalid link";return;}
+
+  document.getElementById("builder").innerHTML=`
+    <div class="box">
+      <img src="${d.img}" style="width:100%;border-radius:16px">
+      <h3>${d.title}</h3>
+      <p>${d.desc}</p>
+      <div class="pay" onclick="pay('${d.upiLink}')">Pay Now</div>
+    </div>`;
 }
 
 function pay(link){
-  if(/Mobi|Android/i.test(navigator.userAgent)){
-    location.href=link;   // 📱 Mobile → direct UPI
+  if(/Mobi|Android|iPhone/i.test(navigator.userAgent)){
+    window.location.href=link;   // 📱 Mobile
   }else{
     QRCode.toCanvas(document.getElementById("qr"),link);
     document.getElementById("qrModal").style.display="flex";
