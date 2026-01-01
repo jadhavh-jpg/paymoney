@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>PayMoney – Create Payment Links & Get Paid Instantly</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- SEO -->
+<meta name="description" content="PayMoney lets you create payment links, share on WhatsApp and receive money directly to your bank. No gateway charges. Built for Indian sellers.">
+<meta name="keywords" content="PayMoney, payment link, UPI payment, WhatsApp payment, India payment gateway">
+
+<!-- Fonts & Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,sans-serif}
+body{background:#fff;color:#111;line-height:1.6}
+
+/* ================= HEADER ================= */
+header{
+  position:sticky;top:0;z-index:100;
+  background:#fff;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 18px;
+  box-shadow:0 2px 10px rgba(0,0,0,.05)
+}
+.logo img{height:34px}
+nav{display:flex;gap:18px}
+nav a{
+  font-weight:600;
+  font-size:14px;
+  color:#333;
+  text-decoration:none;
+}
+.menu{display:none;font-size:22px}
+
+/* ================= HERO ================= */
+.hero{
+  background:linear-gradient(135deg,#0d3b66,#1f8a70);
+  color:#fff;
+  padding:70px 20px;
+}
+.hero-inner{
+  max-width:1200px;
+  margin:auto;
+  display:grid;
+  grid-template-columns:1.1fr .9fr;
+  gap:30px;
+  align-items:center;
+}
+.hero h1{
+  font-size:38px;
+  font-weight:800;
+  line-height:1.2;
+}
+.hero p{margin:14px 0 22px;opacity:.9}
+
+.btn-main{
+  padding:15px 36px;
+  border-radius:40px;
+  background:#fff;
+  color:#0d3b66;
+  font-weight:800;
+  border:2px solid transparent;
+  cursor:pointer;
+  transition:.3s;
+}
+.btn-main:hover{
+  border-color:#1e88e5;
+  box-shadow:0 0 0 4px rgba(30,136,229,.2);
+}
+
+/* HERO VISUAL */
+.hero-visual{position:relative}
+.phone-stack{
+  position:relative;
+  width:260px;
+  height:440px;
+  margin:auto;
+}
+.phone{
+  position:absolute;
+  inset:0;
+  border-radius:28px;
+  background-size:cover;
+  background-position:center;
+  box-shadow:0 25px 60px rgba(0,0,0,.35);
+  opacity:0;
+  transform:scale(.95);
+  transition:.6s;
+}
+.phone.active{opacity:1;transform:scale(1)}
+
+/* DOTS */
+.dots{
+  display:flex;
+  justify-content:center;
+  margin-top:14px;
+}
+.dot{
+  width:8px;height:8px;
+  background:rgba(255,255,255,.4);
+  border-radius:50%;
+  margin:0 4px;
+}
+.dot.active{background:#fff}
+
+/* ================= COMMON SECTIONS ================= */
+.section{padding:60px 20px}
+.section h2{
+  text-align:center;
+  font-size:26px;
+  font-weight:800;
+  margin-bottom:30px;
+}
+
+.grid{
+  max-width:1100px;
+  margin:auto;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:22px;
+}
+
+.card{
+  background:#fff;
+  padding:26px;
+  border-radius:18px;
+  text-align:center;
+  box-shadow:0 12px 30px rgba(0,0,0,.08);
+  border:2px solid transparent;
+  transition:.3s;
+}
+.card:hover{
+  border-color:#1e88e5;
+  box-shadow:0 0 0 4px rgba(30,136,229,.15);
+}
+.card i{
+  font-size:32px;
+  color:#1e88e5;
+  margin-bottom:10px;
+}
+
+/* ================= TRUST & CREDIBILITY ================= */
+.trust-text{
+  text-align:center;
+  max-width:900px;
+  margin:0 auto 30px;
+  color:#444;
+}
+.trust .card p{font-size:14px}
+
+/* ================= DASHBOARD ================= */
+.dashboard img{
+  width:100%;
+  max-width:900px;
+  display:block;
+  margin:auto;
+  border-radius:18px;
+  box-shadow:0 20px 50px rgba(0,0,0,.25);
+}
+
+/* ================= FAQ ================= */
+.faq{max-width:900px;margin:auto}
+.faq-item{
+  padding:16px;
+  border-bottom:1px solid #eee;
+}
+.faq-item b{display:block;margin-bottom:6px}
+
+/* ================= CONTACT ================= */
+.contact{text-align:center}
+.contact a{
+  display:inline-block;
+  margin-top:12px;
+  padding:14px 30px;
+  border-radius:40px;
+  background:#0d3b66;
+  color:#fff;
+  font-weight:800;
+  text-decoration:none;
+}
+
+/* ================= CHAT ================= */
+.chat{
+  position:fixed;
+  right:18px;bottom:18px;
+  background:#25D366;
+  width:56px;height:56px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+  font-size:26px;
+  z-index:99;
+}
+
+/* ================= MOBILE ================= */
+@media(max-width:768px){
+  nav{display:none}
+  .menu{display:block}
+  header{justify-content:center}
+  .hero-inner{grid-template-columns:1fr;text-align:center}
+  .hero h1{font-size:32px}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="menu"><i class="fa-solid fa-bars"></i></div>
+  <div class="logo"><img src="pmc.png"></div>
+  <nav>
+    <a href="#tools">Tools</a>
+    <a href="#how">How it Works</a>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
+  </nav>
+</header>
+
+<!-- ================= HERO ================= -->
+<section class="hero">
+  <div class="hero-inner">
+
+    <div>
+      <h1>Create a Link.<br>Share it.<br>Get Paid Instantly.</h1>
+      <p>Razorpay se simpler. Google Pay se smarter.<br>
+      No gateway charges, yet full business-level control.</p>
+      <button class="btn-main">Create Payment Link</button>
+    </div>
+
+    <div class="hero-visual">
+      <div class="phone-stack">
+        <div class="phone active" style="background-image:url('hero1.png')"></div>
+        <div class="phone" style="background-image:url('hero2.png')"></div>
+        <div class="phone" style="background-image:url('hero3.png')"></div>
+        <div class="phone" style="background-image:url('hero4.png')"></div>
+        <div class="phone" style="background-image:url('hero5.png')"></div>
+      </div>
+      <div class="dots">
+        <span class="dot active"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================= TRUST ================= -->
+<section class="section trust">
+  <h2>Trust & Credibility</h2>
+  <p class="trust-text">
+    Built for Indian sellers who want fast, transparent and reliable payment collection —
+    without paying unnecessary gateway charges.
+  </p>
+
+  <div class="grid">
+    <div class="card">
+      <i class="fa-solid fa-lock"></i>
+      <p>Secure UPI payments with bank-grade encryption</p>
+    </div>
+    <div class="card">
+      <i class="fa-solid fa-building-columns"></i>
+      <p>100% direct transfer to your bank account</p>
+    </div>
+    <div class="card">
+      <i class="fa-solid fa-ban"></i>
+      <p>No hidden fees or gateway charges</p>
+    </div>
+    <div class="card">
+      <i class="fa-solid fa-flag"></i>
+      <p>Designed exclusively for Indian sellers</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= HOW IT WORKS ================= -->
+<section class="section" id="how">
+  <h2>How Payment Link Works</h2>
+  <div class="grid">
+    <div class="card"><i class="fa-solid fa-link"></i><p>Create payment link</p></div>
+    <div class="card"><i class="fa-brands fa-whatsapp"></i><p>Share via WhatsApp / SMS</p></div>
+    <div class="card"><i class="fa-solid fa-qrcode"></i><p>Customer pays using UPI</p></div>
+    <div class="card"><i class="fa-solid fa-check"></i><p>Money goes directly to bank</p></div>
+  </div>
+</section>
+
+<!-- ================= DASHBOARD ================= -->
+<section class="section dashboard">
+  <h2>Dashboard Preview</h2>
+  <img src="dashboard.png" alt="PayMoney Dashboard Preview">
+</section>
+
+<!-- ================= TOOLS ================= -->
+<section class="section" id="tools">
+  <h2>PayMoney Tools</h2>
+  <div class="grid">
+    <div class="card"><i class="fa-solid fa-link"></i><p>Create Payment Link</p></div>
+    <div class="card"><i class="fa-solid fa-layer-group"></i><p>Build Landing Page</p></div>
+    <div class="card"><i class="fa-solid fa-chart-line"></i><p>View Analytics</p></div>
+  </div>
+</section>
+
+<!-- ================= WHO IS IT FOR ================= -->
+<section class="section">
+  <h2>Who Is PayMoney For?</h2>
+  <div class="grid">
+    <div class="card">🛍 Online Sellers</div>
+    <div class="card">🎓 Trainers & Coaches</div>
+    <div class="card">🧘 Consultants</div>
+    <div class="card">🏪 Small Businesses</div>
+    <div class="card">📱 WhatsApp / Instagram Sellers</div>
+  </div>
+</section>
+
+<!-- ================= USE CASES ================= -->
+<section class="section">
+  <h2>Use-Cases</h2>
+  <div class="grid">
+    <div class="card">Advance payments</div>
+    <div class="card">Fees collection</div>
+    <div class="card">Sell digital products</div>
+    <div class="card">One-time payments</div>
+    <div class="card">Custom amount collection</div>
+  </div>
+</section>
+
+<!-- ================= TESTIMONIALS ================= -->
+<section class="section">
+  <h2>What Sellers Say</h2>
+  <div class="grid">
+    <div class="card">“PayMoney made collecting payments super easy.” ⭐⭐⭐⭐⭐<br>— Online Seller, Pune</div>
+    <div class="card">“No gateway fees and instant bank credit.” ⭐⭐⭐⭐⭐<br>— Coach, Mumbai</div>
+    <div class="card">“Perfect for WhatsApp-based selling.” ⭐⭐⭐⭐⭐<br>— Small Business Owner</div>
+  </div>
+</section>
+
+<!-- ================= SECURITY ================= -->
+<section class="section">
+  <h2>Security & Compliance</h2>
+  <div class="grid">
+    <div class="card">Bank-grade security</div>
+    <div class="card">UPI guidelines followed</div>
+    <div class="card">No card data stored</div>
+    <div class="card">Privacy protected</div>
+  </div>
+</section>
+
+<!-- ================= FAQ ================= -->
+<section class="section">
+  <h2>Frequently Asked Questions</h2>
+  <div class="faq">
+    <div class="faq-item"><b>How fast do I receive money?</b>Instant or within minutes.</div>
+    <div class="faq-item"><b>Does customer need to install any app?</b>No app required.</div>
+    <div class="faq-item"><b>Is desktop payment supported?</b>Yes, via QR and UPI.</div>
+  </div>
+</section>
+
+<!-- ================= CONTACT ================= -->
+<section class="section contact" id="contact">
+  <h2>Contact & Support</h2>
+  <p>Email: jadhav.h@gmail.com</p>
+  <p>Working Hours: 10:00 AM – 5:00 PM</p>
+  <a href="tel:+919115121575">+91 91151 21575</a>
+</section>
+
+<footer class="section" style="text-align:center">
+  © 2025 PayMoney · India’s Easy Payment Gateway
+</footer>
+
+<a href="https://wa.me/919115121575" class="chat">
+  <i class="fa-brands fa-whatsapp"></i>
+</a>
+
+<script>
+let idx=0;
+const phones=document.querySelectorAll('.phone');
+const dots=document.querySelectorAll('.dot');
+
+setInterval(()=>{
+  phones.forEach(p=>p.classList.remove('active'));
+  dots.forEach(d=>d.classList.remove('active'));
+  idx=(idx+1)%phones.length;
+  phones[idx].classList.add('active');
+  dots[idx].classList.add('active');
+},3000);
+</script>
+
+</body>
+</html>
