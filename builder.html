@@ -211,9 +211,33 @@ if(q.get("view")==="landing"){
         <img src="${d.img}" style="width:100%;border-radius:16px">
         <h3>${d.title}</h3>
         <p>${d.desc}</p>
-        <div class="pay-real" onclick="pay('${d.upiLink}')">
-          Pay Now
-        </div>
+       function pay(link){
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+  if(isMobile){
+    // 🔹 Try opening UPI app
+    window.location.href = link;
+
+    // 🔹 User guidance (very important)
+    setTimeout(()=>{
+      alert(
+        "If UPI app did not open:\n\n" +
+        "• Please check if Google Pay / PhonePe / Paytm is installed\n" +
+        "• Try opening this link in Chrome browser\n" +
+        "• Or use Scan QR option from desktop"
+      );
+    }, 2000);
+
+  }else{
+    // 💻 Desktop → QR
+    QRCode.toCanvas(
+      document.getElementById("qr"),
+      link
+    );
+    document.getElementById("qrModal").style.display = "flex";
+  }
+}
+
       </div>
     `;
   }
@@ -238,3 +262,4 @@ function closeQR(){
 
 </body>
 </html>
+
