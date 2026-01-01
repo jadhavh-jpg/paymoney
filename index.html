@@ -141,6 +141,15 @@ nav a{
   grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
   gap:22px;
 }
+.no-style-link{
+  text-decoration:none;   /* underline remove */
+  color:inherit;          /* blue / purple text remove */
+  display:block;          /* full card clickable */
+}
+
+.no-style-link:hover{
+  color:inherit;
+}
 
 .card{
   background:#fff;
@@ -304,7 +313,13 @@ nav a{
 <section class="section" id="how">
   <h2>How Payment Link Works</h2>
   <div class="grid">
-    <div class="card"><i class="fa-solid fa-link"></i><p>Create payment link</p></div>
+   <a href="builder.html" class="no-style-link">
+  <div class="card">
+    <i class="fa-solid fa-link"></i>
+    <p>Create payment link</p>
+  </div>
+</a>
+
     <div class="card"><i class="fa-brands fa-whatsapp"></i><p>Share via WhatsApp / SMS</p></div>
     <div class="card"><i class="fa-solid fa-qrcode"></i><p>Customer pays using UPI</p></div>
     <div class="card"><i class="fa-solid fa-check"></i><p>Money goes directly to bank</p></div>
@@ -414,6 +429,7 @@ setInterval(()=>{
 
 </body>
 </html>
+
 
 
 
