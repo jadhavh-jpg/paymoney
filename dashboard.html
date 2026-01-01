@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>PayMoney Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- PROTECT DASHBOARD -->
+<script>
+  if(!localStorage.getItem("paymoney_user")){
+    window.location.href="index.html";
+  }
+</script>
+
+<!-- Fonts & Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,sans-serif}
+body{background:#f5f7fb;color:#111}
+
+/* HEADER */
+.dash-header{
+  background:#fff;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:14px 20px;
+  border-bottom:1px solid #e5e7eb;
+}
+.dash-header img{height:34px}
+.dash-user{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  font-weight:700;
+}
+.logout-btn{
+  padding:8px 14px;
+  border-radius:10px;
+  border:2px solid #1f8a70;
+  background:#fff;
+  color:#1f8a70;
+  font-weight:700;
+  cursor:pointer;
+}
+.logout-btn:hover{
+  background:#1f8a70;
+  color:#fff;
+}
+
+/* LAYOUT */
+.container{
+  max-width:1200px;
+  margin:auto;
+  padding:24px;
+}
+
+/* STATS */
+.stats{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:20px;
+}
+.stat-card{
+  background:#fff;
+  padding:20px;
+  border-radius:16px;
+  box-shadow:0 10px 30px rgba(0,0,0,.08);
+}
+.stat-card h3{
+  font-size:13px;
+  color:#555;
+  margin-bottom:6px;
+}
+.stat-card p{
+  font-size:26px;
+  font-weight:800;
+  color:#1f8a70;
+}
+
+/* CHART */
+.chart-box{
+  background:#fff;
+  margin-top:26px;
+  padding:20px;
+  border-radius:16px;
+  box-shadow:0 10px 30px rgba(0,0,0,.08);
+}
+.chart-placeholder{
+  height:220px;
+  border-radius:12px;
+  background:linear-gradient(135deg,#e0f2f1,#f5f7fb);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:700;
+  color:#555;
+}
+
+/* TABLE */
+.table-box{
+  background:#fff;
+  margin-top:26px;
+  padding:20px;
+  border-radius:16px;
+  box-shadow:0 10px 30px rgba(0,0,0,.08);
+}
+table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:14px;
+}
+th,td{
+  padding:12px;
+  text-align:left;
+  border-bottom:1px solid #eee;
+}
+th{font-weight:700;color:#555}
+.status-paid{color:green;font-weight:700}
+.status-pending{color:orange;font-weight:700}
+
+/* MOBILE */
+@media(max-width:768px){
+  .container{padding:16px}
+}
+</style>
+</head>
+
+<body>
+
+<header class="dash-header">
+  <img src="pmc.png" alt="PayMoney">
+  <div class="dash-user">
+    <span id="userName"></span>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stat-card">
+      <h3>Total Links Created</h3>
+      <p>128</p>
+    </div>
+    <div class="stat-card">
+      <h3>Total Amount Received</h3>
+      <p>₹ 2,45,000</p>
+    </div>
+    <div class="stat-card">
+      <h3>Today’s Collection</h3>
+      <p>₹ 8,500</p>
+    </div>
+    <div class="stat-card">
+      <h3>Successful Payments</h3>
+      <p>96%</p>
+    </div>
+  </div>
+
+  <!-- CHART -->
+  <div class="chart-box">
+    <h3 style="margin-bottom:12px">Last 7 Days Activity</h3>
+    <div class="chart-placeholder">
+      📊 Analytics Graph (Dummy Preview)
+    </div>
+  </div>
+
+  <!-- TABLE -->
+  <div class="table-box">
+    <h3 style="margin-bottom:12px">Recent Payments</h3>
+    <table>
+      <tr>
+        <th>Customer</th>
+        <th>Amount</th>
+        <th>Status</th>
+      </tr>
+      <tr>
+        <td>Rohit Sharma</td>
+        <td>₹ 1,200</td>
+        <td class="status-paid">Paid</td>
+      </tr>
+      <tr>
+        <td>Anita Verma</td>
+        <td>₹ 2,500</td>
+        <td class="status-paid">Paid</td>
+      </tr>
+      <tr>
+        <td>Suresh Patil</td>
+        <td>₹ 900</td>
+        <td class="status-pending">Pending</td>
+      </tr>
+    </table>
+  </div>
+
+</div>
+
+<script>
+  // Show user name
+  const user = JSON.parse(localStorage.getItem("paymoney_user"));
+  if(user){
+    document.getElementById("userName").innerText = user.name;
+  }
+
+  function logout(){
+    localStorage.removeItem("paymoney_user");
+    window.location.href="index.html";
+  }
+</script>
+
+</body>
+</html>
