@@ -20,8 +20,6 @@ input,textarea{width:100%;padding:12px;border-radius:8px;border:1px solid #ccc;m
 textarea{min-height:90px}
 button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;font-weight:600;cursor:pointer;margin-top:14px}
 .primary{background:#0D3B66;color:#fff}
-.copy{background:#2FB344;color:#fff}
-.wa{background:#25D366;color:#fff}
 
 /* PREVIEW */
 .preview{text-align:center}
@@ -34,7 +32,7 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
 .desc{margin:12px 0;color:#333;font-size:14px}
 .note{font-size:13px;color:#777;margin-top:10px}
 
-/* LANDING BUTTONS */
+/* LANDING */
 .pay-mobile{display:block;background:#2FB344;color:#fff;padding:14px;border-radius:14px;font-size:16px;font-weight:600;margin-top:14px;text-decoration:none;text-align:center}
 .pay-qr{background:#1f3c88;color:#fff;padding:14px;border-radius:14px;font-size:16px;font-weight:600;margin-top:12px;text-align:center;cursor:pointer}
 .qr-box{margin-top:14px;display:none;text-align:center}
@@ -60,16 +58,16 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
 <h2>Create Payment Landing</h2>
 
 <label>Logo (optional)</label>
-<input type="file" accept="image/*" onchange="loadLogo(event)">
+<input type="file" accept="image/*" id="logoInput">
 
 <label>Poster Image</label>
-<input type="file" accept="image/*" onchange="loadPoster(event)">
+<input type="file" accept="image/*" id="posterInput">
 
 <label>Brand Name</label>
-<input id="brand" oninput="sync()">
+<input id="brand">
 
 <label>Date & Time</label>
-<input type="datetime-local" id="dt" oninput="sync()">
+<input type="datetime-local" id="dt">
 
 <label>UPI ID</label>
 <input id="upi">
@@ -78,17 +76,12 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
 <input id="amount" type="number">
 
 <label>Description</label>
-<textarea id="desc" oninput="sync()"></textarea>
+<textarea id="desc"></textarea>
 
 <label>WhatsApp Group Link</label>
 <input id="waGroup" placeholder="https://chat.whatsapp.com/...">
 
-<button class="primary" onclick="generate()">Generate Landing Page</button>
-
-<div id="actions" style="display:none">
-  <button class="copy" onclick="copyLink()">Copy Link</button>
-  <button class="wa" onclick="shareWA()">Share WhatsApp</button>
-</div>
+<button class="primary" id="genBtn">Generate Landing Page</button>
 </div>
 
 <!-- LIVE PREVIEW -->
@@ -98,61 +91,56 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
   <div class="brand" id="pBrand">Brand Name</div>
   <div class="date" id="pDate">Date & Time</div>
   <div class="desc" id="pDesc">Description</div>
-  <div class="note">Live preview – payment buttons appear on landing page</div>
+  <div class="note">Live preview (no payment buttons here)</div>
 </div>
 
 </div>
 </div>
 
-<!-- LANDING -->
 <div class="wrap" id="landing" style="display:none"></div>
 
 <script>
-let logoURL="", posterURL="", landingLink="", savedData=null;
+/* ===== ELEMENTS ===== */
+const brand=document.getElementById("brand");
+const dt=document.getElementById("dt");
+const desc=document.getElementById("desc");
+const logoInput=document.getElementById("logoInput");
+const posterInput=document.getElementById("posterInput");
 
-function loadLogo(e){
+const pBrand=document.getElementById("pBrand");
+const pDate=document.getElementById("pDate");
+const pDesc=document.getElementById("pDesc");
+const pLogo=document.getElementById("pLogo");
+const pPoster=document.getElementById("pPoster");
+
+let logoURL="", posterURL="";
+
+/* ===== LIVE PREVIEW ===== */
+brand.oninput=()=>pBrand.innerText=brand.value||"Brand Name";
+dt.oninput=()=>pDate.innerText=dt.value||"Date & Time";
+desc.oninput=()=>pDesc.innerText=desc.value||"Description";
+
+logoInput.onchange=e=>{
   logoURL=URL.createObjectURL(e.target.files[0]);
   pLogo.innerHTML=`<img src="${logoURL}">`;
-}
-function loadPoster(e){
+};
+posterInput.onchange=e=>{
   posterURL=URL.createObjectURL(e.target.files[0]);
   pPoster.innerHTML=`<img src="${posterURL}">`;
-}
-function sync(){
-  pBrand.innerText=brand.value||"Brand Name";
-  pDate.innerText=dt.value||"Date & Time";
-  pDesc.innerText=desc.value||"Description";
-}
+};
 
-function generate(){
+/* ===== GENERATE LANDING ===== */
+document.getElementById("genBtn").onclick=()=>{
   if(!posterURL||!upi.value||!amount.value){
     alert("Poster, UPI & Amount required");
     return;
   }
 
-  const upiIntent =
+  const upiIntent=
     "intent://pay?pa="+encodeURIComponent(upi.value)+
     "&pn="+encodeURIComponent(brand.value||"PayMoney")+
     "&am="+encodeURIComponent(amount.value)+
     "&cu=INR#Intent;scheme=upi;end";
-
-  const id=Date.now();
-  localStorage.setItem("landing_"+id,JSON.stringify({
-    logo:logoURL,poster:posterURL,brand:brand.value,
-    dt:dt.value,desc:desc.value,upi:upiIntent,waGroup:waGroup.value
-  }));
-
-  landingLink=location.origin+location.pathname+"?view=landing&id="+id;
-  actions.style.display="block";
-}
-
-function copyLink(){navigator.clipboard.writeText(landingLink)}
-function shareWA(){window.open("https://wa.me/?text="+encodeURIComponent(landingLink))}
-
-const q=new URLSearchParams(location.search);
-if(q.get("view")==="landing"){
-  const d=JSON.parse(localStorage.getItem("landing_"+q.get("id")));
-  if(!d){document.body.innerHTML="Invalid link";return;}
 
   document.getElementById("builder").style.display="none";
   const land=document.getElementById("landing");
@@ -160,27 +148,27 @@ if(q.get("view")==="landing"){
 
   land.innerHTML=`
     <div class="box preview">
-      ${d.logo?`<div class="logo"><img src="${d.logo}"></div>`:""}
-      <div class="poster"><img src="${d.poster}"></div>
-      <div class="brand">${d.brand||"PayMoney"}</div>
-      <div class="date">${d.dt||""}</div>
-      <div class="desc">${d.desc||""}</div>
+      ${logoURL?`<div class="logo"><img src="${logoURL}"></div>`:""}
+      <div class="poster"><img src="${posterURL}"></div>
+      <div class="brand">${brand.value||"PayMoney"}</div>
+      <div class="date">${dt.value||""}</div>
+      <div class="desc">${desc.value||""}</div>
 
-      <a class="pay-mobile" href="${d.upi}">
+      <a class="pay-mobile" href="${upiIntent}">
         📱 Open UPI App (Google Pay / PhonePe)
       </a>
 
-      <div class="pay-qr" onclick="showQR('${d.upi}')">
+      <div class="pay-qr" onclick="showQR('${upiIntent}')">
         💻 Scan & Pay (QR Code)
       </div>
 
       <div class="qr-box" id="qrBox"></div>
 
-      ${d.waGroup?`
+      ${waGroup.value?`
         <div class="wa-note">
           To get group access, please send the payment screenshot
         </div>
-        <a class="wa-btn" href="${d.waGroup}" target="_blank">
+        <a class="wa-btn" href="${waGroup.value}" target="_blank">
           💬 Access WhatsApp Group
         </a>
       `:""}
@@ -188,7 +176,7 @@ if(q.get("view")==="landing"){
       <div class="footer">© 2026 PayMoney • India</div>
     </div>
   `;
-}
+};
 
 function showQR(link){
   const box=document.getElementById("qrBox");
