@@ -8,7 +8,7 @@
 
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial;background:#f5f7fb}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f5f7fb}
 .wrap{max-width:1200px;margin:20px auto;padding:0 14px}
 .flex{display:flex;gap:20px}
 @media(max-width:900px){.flex{flex-direction:column}}
@@ -51,7 +51,7 @@ button{
 .desc{margin:12px 0;color:#333;font-size:14px}
 .note{font-size:13px;color:#777;margin-top:10px}
 
-/* ===== LANDING BUTTONS ===== */
+/* ===== LANDING ===== */
 .pay-mobile{
   background:#2FB344;color:#fff;
   padding:14px;border-radius:14px;
@@ -74,59 +74,61 @@ button{
 <body>
 
 <div class="wrap" id="builder">
-<div class="flex">
+  <div class="flex">
 
-<!-- ===== BUILDER ===== -->
-<div class="box">
-<h2>Create Payment Landing</h2>
+    <!-- ===== BUILDER ===== -->
+    <div class="box">
+      <h2>Create Payment Landing</h2>
 
-<label>Logo (optional)</label>
-<input type="file" accept="image/*" onchange="loadLogo(event)">
+      <label>Logo (optional)</label>
+      <input type="file" accept="image/*" onchange="loadLogo(event)">
 
-<label>Poster Image</label>
-<input type="file" accept="image/*" onchange="loadPoster(event)">
+      <label>Poster Image</label>
+      <input type="file" accept="image/*" onchange="loadPoster(event)">
 
-<label>Brand Name</label>
-<input id="brand" oninput="sync()">
+      <label>Brand Name</label>
+      <input id="brand" oninput="sync()">
 
-<label>Date & Time</label>
-<input type="datetime-local" id="dt" oninput="sync()">
+      <label>Date & Time</label>
+      <input type="datetime-local" id="dt" oninput="sync()">
 
-<label>UPI ID</label>
-<input id="upi">
+      <label>UPI ID</label>
+      <input id="upi">
 
-<label>Amount (INR)</label>
-<input id="amount" type="number">
+      <label>Amount (INR)</label>
+      <input id="amount" type="number">
 
-<label>Description</label>
-<textarea id="desc" oninput="sync()"></textarea>
+      <label>Description</label>
+      <textarea id="desc" oninput="sync()"></textarea>
 
-<button class="primary" onclick="generate()">Generate Landing Page</button>
+      <button class="primary" onclick="generate()">Generate Landing Page</button>
 
-<div id="actions" style="display:none">
-  <button class="copy" onclick="copyLink()">Copy Link</button>
-  <button class="wa" onclick="shareWA()">Share WhatsApp</button>
-</div>
-</div>
+      <div id="actions" style="display:none">
+        <button class="copy" onclick="copyLink()">Copy Link</button>
+        <button class="wa" onclick="shareWA()">Share WhatsApp</button>
+      </div>
+    </div>
 
-<!-- ===== LIVE PREVIEW (NO PAYMENT BUTTONS) ===== -->
-<div class="box preview">
-  <div class="logo" id="pLogo">LOGO</div>
-  <div class="poster" id="pPoster"></div>
-  <div class="brand" id="pBrand">Brand Name</div>
-  <div class="date" id="pDate">Date & Time</div>
-  <div class="desc" id="pDesc">Description</div>
-  <div class="note">
-    Preview only – payment buttons will appear on landing page
+    <!-- ===== LIVE PREVIEW (NO PAYMENT BUTTONS) ===== -->
+    <div class="box preview">
+      <div class="logo" id="pLogo">LOGO</div>
+      <div class="poster" id="pPoster"></div>
+      <div class="brand" id="pBrand">Brand Name</div>
+      <div class="date" id="pDate">Date & Time</div>
+      <div class="desc" id="pDesc">Description</div>
+      <div class="note">Preview only – payment buttons appear on landing page</div>
+    </div>
+
   </div>
 </div>
 
-</div>
-</div>
+<!-- ===== LANDING CONTAINER (SEPARATE, GESTURE SAFE) ===== -->
+<div id="landing"></div>
 
 <script>
 let posterURL="", logoURL="", landingLink="";
 
+/* ===== IMAGE LOAD ===== */
 function loadPoster(e){
   posterURL = URL.createObjectURL(e.target.files[0]);
   pPoster.innerHTML = `<img src="${posterURL}">`;
@@ -135,12 +137,15 @@ function loadLogo(e){
   logoURL = URL.createObjectURL(e.target.files[0]);
   pLogo.innerHTML = `<img src="${logoURL}">`;
 }
+
+/* ===== PREVIEW SYNC ===== */
 function sync(){
   pBrand.innerText = brand.value || "Brand Name";
   pDate.innerText = dt.value || "Date & Time";
   pDesc.innerText = desc.value || "Description";
 }
 
+/* ===== GENERATE LANDING ===== */
 function generate(){
   if(!posterURL || !upi.value || !amount.value){
     alert("Poster, UPI & Amount required");
@@ -172,37 +177,41 @@ function generate(){
 function copyLink(){navigator.clipboard.writeText(landingLink)}
 function shareWA(){window.open("https://wa.me/?text="+encodeURIComponent(landingLink))}
 
-/* ===== LANDING MODE ===== */
+/* ===== LANDING MODE (NO body.innerHTML) ===== */
 const q = new URLSearchParams(location.search);
 if(q.get("view")==="landing"){
   const d = JSON.parse(localStorage.getItem("landing_"+q.get("id")));
-  if(!d){document.body.innerHTML="Invalid link";return;}
+  if(!d){
+    document.getElementById("landing").innerHTML = "Invalid link";
+  }else{
+    document.getElementById("builder").style.display="none";
+    document.getElementById("landing").innerHTML = `
+      <div class="wrap">
+        <div class="box preview">
+          ${d.logo?`<div class="logo"><img src="${d.logo}"></div>`:""}
+          <div class="poster"><img src="${d.poster}"></div>
+          <div class="brand">${d.brand||"PayMoney"}</div>
+          <div class="date">${d.dt||""}</div>
+          <div class="desc">${d.desc||""}</div>
 
-  document.body.innerHTML = `
-    <div class="wrap">
-      <div class="box preview">
-        ${d.logo?`<div class="logo"><img src="${d.logo}"></div>`:""}
-        <div class="poster"><img src="${d.poster}"></div>
-        <div class="brand">${d.brand||"PayMoney"}</div>
-        <div class="date">${d.dt||""}</div>
-        <div class="desc">${d.desc||""}</div>
+          <a class="pay-mobile"
+             href="${d.upi}"
+             target="_self"
+             rel="noopener">
+             📱 Pay via UPI (Mobile)
+          </a>
 
-        <a class="pay-mobile" href="${d.upi}">
-          📱 Pay via UPI (Mobile)
-        </a>
+          <div class="pay-qr" onclick="showQR('${d.upi}')">
+            💻 Scan & Pay (QR Code)
+          </div>
 
-        <div class="pay-qr" onclick="showQR('${d.upi}')">
-          💻 Scan & Pay (QR Code)
-        </div>
+          <div class="qr-box" id="qrBox"></div>
 
-        <div class="qr-box" id="qrBox"></div>
-
-        <div class="footer">
-          © 2026 PayMoney • India
+          <div class="footer">© 2026 PayMoney • India</div>
         </div>
       </div>
-    </div>
-  `;
+    `;
+  }
 }
 
 function showQR(link){
