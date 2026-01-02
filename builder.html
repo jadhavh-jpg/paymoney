@@ -2,123 +2,174 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>PayMoney – Payment Page</title>
+<title>PayMoney – Landing Builder</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 
-<style>
-body{margin:0;font-family:Arial;background:#f5f7fb}
-.box{max-width:420px;margin:30px auto;background:#fff;border-radius:18px;padding:16px}
-img{width:100%;border-radius:14px}
-.brand{margin-top:12px;background:#0D3B66;color:#fff;padding:10px;border-radius:12px;text-align:center}
-.title{margin-top:8px;background:#1f6fd6;color:#fff;padding:10px;border-radius:12px;text-align:center}
-.desc{margin:10px 0;font-size:14px;color:#333;text-align:center}
-.pay{margin-top:14px;background:#2FB344;color:#fff;padding:14px;border-radius:14px;text-align:center;font-size:16px;font-weight:600;cursor:pointer}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-/* ===== CHOOSER ===== */
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f5f7fb}
+.wrap{max-width:1100px;margin:20px auto;padding:0 14px}
+.flex{display:flex;gap:20px}
+.box{background:#fff;border-radius:16px;padding:20px;width:50%}
+@media(max-width:900px){.flex{flex-direction:column}.box{width:100%}}
+label{font-weight:600;margin-top:12px;display:block}
+input,textarea{width:100%;padding:12px;border-radius:8px;border:1px solid #ccc;margin-top:6px}
+textarea{min-height:90px}
+button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;font-weight:600;cursor:pointer;margin-top:14px}
+.primary{background:#0D3B66;color:#fff}
+.copy{background:#2FB344;color:#fff}
+.wa{background:#25D366;color:#fff}
+.poster{aspect-ratio:2/3;background:#eee;border-radius:12px;overflow:hidden}
+.poster img{width:100%;height:100%;object-fit:cover}
+.preview{text-align:center}
+.pay{background:#2FB344;color:#fff;padding:14px;border-radius:14px;margin-top:14px;cursor:pointer}
+
+/* ===== APP CHOOSER ===== */
 #chooser{
-  position:fixed;inset:0;
-  background:rgba(0,0,0,.6);
-  display:none;align-items:flex-end;
-  z-index:9999;
+  position:fixed;inset:0;background:rgba(0,0,0,.6);
+  display:none;align-items:flex-end;z-index:9999
 }
 .sheet{
   background:#fff;width:100%;
   border-radius:20px 20px 0 0;
-  padding:18px;
+  padding:18px
 }
-.sheet h3{margin-top:0}
 .sheet button{
   width:100%;padding:14px;margin:8px 0;
   border:none;border-radius:12px;
-  font-size:15px;font-weight:600;color:#fff;cursor:pointer
+  font-size:15px;font-weight:600;color:#fff
 }
 .gpay{background:#111}
 .phonepe{background:#5b2aa8}
 .paytm{background:#00b9f1}
 .cancel{background:#ddd;color:#000}
-.note{font-size:13px;color:#555;margin-top:6px;text-align:center}
+.note{font-size:13px;color:#555;text-align:center}
 </style>
 </head>
 
 <body>
 
+<div class="wrap" id="builder">
+<div class="flex">
+
+<!-- BUILDER -->
 <div class="box">
-  <img src="https://dummyimage.com/400x600/ddd/000&text=Poster">
+<h2>Create Landing</h2>
 
-  <div class="brand">PayMoney</div>
-  <div class="title">Secure Payment</div>
+<label>Poster</label>
+<input type="file" accept="image/*" onchange="loadImg(event)">
 
-  <div class="desc">
-    Click below to choose your UPI app and complete payment
-  </div>
+<label>UPI ID</label>
+<input id="upi">
 
-  <!-- PAY BUTTON -->
-  <div class="pay" onclick="openChooser()">Pay Now</div>
+<label>Amount</label>
+<input id="amount" type="number">
+
+<label>Description</label>
+<textarea id="desc"></textarea>
+
+<button class="primary" onclick="generate()">Generate Landing</button>
+
+<div id="actions" style="display:none">
+  <button class="copy" onclick="copyLink()">Copy Link</button>
+  <button class="wa" onclick="shareWA()">Share WhatsApp</button>
+</div>
 </div>
 
-<!-- CHOOSE APP MODAL -->
+<!-- PREVIEW -->
+<div class="box preview">
+  <div class="poster" id="pimg"></div>
+  <p id="pdesc"></p>
+  <div class="pay">Pay Now</div>
+</div>
+
+</div>
+</div>
+
+<!-- ===== APP CHOOSER ===== -->
 <div id="chooser">
   <div class="sheet">
     <h3>Choose payment app</h3>
-
     <button class="gpay" onclick="payGpay()">Pay with Google Pay</button>
     <button class="phonepe" onclick="payPhonePe()">Pay with PhonePe</button>
     <button class="paytm" onclick="payPaytm()">Pay with Paytm</button>
-
-    <div class="note">
-      You may be asked to allow the browser to open the app.
-    </div>
-
+    <p class="note">Allow browser if asked</p>
     <button class="cancel" onclick="closeChooser()">Cancel</button>
   </div>
 </div>
 
 <script>
-/* ===== STANDARD FULL UPI LINK ===== */
-const currentUpiLink =
-  "upi://pay?" +
-  "pa=YOURUPI@BANK" +
-  "&pn=PayMoney" +
-  "&am=100" +
-  "&cu=INR" +
-  "&tn=PayMoney Payment" +
-  "&tr=PM" + Date.now() +
-  "&mode=02";
+let imgURL="", landingLink="", currentUpi="";
 
-/* ===== CHOOSER CONTROLS ===== */
-function openChooser(){
-  document.getElementById("chooser").style.display="flex";
-}
-function closeChooser(){
-  document.getElementById("chooser").style.display="none";
+/* ===== IMAGE ===== */
+function loadImg(e){
+  imgURL = URL.createObjectURL(e.target.files[0]);
+  pimg.innerHTML = `<img src="${imgURL}">`;
 }
 
-/* ===== SAFE LINK OPEN (USER GESTURE) ===== */
-function openLink(url){
+/* ===== GENERATE LANDING ===== */
+function generate(){
+  if(!imgURL || !upi.value || !amount.value){
+    alert("All fields required"); return;
+  }
+
+  const upiLink =
+    `upi://pay?pa=${encodeURIComponent(upi.value)}`+
+    `&pn=PayMoney`+
+    `&am=${encodeURIComponent(String(amount.value))}`+
+    `&cu=INR`+
+    `&tn=PayMoney Payment`+
+    `&tr=PM${Date.now()}`+
+    `&mode=02`;
+
+  const id = Date.now();
+  localStorage.setItem("landing_"+id, JSON.stringify({
+    img: imgURL,
+    desc: desc.value,
+    upi: upiLink
+  }));
+
+  landingLink = location.pathname + "?view=landing&id=" + id;
+  actions.style.display = "block";
+}
+
+/* ===== SHARE ===== */
+function copyLink(){navigator.clipboard.writeText(location.origin+landingLink)}
+function shareWA(){window.open("https://wa.me/?text="+encodeURIComponent(location.origin+landingLink))}
+
+/* ===== LANDING MODE ===== */
+const q = new URLSearchParams(location.search);
+if(q.get("view")==="landing"){
+  const d = JSON.parse(localStorage.getItem("landing_"+q.get("id")));
+  if(!d){document.body.innerHTML="Invalid link"; }
+  else{
+    currentUpi = d.upi;
+    document.getElementById("builder").innerHTML = `
+      <div class="box">
+        <img src="${d.img}" style="width:100%;border-radius:14px">
+        <p>${d.desc}</p>
+        <div class="pay" onclick="openChooser()">Pay Now</div>
+      </div>
+    `;
+  }
+}
+
+/* ===== CHOOSER LOGIC ===== */
+function openChooser(){chooser.style.display="flex"}
+function closeChooser(){chooser.style.display="none"}
+function openLink(u){
   const a=document.createElement("a");
-  a.href=url;
-  a.rel="noopener";
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
+  a.href=u;document.body.appendChild(a);a.click();a.remove();
 }
-
-/* ===== ANDROID INTENT BUILDER ===== */
 function makeIntent(pkg){
-  return currentUpiLink.replace("upi://pay?","intent://pay?")
-    + "#Intent;scheme=upi;package=" + pkg + ";end";
+  return currentUpi.replace("upi://pay?","intent://pay?")
+    + "#Intent;scheme=upi;package="+pkg+";end";
 }
-
-/* ===== APP ACTIONS ===== */
-function payGpay(){
-  openLink(makeIntent("com.google.android.apps.nbu.paisa.user"));
-}
-function payPhonePe(){
-  openLink(makeIntent("com.phonepe.app"));
-}
-function payPaytm(){
-  openLink(makeIntent("net.one97.paytm"));
-}
+function payGpay(){openLink(makeIntent("com.google.android.apps.nbu.paisa.user"))}
+function payPhonePe(){openLink(makeIntent("com.phonepe.app"))}
+function payPaytm(){openLink(makeIntent("net.one97.paytm"))}
 </script>
 
 </body>
