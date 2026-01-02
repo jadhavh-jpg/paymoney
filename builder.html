@@ -244,22 +244,53 @@ if(q.get("view")==="landing"){
 }
 
 /* pay logic */
-function pay(link){
-  if(/Mobi|Android|iPhone/i.test(navigator.userAgent)){
-    window.location.href = link;        // 📱 Mobile
-  }else{
-    QRCode.toCanvas(
-      document.getElementById("qr"),
-      link
-    );
-    document.getElementById("qrModal").style.display="flex";
-  }
+<div class="pay-real" onclick="pay(upiLink)">
+  Pay Now via UPI
+</div>
+
+<div id="qrModal" style="display:none">
+  <canvas id="qr"></canvas>
+</div>
+
 }
 function closeQR(){
   document.getElementById("qrModal").style.display="none";
 }
 </script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+
+<script>
+const upiLink = "upi://pay?pa=test@upi&pn=PayMoney&am=100";
+
+function pay(link){
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+  if(isMobile){
+    // 📱 Mobile → try opening UPI app
+    window.location.href = link;
+
+    // User guidance (recommended)
+    setTimeout(()=>{
+      alert(
+        "If UPI app did not open:\n" +
+        "• Make sure Google Pay / PhonePe / Paytm is installed\n" +
+        "• Try opening this link in Chrome\n" +
+        "• Or scan QR from desktop"
+      );
+    }, 2000);
+
+  } else {
+    // 💻 Desktop → show QR
+    document.getElementById("qrModal").style.display = "flex";
+    QRCode.toCanvas(
+      document.getElementById("qr"),
+      link
+    );
+  }
+}
+</script>
 
 </body>
 </html>
+
 
