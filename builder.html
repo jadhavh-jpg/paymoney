@@ -2,149 +2,157 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>PayMoney – Payment Landing</title>
+<title>PayMoney – Payment Landing Builder</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 
 <style>
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial;background:#f5f7fb}
-.wrap{max-width:480px;margin:20px auto;padding:0 14px}
-.box{background:#fff;border-radius:18px;padding:18px}
+.wrap{max-width:1200px;margin:20px auto;padding:0 14px}
+.flex{display:flex;gap:20px}
+@media(max-width:900px){.flex{flex-direction:column}}
+.box{background:#fff;border-radius:18px;padding:20px;width:50%}
+@media(max-width:900px){.box{width:100%}}
 
 label{font-weight:600;margin-top:12px;display:block}
-input,textarea{
-  width:100%;padding:12px;border-radius:8px;
-  border:1px solid #ccc;margin-top:6px
-}
-textarea{min-height:80px}
-
-button{
-  width:100%;padding:14px;border:none;border-radius:14px;
-  font-size:16px;font-weight:600;cursor:pointer;margin-top:14px
-}
+input,textarea{width:100%;padding:12px;border-radius:8px;border:1px solid #ccc;margin-top:6px}
+textarea{min-height:90px}
+button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;font-weight:600;cursor:pointer;margin-top:14px}
 .primary{background:#0D3B66;color:#fff}
+.copy{background:#2FB344;color:#fff}
+.wa{background:#25D366;color:#fff}
 
+/* PREVIEW */
 .preview{text-align:center}
-.logo{
-  width:100px;height:100px;margin:0 auto 10px;
-  border-radius:16px;background:#eee;
-  display:flex;align-items:center;justify-content:center;
-  overflow:hidden
-}
+.logo{width:110px;height:110px;margin:0 auto 10px;border-radius:16px;background:#eee;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .logo img{width:100%;height:100%;object-fit:contain}
-.poster{
-  aspect-ratio:2/3;background:#ddd;
-  border-radius:14px;overflow:hidden
-}
+.poster{aspect-ratio:2/3;background:#ddd;border-radius:14px;overflow:hidden}
 .poster img{width:100%;height:100%;object-fit:cover}
-.brand{background:#0D3B66;color:#fff;padding:10px;border-radius:12px;margin-top:10px}
-.date{font-size:14px;color:#555;margin-top:6px}
-.desc{font-size:14px;color:#333;margin:10px 0}
+.brand{background:#0D3B66;color:#fff;padding:10px;border-radius:12px;margin-top:12px}
+.date{margin-top:8px;font-size:14px;color:#555}
+.desc{margin:12px 0;color:#333;font-size:14px}
+.note{font-size:13px;color:#777;margin-top:10px}
 
-.pay{
-  display:block;
-  padding:14px;
-  background:#2FB344;
-  color:#fff;
-  border-radius:14px;
-  font-size:16px;
-  font-weight:600;
-  text-decoration:none;
-  text-align:center;
-  margin-top:14px
-}
-.qrbtn{
-  background:#1f3c88;color:#fff;
-  padding:14px;border-radius:14px;
-  font-weight:600;margin-top:12px;
-  text-align:center;cursor:pointer
-}
-.note{font-size:13px;color:#666;margin-top:6px}
-
-.qr{margin-top:14px;text-align:center;display:none}
+/* LANDING BUTTONS */
+.pay-mobile{display:block;background:#2FB344;color:#fff;padding:14px;border-radius:14px;font-size:16px;font-weight:600;margin-top:14px;text-decoration:none;text-align:center}
+.pay-qr{background:#1f3c88;color:#fff;padding:14px;border-radius:14px;font-size:16px;font-weight:600;margin-top:12px;text-align:center;cursor:pointer}
+.qr-box{margin-top:14px;display:none;text-align:center}
 
 .wa-note{font-size:13px;color:#444;margin-top:16px}
-.wa-btn{
-  display:inline-block;
-  padding:12px 20px;
-  background:#25D366;
-  color:#fff;
-  border-radius:30px;
-  font-weight:600;
-  text-decoration:none;
-  margin-top:8px;
-  animation:pulse 1.6s infinite
-}
+.wa-btn{display:inline-block;padding:12px 20px;background:#25D366;color:#fff;border-radius:30px;font-weight:600;text-decoration:none;margin-top:8px;animation:pulse 1.6s infinite}
 @keyframes pulse{
   0%{box-shadow:0 0 0 0 rgba(37,211,102,.6)}
   70%{box-shadow:0 0 0 14px rgba(37,211,102,0)}
   100%{box-shadow:0 0 0 0 rgba(37,211,102,0)}
 }
-.footer{font-size:13px;color:#777;margin-top:18px;text-align:center}
+.footer{margin-top:16px;font-size:13px;color:#777}
 </style>
 </head>
 
 <body>
 
 <div class="wrap" id="builder">
-  <div class="box">
-    <h3>Create Payment Landing</h3>
+<div class="flex">
 
-    <label>Logo (optional)</label>
-    <input type="file" accept="image/*" onchange="loadLogo(event)">
+<!-- BUILDER -->
+<div class="box">
+<h2>Create Payment Landing</h2>
 
-    <label>Poster Image</label>
-    <input type="file" accept="image/*" onchange="loadPoster(event)">
+<label>Logo (optional)</label>
+<input type="file" accept="image/*" onchange="loadLogo(event)">
 
-    <label>Brand Name</label>
-    <input id="brand">
+<label>Poster Image</label>
+<input type="file" accept="image/*" onchange="loadPoster(event)">
 
-    <label>Date & Time</label>
-    <input type="datetime-local" id="dt">
+<label>Brand Name</label>
+<input id="brand" oninput="sync()">
 
-    <label>UPI ID</label>
-    <input id="upi" placeholder="example@upi">
+<label>Date & Time</label>
+<input type="datetime-local" id="dt" oninput="sync()">
 
-    <label>Amount (INR)</label>
-    <input id="amount" type="number">
+<label>UPI ID</label>
+<input id="upi">
 
-    <label>Description</label>
-    <textarea id="desc"></textarea>
+<label>Amount (INR)</label>
+<input id="amount" type="number">
 
-    <label>WhatsApp Group Link</label>
-    <input id="waGroup" placeholder="https://chat.whatsapp.com/...">
+<label>Description</label>
+<textarea id="desc" oninput="sync()"></textarea>
 
-    <button class="primary" onclick="generate()">Generate Landing</button>
-  </div>
+<label>WhatsApp Group Link</label>
+<input id="waGroup" placeholder="https://chat.whatsapp.com/...">
+
+<button class="primary" onclick="generate()">Generate Landing Page</button>
+
+<div id="actions" style="display:none">
+  <button class="copy" onclick="copyLink()">Copy Link</button>
+  <button class="wa" onclick="shareWA()">Share WhatsApp</button>
+</div>
 </div>
 
+<!-- LIVE PREVIEW -->
+<div class="box preview">
+  <div class="logo" id="pLogo">LOGO</div>
+  <div class="poster" id="pPoster"></div>
+  <div class="brand" id="pBrand">Brand Name</div>
+  <div class="date" id="pDate">Date & Time</div>
+  <div class="desc" id="pDesc">Description</div>
+  <div class="note">Live preview – payment buttons appear on landing page</div>
+</div>
+
+</div>
+</div>
+
+<!-- LANDING -->
 <div class="wrap" id="landing" style="display:none"></div>
 
 <script>
-let logoURL="", posterURL="";
+let logoURL="", posterURL="", landingLink="", savedData=null;
 
 function loadLogo(e){
   logoURL=URL.createObjectURL(e.target.files[0]);
+  pLogo.innerHTML=`<img src="${logoURL}">`;
 }
 function loadPoster(e){
   posterURL=URL.createObjectURL(e.target.files[0]);
+  pPoster.innerHTML=`<img src="${posterURL}">`;
+}
+function sync(){
+  pBrand.innerText=brand.value||"Brand Name";
+  pDate.innerText=dt.value||"Date & Time";
+  pDesc.innerText=desc.value||"Description";
 }
 
 function generate(){
-  if(!posterURL || !upi.value || !amount.value){
+  if(!posterURL||!upi.value||!amount.value){
     alert("Poster, UPI & Amount required");
     return;
   }
 
   const upiIntent =
-    "intent://pay?" +
-    "pa=" + encodeURIComponent(upi.value) +
-    "&pn=" + encodeURIComponent(brand.value||"PayMoney") +
-    "&am=" + encodeURIComponent(amount.value) +
-    "&cu=INR" +
-    "#Intent;scheme=upi;end";
+    "intent://pay?pa="+encodeURIComponent(upi.value)+
+    "&pn="+encodeURIComponent(brand.value||"PayMoney")+
+    "&am="+encodeURIComponent(amount.value)+
+    "&cu=INR#Intent;scheme=upi;end";
+
+  const id=Date.now();
+  localStorage.setItem("landing_"+id,JSON.stringify({
+    logo:logoURL,poster:posterURL,brand:brand.value,
+    dt:dt.value,desc:desc.value,upi:upiIntent,waGroup:waGroup.value
+  }));
+
+  landingLink=location.origin+location.pathname+"?view=landing&id="+id;
+  actions.style.display="block";
+}
+
+function copyLink(){navigator.clipboard.writeText(landingLink)}
+function shareWA(){window.open("https://wa.me/?text="+encodeURIComponent(landingLink))}
+
+const q=new URLSearchParams(location.search);
+if(q.get("view")==="landing"){
+  const d=JSON.parse(localStorage.getItem("landing_"+q.get("id")));
+  if(!d){document.body.innerHTML="Invalid link";return;}
 
   document.getElementById("builder").style.display="none";
   const land=document.getElementById("landing");
@@ -152,31 +160,27 @@ function generate(){
 
   land.innerHTML=`
     <div class="box preview">
-      ${logoURL?`<div class="logo"><img src="${logoURL}"></div>`:""}
-      <div class="poster"><img src="${posterURL}"></div>
-      <div class="brand">${brand.value||"PayMoney"}</div>
-      <div class="date">${dt.value||""}</div>
-      <div class="desc">${desc.value||""}</div>
+      ${d.logo?`<div class="logo"><img src="${d.logo}"></div>`:""}
+      <div class="poster"><img src="${d.poster}"></div>
+      <div class="brand">${d.brand||"PayMoney"}</div>
+      <div class="date">${d.dt||""}</div>
+      <div class="desc">${d.desc||""}</div>
 
-      <a class="pay" href="${upiIntent}">
+      <a class="pay-mobile" href="${d.upi}">
         📱 Open UPI App (Google Pay / PhonePe)
       </a>
 
-      <div class="note">
-        If asked, tap <b>Continue</b> to open your UPI app
-      </div>
-
-      <div class="qrbtn" onclick="showQR('${upiIntent}')">
+      <div class="pay-qr" onclick="showQR('${d.upi}')">
         💻 Scan & Pay (QR Code)
       </div>
 
-      <div class="qr" id="qr"></div>
+      <div class="qr-box" id="qrBox"></div>
 
-      ${waGroup.value?`
+      ${d.waGroup?`
         <div class="wa-note">
           To get group access, please send the payment screenshot
         </div>
-        <a class="wa-btn" href="${waGroup.value}" target="_blank">
+        <a class="wa-btn" href="${d.waGroup}" target="_blank">
           💬 Access WhatsApp Group
         </a>
       `:""}
@@ -187,12 +191,10 @@ function generate(){
 }
 
 function showQR(link){
-  const box=document.getElementById("qr");
+  const box=document.getElementById("qrBox");
   box.style.display="block";
   box.innerHTML="";
-  QRCode.toCanvas(document.createElement("canvas"),link,(e,c)=>{
-    box.appendChild(c);
-  });
+  QRCode.toCanvas(document.createElement("canvas"),link,(e,c)=>box.appendChild(c));
 }
 </script>
 
