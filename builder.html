@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>PayMoney – Landing Builder</title>
+<title>PayMoney – Create Payment Link</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -15,15 +15,22 @@ body{margin:0;background:#f5f7fb}
 /* layout */
 .wrap{max-width:1100px;margin:auto;padding:20px}
 .flex{display:flex;gap:20px}
-.box{background:#fff;border-radius:16px;padding:20px;width:50%;box-shadow:0 10px 30px rgba(0,0,0,.08)}
-@media(max-width:900px){.flex{flex-direction:column}.box{width:100%}}
+.box{
+  background:#fff;border-radius:18px;
+  padding:20px;width:50%;
+  box-shadow:0 10px 30px rgba(0,0,0,.08)
+}
+@media(max-width:900px){
+  .flex{flex-direction:column}
+  .box{width:100%}
+}
 
 h2,h3{margin-top:0}
 
 /* form */
 label{font-weight:600;margin-top:12px;display:block}
 input,textarea{
-  width:100%;padding:12px;border-radius:8px;
+  width:100%;padding:12px;border-radius:10px;
   border:1px solid #ccc;margin-top:6px
 }
 textarea{min-height:80px}
@@ -39,30 +46,46 @@ button{
 .wa{background:#25D366;color:#fff}
 
 /* preview */
-.preview{border:1px solid #ddd;border-radius:16px;overflow:hidden}
+.preview{border:1px solid #ddd;border-radius:18px;overflow:hidden}
 .poster{aspect-ratio:2/3;background:#eee}
 .poster img{width:100%;height:100%;object-fit:cover}
 .c{text-align:center;padding:16px}
 
-.brand{background:#0D3B66;color:#fff;padding:10px;border-radius:12px;margin-top:8px}
-.title{background:#1f6fd6;color:#fff;padding:10px;border-radius:12px;margin-top:8px}
+.brand{
+  background:#0D3B66;color:#fff;
+  padding:10px;border-radius:12px;margin-top:8px
+}
+.title{
+  background:#1f6fd6;color:#fff;
+  padding:10px;border-radius:12px;margin-top:8px
+}
 
 .pay-btn{
-  margin-top:14px;padding:14px;
-  border-radius:14px;
+  margin-top:16px;padding:16px;
+  border-radius:16px;
   background:#2FB344;color:#fff;
-  font-weight:700;cursor:pointer
+  font-weight:800;font-size:16px;
+  cursor:pointer
 }
 
 /* QR modal */
 #qrModal{
   display:none;position:fixed;inset:0;
   background:rgba(0,0,0,.6);
-  align-items:center;justify-content:center
+  align-items:center;justify-content:center;
+  z-index:999
 }
 #qrBox{
-  background:#fff;padding:20px;
-  border-radius:16px;text-align:center
+  background:#fff;padding:22px;
+  border-radius:18px;text-align:center;
+  max-width:320px;width:100%
+}
+#qrBox canvas{margin:12px auto}
+
+/* small help */
+.help{
+  font-size:12px;color:#666;
+  margin-top:10px
 }
 </style>
 </head>
@@ -72,11 +95,11 @@ button{
 <div class="wrap" id="builder">
   <div class="flex">
 
-    <!-- FORM -->
+    <!-- LEFT : BUILDER -->
     <div class="box">
-      <h2>Create Landing</h2>
+      <h2>Create Payment Landing</h2>
 
-      <label>Brand</label>
+      <label>Brand Name</label>
       <input id="brand" oninput="sync()">
 
       <label>Poster Image</label>
@@ -102,7 +125,7 @@ button{
       </div>
     </div>
 
-    <!-- LIVE PREVIEW -->
+    <!-- RIGHT : LIVE PREVIEW -->
     <div class="box">
       <h3>Live Preview</h3>
       <div class="preview">
@@ -119,12 +142,12 @@ button{
   </div>
 </div>
 
-<!-- QR -->
+<!-- QR MODAL -->
 <div id="qrModal">
   <div id="qrBox">
     <h3>Scan to Pay</h3>
     <canvas id="qr"></canvas>
-    <br><br>
+    <p class="help">Open UPI app and scan QR</p>
     <button onclick="closeQR()">Close</button>
   </div>
 </div>
@@ -132,14 +155,14 @@ button{
 <script>
 let imageURL="", landingURL="";
 
-/* preview sync */
+/* live preview sync */
 function sync(){
   pBrand.innerText = brand.value || "Brand";
   pTitle.innerText = title.value || "Title";
   pDesc.innerText  = desc.value || "";
 }
 
-/* image */
+/* load image */
 function loadImg(e){
   imageURL = URL.createObjectURL(e.target.files[0]);
   pimg.innerHTML = `<img src="${imageURL}">`;
@@ -148,7 +171,7 @@ function loadImg(e){
 /* generate landing */
 function generate(){
   if(!imageURL || !upi.value || !amount.value){
-    alert("Image, UPI & Amount required");
+    alert("Poster, UPI ID and Amount are required");
     return;
   }
 
@@ -168,7 +191,7 @@ function generate(){
   location.href = landingURL;
 }
 
-/* copy & share */
+/* copy & whatsapp */
 function copyLink(){
   navigator.clipboard.writeText(landingURL);
   alert("Link copied");
@@ -186,33 +209,48 @@ if(q.get("id")){
     document.getElementById("builder").innerHTML = `
       <div class="wrap">
         <div class="box">
-          <img src="${d.img}" style="width:100%;border-radius:16px">
+          <img src="${d.img}" style="width:100%;border-radius:18px">
           <div class="brand">${d.brand}</div>
           <div class="title">${d.title}</div>
           <p>${d.desc}</p>
           <div class="pay-btn" onclick="pay('${d.upi}','${d.amount}')">
             Pay Now ₹${d.amount}
           </div>
-          <p style="font-size:12px;color:#666;margin-top:8px">
-            If payment doesn’t open, scan QR from desktop.
+          <p class="help">
+            If UPI app does not open, scan QR from desktop.
           </p>
         </div>
       </div>`;
   }
 }
 
-/* payment */
+/* PAYMENT LOGIC */
 function pay(upi, amount){
-  const link = `upi://pay?pa=${upi}&pn=PayMoney&am=${amount}&cu=INR`;
+  const upiLink =
+    `upi://pay?pa=${upi}&pn=PayMoney&am=${amount}&cu=INR&tn=PayMoneyPayment`;
+
   const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
   if(isMobile){
-    window.location.href = link;
+    const a = document.createElement("a");
+    a.href = upiLink;
+    a.click();
+
+    setTimeout(()=>{
+      alert(
+        "If UPI app did not open:\n\n" +
+        "• Ensure Google Pay / PhonePe / Paytm is installed\n" +
+        "• Open this page in Chrome browser\n" +
+        "• Or ask customer to scan QR from desktop"
+      );
+    },2000);
+
   }else{
     document.getElementById("qrModal").style.display="flex";
-    QRCode.toCanvas(document.getElementById("qr"), link);
+    QRCode.toCanvas(document.getElementById("qr"), upiLink);
   }
 }
+
 function closeQR(){
   document.getElementById("qrModal").style.display="none";
 }
