@@ -194,12 +194,12 @@ if(q.get("view")==="landing"){
           <div class="date">${d.dt||""}</div>
           <div class="desc">${d.desc||""}</div>
 
-          <a class="pay-mobile"
-   href="${d.upi}"
-   target="_self"
+         <a class="pay-mobile"
+   href="${d.upi.replace('upi://pay?','intent://pay?')}#Intent;scheme=upi;end"
    rel="noopener">
    📱 Open UPI App (Google Pay / PhonePe)
 </a>
+
 
 <div class="pay-qr" onclick="showQR('${d.upi}')">
   💻 Scan & Pay (QR Code)
@@ -231,4 +231,5 @@ function showQR(link){
 
 </body>
 </html>
+
 
