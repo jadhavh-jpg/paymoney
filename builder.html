@@ -134,20 +134,37 @@ function sync(){
   pdesc.innerText=desc.value;
 }
 
+/* ====== GENERATE WITH FULL STANDARD UPI LINK ====== */
 function generate(){
   if(!imageURL||!upi.value||!amount.value){
     alert("Image, UPI & Amount required");
     return;
   }
-  const upiLink=`upi://pay?pa=${encodeURIComponent(upi.value)}&am=${amount.value}&cu=INR&tn=PayMoney`;
+
+  const upiLink =
+    `upi://pay?` +
+    `pa=${encodeURIComponent(upi.value)}` +
+    `&pn=${encodeURIComponent("PayMoney")}` +
+    `&am=${encodeURIComponent(String(amount.value))}` +
+    `&cu=INR` +
+    `&tn=${encodeURIComponent("PayMoney Payment")}` +
+    `&tr=PM${Date.now()}` +
+    `&mode=02`;
+
   const id=Date.now();
   localStorage.setItem("landing_"+id,JSON.stringify({
-    brand:brand.value,title:title.value,dt:dt.value,
-    desc:desc.value,img:imageURL,upiLink
+    brand:brand.value,
+    title:title.value,
+    dt:dt.value,
+    desc:desc.value,
+    img:imageURL,
+    upiLink
   }));
+
   landingLink=location.origin+location.pathname+"?view=landing&id="+id;
   actions.style.display="block";
 }
+
 function copyLink(){navigator.clipboard.writeText(landingLink);alert("Link copied")}
 function shareWA(){window.open("https://wa.me/?text="+encodeURIComponent(landingLink))}
 
@@ -157,7 +174,7 @@ if(q.get("view")==="landing"){
   const d=JSON.parse(localStorage.getItem("landing_"+q.get("id")));
   if(!d){ document.body.innerHTML="Invalid Link"; }
   else{
-    currentUpiLink = d.upiLink;
+    currentUpiLink=d.upiLink;
     document.getElementById("builder").innerHTML=`
       <div class="box">
         <img src="${d.img}" style="width:100%;border-radius:16px">
@@ -174,34 +191,30 @@ if(q.get("view")==="landing"){
           <button class="pay paytm anim" onclick="payPaytm()">Paytm</button>
         </div>
 
-        <div class="small-note">If payment doesn’t open, try another UPI app.</div>
+        <div class="small-note">If payment doesn’t open, tap <b>Continue</b> to allow the app.</div>
       </div>`;
   }
 }
 
-/* ===== FINAL WORKING DEEP-LINK LOGIC ===== */
+/* ===== DEEP LINK CORE ===== */
 function openLink(url){
   const a=document.createElement("a");
-  a.href=url; a.style.display="none";
-  document.body.appendChild(a); a.click(); a.remove();
+  a.href=url;a.style.display="none";
+  document.body.appendChild(a);a.click();a.remove();
 }
-function makeIntent(upiLink, pkg){
+function makeIntent(upiLink,pkg){
   return upiLink.replace("upi://pay?","intent://pay?")
     + `#Intent;scheme=upi;${pkg?`package=${pkg};`:``}end`;
 }
 function pay(upiLink){
   const ua=navigator.userAgent;
-  const isAndroid=/Android/i.test(ua);
-  const isIOS=/iPhone|iPad|iPod/i.test(ua);
-
-  if(isIOS){ openLink(upiLink); return; }
-
-  if(isAndroid){
-    openLink(makeIntent(upiLink));     // generic chooser
-    setTimeout(()=>openLink(upiLink),600); // fallback
+  if(/iPhone|iPad|iPod/i.test(ua)){
+    openLink(upiLink); return;
+  }
+  if(/Android/i.test(ua)){
+    openLink(makeIntent(upiLink));
     return;
   }
-
   QRCode.toCanvas(document.getElementById("qr"),upiLink);
   document.getElementById("qrModal").style.display="flex";
 }
@@ -209,7 +222,7 @@ function payGpay(){ openLink(makeIntent(currentUpiLink,"com.google.android.apps.
 function payPhonePe(){ openLink(makeIntent(currentUpiLink,"com.phonepe.app")); }
 function payPaytm(){ openLink(makeIntent(currentUpiLink,"net.one97.paytm")); }
 
-function closeQR(){ document.getElementById("qrModal").style.display="none"; }
+function closeQR(){document.getElementById("qrModal").style.display="none";}
 </script>
 
 </body>
