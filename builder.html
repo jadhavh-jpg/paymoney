@@ -5,8 +5,6 @@
 <title>PayMoney – Landing Builder</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
 <style>
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,sans-serif;background:#f5f7fb}
@@ -14,38 +12,71 @@ body{margin:0;font-family:Arial,sans-serif;background:#f5f7fb}
 .flex{display:flex;gap:20px}
 .box{background:#fff;border-radius:16px;padding:20px;width:50%}
 @media(max-width:900px){.flex{flex-direction:column}.box{width:100%}}
+
 label{font-weight:600;margin-top:12px;display:block}
 input,textarea{width:100%;padding:12px;border-radius:8px;border:1px solid #ccc;margin-top:6px}
 textarea{min-height:90px}
 button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;font-weight:600;cursor:pointer;margin-top:14px}
+
 .primary{background:#0D3B66;color:#fff}
 .copy{background:#2FB344;color:#fff}
 .wa{background:#25D366;color:#fff}
+
 .poster{aspect-ratio:2/3;background:#eee;border-radius:12px;overflow:hidden}
 .poster img{width:100%;height:100%;object-fit:cover}
-.preview{text-align:center}
-.pay{background:#2FB344;color:#fff;padding:14px;border-radius:14px;margin-top:14px;cursor:pointer}
 
-/* ===== APP CHOOSER ===== */
+.preview{text-align:center}
+
+.logo{
+  width:120px;height:120px;
+  margin:0 auto 10px;
+  border-radius:16px;
+  overflow:hidden;
+  background:#f1f1f1;
+  display:flex;align-items:center;justify-content:center
+}
+.logo img{width:100%;height:100%;object-fit:contain}
+
+.brand{background:#0D3B66;color:#fff;padding:10px;border-radius:12px;margin-top:6px}
+.desc{margin:10px 0;font-size:14px;color:#333}
+
+.pay{background:#2FB344;color:#fff;padding:14px;border-radius:14px;margin-top:14px;font-size:16px;font-weight:600;cursor:pointer}
+
+/* ===== CHOOSER ===== */
 #chooser{
-  position:fixed;inset:0;background:rgba(0,0,0,.6);
-  display:none;align-items:flex-end;z-index:9999
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.6);
+  display:none;align-items:flex-end;
+  z-index:9999
 }
 .sheet{
   background:#fff;width:100%;
   border-radius:20px 20px 0 0;
   padding:18px
 }
-.sheet button{
-  width:100%;padding:14px;margin:8px 0;
-  border:none;border-radius:12px;
-  font-size:15px;font-weight:600;color:#fff
+.sheet h3{margin-top:0}
+.app-btn{
+  display:block;
+  width:100%;
+  padding:14px;
+  margin:8px 0;
+  border-radius:12px;
+  font-size:15px;
+  font-weight:600;
+  color:#fff;
+  text-align:center;
+  text-decoration:none;
 }
 .gpay{background:#111}
 .phonepe{background:#5b2aa8}
 .paytm{background:#00b9f1}
-.cancel{background:#ddd;color:#000}
-.note{font-size:13px;color:#555;text-align:center}
+.cancel{
+  background:#ddd;color:#000;
+  display:block;text-align:center;
+  padding:12px;border-radius:12px;
+  margin-top:10px;text-decoration:none
+}
+.note{font-size:13px;color:#555;text-align:center;margin-top:6px}
 </style>
 </head>
 
@@ -54,12 +85,18 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
 <div class="wrap" id="builder">
 <div class="flex">
 
-<!-- BUILDER -->
+<!-- ===== BUILDER ===== -->
 <div class="box">
 <h2>Create Landing</h2>
 
+<label>Logo (optional)</label>
+<input type="file" accept="image/*" onchange="loadLogo(event)">
+
 <label>Poster</label>
-<input type="file" accept="image/*" onchange="loadImg(event)">
+<input type="file" accept="image/*" onchange="loadPoster(event)">
+
+<label>Brand Name</label>
+<input id="brand">
 
 <label>UPI ID</label>
 <input id="upi">
@@ -78,66 +115,76 @@ button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;fon
 </div>
 </div>
 
-<!-- PREVIEW -->
+<!-- ===== PREVIEW ===== -->
 <div class="box preview">
-  <div class="poster" id="pimg"></div>
-  <p id="pdesc"></p>
+  <div class="logo" id="pLogo">LOGO</div>
+  <div class="poster" id="pPoster"></div>
+  <div class="brand" id="pBrand">Brand</div>
+  <div class="desc" id="pDesc"></div>
   <div class="pay">Pay Now</div>
 </div>
 
 </div>
 </div>
 
-<!-- ===== APP CHOOSER ===== -->
+<!-- ===== CHOOSE APP MODAL ===== -->
 <div id="chooser">
   <div class="sheet">
     <h3>Choose payment app</h3>
-    <button class="gpay" onclick="payGpay()">Pay with Google Pay</button>
-    <button class="phonepe" onclick="payPhonePe()">Pay with PhonePe</button>
-    <button class="paytm" onclick="payPaytm()">Pay with Paytm</button>
-    <p class="note">Allow browser if asked</p>
-    <button class="cancel" onclick="closeChooser()">Cancel</button>
+
+    <a id="gpayBtn" class="app-btn gpay">Pay with Google Pay</a>
+    <a id="phonepeBtn" class="app-btn phonepe">Pay with PhonePe</a>
+    <a id="paytmBtn" class="app-btn paytm">Pay with Paytm</a>
+
+    <div class="note">Allow browser if asked</div>
+    <a href="#" class="cancel" onclick="closeChooser()">Cancel</a>
   </div>
 </div>
 
 <script>
-let imgURL="", landingLink="", currentUpi="";
+let posterURL="", logoURL="", landingLink="", currentUpi="";
 
-/* ===== IMAGE ===== */
-function loadImg(e){
-  imgURL = URL.createObjectURL(e.target.files[0]);
-  pimg.innerHTML = `<img src="${imgURL}">`;
+/* ===== LOAD IMAGES ===== */
+function loadPoster(e){
+  posterURL = URL.createObjectURL(e.target.files[0]);
+  pPoster.innerHTML = `<img src="${posterURL}">`;
+}
+function loadLogo(e){
+  logoURL = URL.createObjectURL(e.target.files[0]);
+  pLogo.innerHTML = `<img src="${logoURL}">`;
 }
 
-/* ===== GENERATE LANDING ===== */
+/* ===== GENERATE ===== */
 function generate(){
-  if(!imgURL || !upi.value || !amount.value){
-    alert("All fields required"); return;
+  if(!posterURL || !upi.value || !amount.value){
+    alert("Poster, UPI & Amount required");
+    return;
   }
 
   const upiLink =
     `upi://pay?pa=${encodeURIComponent(upi.value)}`+
-    `&pn=PayMoney`+
+    `&pn=${encodeURIComponent(brand.value || "PayMoney")}`+
     `&am=${encodeURIComponent(String(amount.value))}`+
     `&cu=INR`+
-    `&tn=PayMoney Payment`+
+    `&tn=${encodeURIComponent("PayMoney Payment")}`+
     `&tr=PM${Date.now()}`+
     `&mode=02`;
 
   const id = Date.now();
   localStorage.setItem("landing_"+id, JSON.stringify({
-    img: imgURL,
+    logo: logoURL,
+    poster: posterURL,
+    brand: brand.value,
     desc: desc.value,
     upi: upiLink
   }));
 
-  landingLink = location.pathname + "?view=landing&id=" + id;
-  actions.style.display = "block";
+  landingLink = location.origin + location.pathname + "?view=landing&id=" + id;
+  actions.style.display="block";
 }
 
-/* ===== SHARE ===== */
-function copyLink(){navigator.clipboard.writeText(location.origin+landingLink)}
-function shareWA(){window.open("https://wa.me/?text="+encodeURIComponent(location.origin+landingLink))}
+function copyLink(){navigator.clipboard.writeText(landingLink)}
+function shareWA(){window.open("https://wa.me/?text="+encodeURIComponent(landingLink))}
 
 /* ===== LANDING MODE ===== */
 const q = new URLSearchParams(location.search);
@@ -147,29 +194,30 @@ if(q.get("view")==="landing"){
   else{
     currentUpi = d.upi;
     document.getElementById("builder").innerHTML = `
-      <div class="box">
-        <img src="${d.img}" style="width:100%;border-radius:14px">
-        <p>${d.desc}</p>
+      <div class="box preview">
+        ${d.logo ? `<div class="logo"><img src="${d.logo}"></div>` : ``}
+        <div class="poster"><img src="${d.poster}"></div>
+        <div class="brand">${d.brand || "PayMoney"}</div>
+        <div class="desc">${d.desc || ""}</div>
         <div class="pay" onclick="openChooser()">Pay Now</div>
       </div>
     `;
   }
 }
 
-/* ===== CHOOSER LOGIC ===== */
-function openChooser(){chooser.style.display="flex"}
-function closeChooser(){chooser.style.display="none"}
-function openLink(u){
-  const a=document.createElement("a");
-  a.href=u;document.body.appendChild(a);a.click();a.remove();
+/* ===== CHOOSER LOGIC (NO JS CLICK) ===== */
+function openChooser(){
+  const intentBase = currentUpi.replace("upi://pay?","intent://pay?");
+  document.getElementById("gpayBtn").href =
+    intentBase + "#Intent;scheme=upi;package=com.google.android.apps.nbu.paisa.user;end";
+  document.getElementById("phonepeBtn").href =
+    intentBase + "#Intent;scheme=upi;package=com.phonepe.app;end";
+  document.getElementById("paytmBtn").href =
+    intentBase + "#Intent;scheme=upi;package=net.one97.paytm;end";
+
+  chooser.style.display="flex";
 }
-function makeIntent(pkg){
-  return currentUpi.replace("upi://pay?","intent://pay?")
-    + "#Intent;scheme=upi;package="+pkg+";end";
-}
-function payGpay(){openLink(makeIntent("com.google.android.apps.nbu.paisa.user"))}
-function payPhonePe(){openLink(makeIntent("com.phonepe.app"))}
-function payPaytm(){openLink(makeIntent("net.one97.paytm"))}
+function closeChooser(){chooser.style.display="none";}
 </script>
 
 </body>
