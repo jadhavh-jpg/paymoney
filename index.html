@@ -922,6 +922,33 @@ nav a{
     padding:14px 26px;
   }
 }
+/* Step number badge */
+.how-grid .card{
+  position:relative; /* important */
+}
+
+.step-badge{
+  position:absolute;
+  top:-12px;
+  left:-12px;
+
+  width:36px;
+  height:36px;
+  border-radius:50%;
+
+  background:#1e88e5;
+  color:#ffffff;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-size:16px;
+  font-weight:800;
+
+  box-shadow:0 6px 16px rgba(30,136,229,0.4);
+}
+
 
 </style>
 </head>
@@ -1001,19 +1028,50 @@ nav a{
 <!-- ================= HOW IT WORKS ================= -->
 <section class="section" id="how">
   <h2>How Payment Link Works</h2>
-  <div class="grid">
-   <a href="builder.html" class="no-style-link">
-  <div class="card">
-    <i class="fa-solid fa-link"></i>
-    <p>Create payment link</p>
-  </div>
-</a>
 
-    <div class="card"><i class="fa-brands fa-whatsapp"></i><p>Share via WhatsApp / SMS</p></div>
-    <div class="card"><i class="fa-solid fa-qrcode"></i><p>Customer pays using UPI</p></div>
-    <div class="card"><i class="fa-solid fa-check"></i><p>Money goes directly to bank</p></div>
+  <div class="grid how-grid">
+
+    <!-- STEP 1 -->
+    <a href="builder.html" class="no-style-link">
+      <div class="card">
+        <span class="step-badge">1</span>
+        <i class="fa-solid fa-link"></i>
+        <p>Create payment link</p>
+      </div>
+    </a>
+
+    <!-- STEP 2 -->
+    <div class="card">
+      <span class="step-badge">2</span>
+      <i class="fa-brands fa-whatsapp"></i>
+      <p>Share via WhatsApp / SMS</p>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="card">
+      <span class="step-badge">3</span>
+      <i class="fa-solid fa-qrcode"></i>
+      <p>Customer pays using UPI</p>
+    </div>
+
+    <!-- STEP 4 -->
+    <div class="card">
+      <span class="step-badge">4</span>
+      <i class="fa-solid fa-check"></i>
+      <p>Money goes directly to bank</p>
+    </div>
+
+    <!-- STEP 5 -->
+    <div class="card">
+      <span class="step-badge">5</span>
+      <i class="fa-solid fa-chart-line"></i>
+      <p>Track payments in Dashboard</p>
+    </div>
+
   </div>
 </section>
+
+
 
 <!-- ================= DASHBOARD ================= -->
 <section class="section dashboard">
@@ -1403,6 +1461,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 </body>
 </html>
+
 
 
 
