@@ -434,8 +434,81 @@ nav a{
     grid-template-columns:repeat(2,1fr);
   }
 }
+  /* Testimonials */
+.testimonials-section{
+  padding:90px 20px;
+  text-align:center;
+}
 
+.section-title{
+  font-size:32px;
+  font-weight:700;
+  margin-bottom:50px;
+}
 
+.testimonials-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:28px;
+  max-width:1100px;
+  margin:auto;
+}
+
+.testimonial-card{
+  background:#fff;
+  border-radius:14px;
+  padding:30px 22px;
+  box-shadow:0 12px 28px rgba(0,0,0,0.08);
+  transition:0.3s ease;
+}
+
+.testimonial-card:hover,
+.testimonial-card.active{
+  border:2px solid #1e88e5;
+  box-shadow:0 0 0 4px rgba(30,136,229,0.15),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+/* Avatar */
+.avatar{
+  width:54px;
+  height:54px;
+  margin:0 auto 14px;
+  border-radius:50%;
+  background:#e3f2fd;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.avatar svg{
+  width:28px;
+  height:28px;
+  fill:none;
+  stroke:#1e88e5;
+  stroke-width:2;
+}
+
+/* Text */
+.quote{
+  font-size:15px;
+  line-height:1.6;
+  color:#333;
+  margin-bottom:14px;
+}
+
+.author{
+  font-size:14px;
+  font-weight:600;
+  color:#555;
+}
+
+/* Mobile */
+@media(max-width:768px){
+  .testimonials-grid{
+    grid-template-columns:1fr;
+  }
+}
 
 
 </style>
@@ -642,14 +715,59 @@ nav a{
 
 
 <!-- ================= TESTIMONIALS ================= -->
-<section class="section">
-  <h2>What Sellers Say</h2>
-  <div class="grid">
-    <div class="card">â€œPayMoney made collecting payments super easy.â€ â­â­â­â­â­<br>â€” Online Seller, Pune</div>
-    <div class="card">â€œNo gateway fees and instant bank credit.â€ â­â­â­â­â­<br>â€” Coach, Mumbai</div>
-    <div class="card">â€œPerfect for WhatsApp-based selling.â€ â­â­â­â­â­<br>â€” Small Business Owner</div>
+<section class="testimonials-section">
+  <h2 class="section-title">What Sellers Say</h2>
+
+  <div class="testimonials-grid">
+
+    <!-- Card 1 -->
+    <div class="testimonial-card active">
+      <div class="avatar">
+        <svg viewBox="0 0 24 24">
+          <circle cx="12" cy="8" r="4"/>
+          <path d="M4 22c0-4 4-6 8-6s8 2 8 6"/>
+        </svg>
+      </div>
+      <p class="quote">
+        “PayMoney made collecting payments incredibly simple and fast.  
+        I now close deals directly on WhatsApp without any friction.”
+      </p>
+      <span class="author">Online Seller, Pune</span>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="testimonial-card">
+      <div class="avatar">
+        <svg viewBox="0 0 24 24">
+          <circle cx="12" cy="8" r="4"/>
+          <path d="M4 22c0-4 4-6 8-6s8 2 8 6"/>
+        </svg>
+      </div>
+      <p class="quote">
+        “No gateway fees and instant bank credit is a game changer.  
+        PayMoney fits perfectly for coaches and consultants.”
+      </p>
+      <span class="author">Coach, Mumbai</span>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="testimonial-card">
+      <div class="avatar">
+        <svg viewBox="0 0 24 24">
+          <circle cx="12" cy="8" r="4"/>
+          <path d="M4 22c0-4 4-6 8-6s8 2 8 6"/>
+        </svg>
+      </div>
+      <p class="quote">
+        “Perfect solution for WhatsApp-based selling.  
+        Clean links, fast payments, and no technical headache.”
+      </p>
+      <span class="author">Small Business Owner</span>
+    </div>
+
   </div>
 </section>
+
 
 <!-- ================= SECURITY ================= -->
 <section class="section">
@@ -704,6 +822,7 @@ setInterval(()=>{
 
 </body>
 </html>
+
 
 
 
