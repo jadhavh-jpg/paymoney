@@ -1076,16 +1076,17 @@ setInterval(()=>{
 <script>
 document.querySelectorAll('.more-btn').forEach(btn=>{
   btn.addEventListener('click',(e)=>{
-    e.stopPropagation(); // important
-    const item = btn.closest('.faq-item');
-    item.classList.toggle('active');
+    e.stopPropagation();
+    btn.closest('.faq-item').classList.toggle('active');
   });
 });
+
 </script>
 
 
 </body>
 </html>
+
 
 
 
