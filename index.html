@@ -1062,9 +1062,10 @@ setInterval(()=>{
 },3000);
   
 <script>
-document.querySelectorAll('.faq-question').forEach(q=>{
-  q.addEventListener('click',()=>{
-    const item = q.parentElement;
+document.querySelectorAll('.more-btn').forEach(btn=>{
+  btn.addEventListener('click',(e)=>{
+    e.stopPropagation(); // important
+    const item = btn.closest('.faq-item');
     item.classList.toggle('active');
   });
 });
@@ -1073,6 +1074,7 @@ document.querySelectorAll('.faq-question').forEach(q=>{
 
 </body>
 </html>
+
 
 
 
