@@ -269,6 +269,63 @@ nav a{
   0%{left:-10%}
   10%{left:10%}
 }
+  /* WHO IS PAYMONEY FOR */
+.who-section{
+  padding:80px 20px;
+  text-align:center;
+}
+
+.who-title{
+  font-size:32px;
+  font-weight:700;
+  margin-bottom:50px;
+}
+
+.who-grid{
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  gap:24px;
+  max-width:1100px;
+  margin:auto;
+}
+
+.who-card{
+  height:160px;
+  background:#fff;
+  border-radius:12px;              /* square look */
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  gap:10px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.08);
+  cursor:pointer;
+  transition:0.3s ease;
+}
+
+.who-card .icon{
+  font-size:30px;
+}
+
+.who-card p{
+  font-size:16px;
+  font-weight:600;
+}
+
+/* Hover blue effect – wahi rehne do */
+.who-card:hover,
+.who-card.active{
+  border:2px solid #1e88e5;
+  box-shadow:0 0 0 4px rgba(30,136,229,0.15);
+}
+
+/* 📱 Mobile view – 2 upar 2 neeche */
+@media(max-width:768px){
+  .who-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+
 
 </style>
 </head>
@@ -380,14 +437,31 @@ nav a{
 </section>
 
 <!-- ================= WHO IS IT FOR ================= -->
-<section class="section">
-  <h2>Who Is PayMoney For?</h2>
-  <div class="grid">
-    <div class="card">ðŸ› Online Sellers</div>
-    <div class="card">ðŸŽ“ Trainers & Coaches</div>
-    <div class="card">ðŸ§˜ Consultants</div>
-    <div class="card">ðŸª Small Businesses</div>
-    <div class="card">ðŸ“± WhatsApp / Instagram Sellers</div>
+<section class="who-section">
+  <h2 class="who-title">Who Is PayMoney For?</h2>
+
+  <div class="who-grid">
+
+    <div class="who-card active">
+      <span class="icon">🛒</span>
+      <p>Online Sellers</p>
+    </div>
+
+    <div class="who-card">
+      <span class="icon">🎓</span>
+      <p>Trainers & Coaches</p>
+    </div>
+
+    <div class="who-card">
+      <span class="icon">💼</span>
+      <p>Consultants</p>
+    </div>
+
+    <div class="who-card">
+      <span class="icon">📱</span>
+      <p>WhatsApp / Instagram Sellers</p>
+    </div>
+
   </div>
 </section>
 
@@ -466,6 +540,7 @@ setInterval(()=>{
 
 </body>
 </html>
+
 
 
 
