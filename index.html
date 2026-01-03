@@ -659,7 +659,89 @@ nav a{
 .faq-item.active .faq-answer{
   display:flex;
 }
+/* ===== PAYMONEY FOOTER ===== */
+.paymoney-footer{
+  background:linear-gradient(135deg,#0d3b66,#1e88e5);
+  color:#fff;
+  padding:80px 20px 40px;
+  text-align:center;
+}
 
+.footer-content{
+  max-width:900px;
+  margin:auto;
+}
+
+.paymoney-footer h2{
+  font-size:32px;
+  margin-bottom:20px;
+}
+
+.footer-text{
+  font-size:15px;
+  margin:6px 0;
+}
+
+.footer-text a{
+  color:#e3f2fd;
+  text-decoration:none;
+  font-weight:600;
+}
+
+/* WhatsApp Button */
+.whatsapp-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  background:#25D366;
+  color:#fff;
+  padding:14px 26px;
+  border-radius:40px;
+  margin:20px 0;
+  text-decoration:none;
+  font-weight:600;
+  box-shadow:0 10px 25px rgba(0,0,0,0.2);
+}
+
+.whatsapp-icon{
+  width:22px;
+  height:22px;
+  fill:#fff;
+}
+
+/* Social Icons */
+.social-icons{
+  display:flex;
+  justify-content:center;
+  gap:18px;
+  margin:25px 0;
+}
+
+.social-icons a{
+  font-size:22px;
+  background:rgba(255,255,255,0.15);
+  width:44px;
+  height:44px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:50%;
+  color:#fff;
+  text-decoration:none;
+  transition:0.3s;
+}
+
+.social-icons a:hover{
+  background:#fff;
+  color:#1e88e5;
+}
+
+/* Copyright */
+.footer-copy{
+  font-size:14px;
+  opacity:0.9;
+  margin-top:20px;
+}
 
 </style>
 </head>
@@ -1045,20 +1127,43 @@ nav a{
 
 
 <!-- ================= CONTACT ================= -->
-<section class="section contact" id="contact">
-  <h2>Contact & Support</h2>
-  <p>Email: jadhav.h@gmail.com</p>
-  <p>Working Hours: 10:00 AM â€“ 5:00 PM</p>
-  <a href="tel:+919115121575">+91 91151 21575</a>
-</section>
+<footer class="paymoney-footer" id="contact">
+  <div class="footer-content">
 
-<footer class="section" style="text-align:center">
-  Â© 2025 PayMoney Â· Indiaâ€™s Easy Payment Gateway
+    <h2>Contact & Support</h2>
+
+    <p class="footer-text">
+      Email:
+      <a href="mailto:support@paymoney24.in">support@paymoney24.in</a>
+    </p>
+
+    <p class="footer-text">
+      Working Hours: 10:00 AM – 5:00 PM
+    </p>
+
+    <!-- WhatsApp Button -->
+    <a href="https://wa.me/919115121575" target="_blank" class="whatsapp-btn">
+      <svg viewBox="0 0 24 24" class="whatsapp-icon">
+        <path d="M12 2a10 10 0 0 0-8.4 15.4L2 22l4.7-1.6A10 10 0 1 0 12 2z"/>
+        <path d="M16.2 13.6c-.2-.1-1.3-.6-1.5-.7-.2-.1-.4-.1-.6.1l-.4.6c-.1.2-.3.2-.5.1-.3-.1-1.2-.4-2.3-1.4-.8-.7-1.4-1.6-1.5-1.9-.1-.2 0-.4.1-.5l.4-.4c.1-.1.2-.3.3-.4.1-.1.1-.3 0-.5l-.7-1.7c-.2-.4-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 1.9s.8 2.2.9 2.3c.1.1 1.6 2.5 3.9 3.5.5.2.9.3 1.2.4.5.1.9.1 1.2.1.4-.1 1.3-.5 1.5-1 .2-.5.2-.9.1-1-.1-.1-.2-.1-.4-.2z"/>
+      </svg>
+      +91 91151 21575
+    </a>
+
+    <!-- Social Media Icons -->
+    <div class="social-icons">
+      <a href="#" aria-label="Facebook">🌐</a>
+      <a href="#" aria-label="Instagram">📸</a>
+      <a href="#" aria-label="LinkedIn">💼</a>
+      <a href="#" aria-label="YouTube">▶️</a>
+    </div>
+
+    <p class="footer-copy">
+      © 2025 PayMoney · India’s Easy Payment Gateway
+    </p>
+
+  </div>
 </footer>
-
-<a href="https://wa.me/919115121575" class="chat">
-  <i class="fa-brands fa-whatsapp"></i>
-</a>
 
 <script>
 let idx = 0;
@@ -1100,6 +1205,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 </body>
 </html>
+
 
 
 
