@@ -509,7 +509,62 @@ nav a{
     grid-template-columns:1fr;
   }
 }
+/* Security Section */
+.security-section{
+  padding:90px 20px;
+  text-align:center;
+}
 
+.security-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:24px;
+  max-width:1100px;
+  margin:auto;
+}
+
+.security-card{
+  height:150px;
+  background:#fff;
+  border-radius:12px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.08);
+  cursor:pointer;
+  transition:0.3s ease;
+}
+
+.security-card p{
+  font-size:15px;
+  font-weight:600;
+}
+
+/* SVG icons */
+.sec-icon{
+  width:32px;
+  height:32px;
+  fill:none;
+  stroke:#1e88e5;
+  stroke-width:2;
+}
+
+/* Hover + active */
+.security-card:hover,
+.security-card.active{
+  border:2px solid #1e88e5;
+  box-shadow:0 0 0 4px rgba(30,136,229,0.15),
+             0 10px 25px rgba(0,0,0,0.1);
+}
+
+/* Mobile */
+@media(max-width:768px){
+  .security-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
 
 </style>
 </head>
@@ -773,15 +828,53 @@ nav a{
 
 
 <!-- ================= SECURITY ================= -->
-<section class="section">
-  <h2>Security & Compliance</h2>
-  <div class="grid">
-    <div class="card">Bank-grade security</div>
-    <div class="card">UPI guidelines followed</div>
-    <div class="card">No card data stored</div>
-    <div class="card">Privacy protected</div>
+<section class="security-section">
+  <h2 class="section-title">Security & Compliance</h2>
+
+  <div class="security-grid">
+
+    <!-- Bank-grade security -->
+    <div class="security-card active">
+      <svg viewBox="0 0 24 24" class="sec-icon">
+        <path d="M12 2L4 6v6c0 5 4 9 8 10 4-1 8-5 8-10V6z"/>
+        <path d="M9 12l2 2 4-4"/>
+      </svg>
+      <p>Bank-grade Security</p>
+    </div>
+
+    <!-- UPI guidelines -->
+    <div class="security-card">
+      <svg viewBox="0 0 24 24" class="sec-icon">
+        <rect x="3" y="4" width="18" height="16" rx="2"/>
+        <line x1="3" y1="9" x2="21" y2="9"/>
+        <path d="M7 14h4"/>
+      </svg>
+      <p>UPI Guidelines Followed</p>
+    </div>
+
+    <!-- No card data -->
+    <div class="security-card">
+      <svg viewBox="0 0 24 24" class="sec-icon">
+        <rect x="3" y="5" width="18" height="14" rx="2"/>
+        <line x1="3" y1="10" x2="21" y2="10"/>
+        <line x1="6" y1="16" x2="18" y2="16"/>
+      </svg>
+      <p>No Card Data Stored</p>
+    </div>
+
+    <!-- Privacy -->
+    <div class="security-card">
+      <svg viewBox="0 0 24 24" class="sec-icon">
+        <circle cx="12" cy="12" r="9"/>
+        <path d="M12 8v4"/>
+        <circle cx="12" cy="16" r="1"/>
+      </svg>
+      <p>Privacy Protected</p>
+    </div>
+
   </div>
 </section>
+
 
 <!-- ================= FAQ ================= -->
 <section class="section">
@@ -825,6 +918,7 @@ setInterval(()=>{
 
 </body>
 </html>
+
 
 
 
