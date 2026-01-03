@@ -325,6 +325,63 @@ nav a{
     grid-template-columns:repeat(2,1fr);
   }
 }
+  /* USE-CASES SECTION */
+.use-section{
+  padding:80px 20px;
+  text-align:center;
+}
+
+.use-title{
+  font-size:32px;
+  font-weight:700;
+  margin-bottom:50px;
+}
+
+.use-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:24px;
+  max-width:1100px;
+  margin:auto;
+}
+
+.use-card{
+  height:160px;
+  background:#fff;
+  border-radius:12px; /* square feel */
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.08);
+  cursor:pointer;
+  transition:0.3s ease;
+}
+
+.use-card .icon{
+  font-size:30px;
+}
+
+.use-card p{
+  font-size:16px;
+  font-weight:600;
+}
+
+/* Same blue hover effect */
+.use-card:hover,
+.use-card.active{
+  border:2px solid #1e88e5;
+  box-shadow:0 0 0 4px rgba(30,136,229,0.15);
+}
+
+/* 📱 Mobile – 2 upar 2 neeche */
+@media(max-width:768px){
+  .use-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+
 
 
 </style>
@@ -466,16 +523,34 @@ nav a{
 </section>
 
 <!-- ================= USE CASES ================= -->
-<section class="section">
-  <h2>Use-Cases</h2>
-  <div class="grid">
-    <div class="card">Advance payments</div>
-    <div class="card">Fees collection</div>
-    <div class="card">Sell digital products</div>
-    <div class="card">One-time payments</div>
-    <div class="card">Custom amount collection</div>
+<section class="use-section">
+  <h2 class="use-title">Use-Cases</h2>
+
+  <div class="use-grid">
+
+    <div class="use-card active">
+      <span class="icon">⏳</span>
+      <p>Advance Payments</p>
+    </div>
+
+    <div class="use-card">
+      <span class="icon">🏫</span>
+      <p>Fees Collection</p>
+    </div>
+
+    <div class="use-card">
+      <span class="icon">📦</span>
+      <p>Sell Digital Products</p>
+    </div>
+
+    <div class="use-card">
+      <span class="icon">💰</span>
+      <p>Custom Amount Collection</p>
+    </div>
+
   </div>
 </section>
+
 
 <!-- ================= TESTIMONIALS ================= -->
 <section class="section">
@@ -540,6 +615,7 @@ setInterval(()=>{
 
 </body>
 </html>
+
 
 
 
