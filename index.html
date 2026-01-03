@@ -12,6 +12,8 @@
 <!-- Fonts & Icons -->
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet"
+ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Inter,sans-serif}
@@ -742,6 +744,53 @@ nav a{
   opacity:0.9;
   margin-top:20px;
 }
+.whatsapp-float{
+  position: fixed;
+  bottom: 22px;
+  right: 22px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #25D366;
+  color: #fff;
+  padding: 12px 16px;
+  border-radius: 40px;
+  font-size: 15px;
+  text-decoration: none;
+  z-index: 9999;
+  box-shadow: 0 0 0 rgba(37,211,102,.6);
+  animation: pulse 2s infinite;
+}
+
+.whatsapp-float i{
+  font-size: 26px;
+}
+
+.wa-text{
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Pulse animation */
+@keyframes pulse{
+  0%{box-shadow:0 0 0 0 rgba(37,211,102,.6)}
+  70%{box-shadow:0 0 0 18px rgba(37,211,102,0)}
+  100%{box-shadow:0 0 0 0 rgba(37,211,102,0)}
+}
+
+/* Hover effect */
+.whatsapp-float:hover{
+  transform: scale(1.05);
+}
+
+/* 📱 Mobile pe sirf icon dikhe */
+@media(max-width:600px){
+  .wa-text{display:none}
+  .whatsapp-float{
+    padding: 14px;
+    border-radius: 50%;
+  }
+}
 
 </style>
 </head>
@@ -1202,9 +1251,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
 });
 </script>
+<!-- WhatsApp Floating Button -->
+<a
+  href="https://wa.me/919115121575?text=Hi%20I%20want%20to%20know%20more%20about%20PayMoney"
+  class="whatsapp-float"
+  target="_blank"
+  aria-label="Chat on WhatsApp"
+>
+  <span class="wa-text">Need Help?</span>
+  <i class="fa-brands fa-whatsapp"></i>
+</a>
 
 </body>
 </html>
+
 
 
 
