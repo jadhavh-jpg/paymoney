@@ -948,6 +948,20 @@ nav a{
 
   box-shadow:0 6px 16px rgba(30,136,229,0.4);
 }
+/* 🔧 Desktop only: force 5 cards in one row */
+@media(min-width:1024px){
+  .how-grid{
+    display:flex;
+    gap:24px;
+    justify-content:space-between;
+    flex-wrap:nowrap; /* important */
+  }
+
+  .how-grid .card{
+    flex:1;
+    min-width:0;
+  }
+}
 
 
 </style>
@@ -1461,6 +1475,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 </body>
 </html>
+
 
 
 
