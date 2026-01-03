@@ -381,6 +381,60 @@ nav a{
     grid-template-columns:repeat(2,1fr);
   }
 }
+  /* Tools Section */
+.tools-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:24px;
+  max-width:1100px;
+  margin:auto;
+}
+
+.tool-card{
+  height:160px;
+  background:#fff;
+  border-radius:12px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.08);
+  cursor:pointer;
+  transition:0.3s ease;
+}
+
+/* SVG icon */
+.tool-icon{
+  width:34px;
+  height:34px;
+  stroke:#1e88e5;
+  fill:none;
+  stroke-width:2;
+}
+
+/* Text */
+.tool-card p{
+  font-size:15px;
+  font-weight:600;
+  text-align:center;
+}
+
+/* Hover + Active (blur border) */
+.tool-card:hover,
+.tool-card.active{
+  border:2px solid #1e88e5;
+  box-shadow:0 0 0 4px rgba(30,136,229,0.15),
+             0 10px 25px rgba(0,0,0,0.1);
+}
+
+/* Mobile view */
+@media(max-width:768px){
+  .tools-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+
 
 
 
@@ -485,12 +539,47 @@ nav a{
 
 <!-- ================= TOOLS ================= -->
 <section class="section" id="tools">
-  <h2>PayMoney Tools</h2>
-  <div class="grid">
-    <div class="card"><i class="fa-solid fa-link"></i><p>Create Payment Link</p></div>
-    <div class="card"><i class="fa-solid fa-layer-group"></i><p>Build Landing Page</p></div>
-    <div class="card"><i class="fa-solid fa-chart-line"></i><p>View Analytics</p></div>
+  <h2 class="tools-title">Landing Pages & Finance</h2>
+
+  <div class="tools-grid">
+
+  <!-- 1️⃣ Build Landing Page -->
+  <div class="tool-card active">
+    <svg viewBox="0 0 24 24" class="tool-icon">
+      <rect x="3" y="3" width="18" height="18" rx="2"/>
+      <line x1="3" y1="9" x2="21" y2="9"/>
+    </svg>
+    <p>Build Landing Page</p>
   </div>
+
+  <!-- 2️⃣ HDFC Credit Card -->
+  <div class="tool-card">
+    <svg viewBox="0 0 24 24" class="tool-icon">
+      <rect x="2" y="5" width="20" height="14" rx="2"/>
+      <line x1="2" y1="10" x2="22" y2="10"/>
+    </svg>
+    <p>HDFC Credit Card</p>
+  </div>
+
+  <!-- 3️⃣ LIC Insurance -->
+  <div class="tool-card">
+    <svg viewBox="0 0 24 24" class="tool-icon">
+      <path d="M12 2L3 7v6c0 5 4 9 9 9s9-4 9-9V7z"/>
+    </svg>
+    <p>LIC India Insurance</p>
+  </div>
+
+  <!-- 4️⃣ Mutual Fund -->
+  <div class="tool-card">
+    <svg viewBox="0 0 24 24" class="tool-icon">
+      <polyline points="3 17 9 11 13 15 21 7"/>
+      <line x1="3" y1="21" x2="21" y2="21"/>
+    </svg>
+    <p>Mutual Fund Investment</p>
+  </div>
+
+</div>
+
 </section>
 
 <!-- ================= WHO IS IT FOR ================= -->
@@ -615,6 +704,7 @@ setInterval(()=>{
 
 </body>
 </html>
+
 
 
 
