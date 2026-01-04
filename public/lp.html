@@ -1,112 +1,128 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>PayMoney – Payment</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <title>PayMoney – Secure Payment</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<style>
-body{
-  font-family:Arial;
-  background:#f5f7fb;
-  margin:0;
-}
-.card{
-  max-width:420px;
-  margin:30px auto;
-  background:#fff;
-  border-radius:16px;
-  overflow:hidden;
-  box-shadow:0 10px 30px rgba(0,0,0,.15);
-}
-.poster img{
-  width:100%;
-  display:block;
-}
-.c{
-  padding:16px;
-}
-h2{margin:0;color:#0D3B66}
-p{color:#555}
-.pay{
-  background:#16a34a;
-  color:#fff;
-  padding:14px;
-  text-align:center;
-  border-radius:10px;
-  margin-top:14px;
-  cursor:pointer;
-}
-.tools{
-  display:flex;
-  gap:10px;
-  margin-top:12px;
-}
-.tool{
-  flex:1;
-  background:#0D3B66;
-  color:#fff;
-  padding:12px;
-  text-align:center;
-  border-radius:10px;
-  cursor:pointer;
-}
-</style>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .card {
+      background: #fff;
+      width: 100%;
+      max-width: 380px;
+      padding: 22px;
+      border-radius: 14px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.1);
+      text-align: center;
+    }
+    h2 {
+      margin: 0 0 6px;
+      color: #0d3b66;
+    }
+    p {
+      margin: 0 0 16px;
+      color: #555;
+      font-size: 14px;
+    }
+    #amount {
+      font-size: 22px;
+      font-weight: bold;
+      margin: 16px 0;
+      color: #111;
+    }
+    button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      cursor: pointer;
+    }
+    #payBtn {
+      background: #22c55e;
+      color: #fff;
+      font-weight: bold;
+    }
+    #copyBtn {
+      background: #0d3b66;
+      color: #fff;
+    }
+    #waBtn {
+      background: #25d366;
+      color: #fff;
+    }
+  </style>
 </head>
 
 <body>
-
-<div class="card">
-  <div class="poster">
-    <img id="img">
-  </div>
-
-  <div class="c">
-    <h2 id="title"></h2>
+  <div class="card">
+    <h2 id="title">Loading…</h2>
     <p id="desc"></p>
 
-    <div class="pay" id="payBtn">Pay ₹<span id="amt"></span></div>
+    <div id="amount"></div>
 
-    <div class="tools">
-      <div class="tool" onclick="copyLink()">Copy Link</div>
-      <div class="tool" onclick="shareWA()">WhatsApp</div>
-    </div>
+    <button id="payBtn">Pay Now</button>
+    <button id="copyBtn">Copy Link</button>
+    <button id="waBtn">Share on WhatsApp</button>
   </div>
-</div>
 
-<script>
-const q = new URLSearchParams(location.search);
+  <!-- 🔥 BACKEND DATA LOADER -->
+  <script>
+    async function loadPage() {
+      // /p/PMxxxx se ID nikalega
+      const id = window.location.pathname.split("/").pop();
 
-const title  = q.get("title");
-const desc   = q.get("desc");
-const image  = q.get("image");
-const amount = q.get("amount");
-const upi    = q.get("upi");
+      try {
+        const res = await fetch("/api/get/" + id);
+        if (!res.ok) {
+          document.body.innerHTML = "<h2>Invalid or expired payment link</h2>";
+          return;
+        }
 
-document.getElementById("title").innerText = title;
-document.getElementById("desc").innerText = desc;
-document.getElementById("img").src = image;
-document.getElementById("amt").innerText = amount;
+        const data = await res.json();
 
-const upiLink =
- `upi://pay?pa=${upi}&am=${amount}&cu=INR`;
+        document.getElementById("title").innerText = data.title;
+        document.getElementById("desc").innerText = data.desc;
+        document.getElementById("amount").innerText = "₹" + data.amount;
 
-document.getElementById("payBtn").onclick = ()=>{
-  location.href = upiLink;
-};
+        const upiLink =
+          `upi://pay?pa=${data.upi}&pn=PayMoney&am=${data.amount}&cu=INR`;
 
-function copyLink(){
-  navigator.clipboard.writeText(location.href);
-  alert("Payment link copied");
-}
+        document.getElementById("payBtn").onclick = () => {
+          window.location.href = upiLink;
+        };
 
-function shareWA(){
-  window.open(
-   `https://wa.me/?text=${encodeURIComponent(location.href)}`,
-   "_blank"
-  );
-}
-</script>
+        document.getElementById("copyBtn").onclick = () => {
+          navigator.clipboard.writeText(window.location.href);
+          alert("Payment link copied");
+        };
 
+        document.getElementById("waBtn").onclick = () => {
+          const msg =
+            `Pay ₹${data.amount} using PayMoney:\n` +
+            window.location.href;
+          window.open(
+            "https://wa.me/?text=" + encodeURIComponent(msg),
+            "_blank"
+          );
+        };
+
+      } catch (e) {
+        document.body.innerHTML = "<h2>Server error. Try again later.</h2>";
+      }
+    }
+
+    loadPage();
+  </script>
 </body>
 </html>
