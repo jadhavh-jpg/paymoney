@@ -1,10 +1,1586 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>PayMoney</title>
+<meta charset="UTF-8">
+<title>PayMoney Ã¢â‚¬â€œ Create Payment Links & Get Paid Instantly</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- SEO -->
+<meta name="description" content="PayMoney lets you create payment links, share on WhatsApp and receive money directly to your bank. No gateway charges. Built for Indian sellers.">
+<meta name="keywords" content="PayMoney, payment link, UPI payment, WhatsApp payment, India payment gateway">
+
+<!-- Fonts & Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet"
+ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,sans-serif}
+body{background:#fff;color:#111;line-height:1.6}
+
+/* ================= HEADER ================= */
+header{
+  position:sticky;top:0;z-index:100;
+  background:#fff;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 18px;
+  box-shadow:0 2px 10px rgba(0,0,0,.05)
+}
+.logo img{height:52px}
+nav{display:flex;gap:18px}
+nav a{
+  font-weight:600;
+  font-size:14px;
+  color:#333;
+  text-decoration:none;
+}
+.menu{display:none;font-size:22px}
+
+/* ================= HERO ================= */
+.hero{
+  background:linear-gradient(135deg,#0d3b66,#1f8a70);
+  color:#fff;
+  padding:70px 20px;
+}
+.hero-inner{
+  max-width:1200px;
+  margin:auto;
+  display:grid;
+  grid-template-columns:1.1fr .9fr;
+  gap:30px;
+  align-items:center;
+}
+.hero h1{
+  font-size:38px;
+  font-weight:800;
+  line-height:1.2;
+}
+.hero p{margin:14px 0 22px;opacity:.9}
+
+.btn-main{
+  padding:15px 36px;
+  border-radius:40px;
+  background:#fff;
+  color:#0d3b66;
+  font-weight:800;
+  border:2px solid transparent;
+  cursor:pointer;
+  transition:.3s;
+}
+.btn-main:hover{
+  border-color:#1e88e5;
+  box-shadow:0 0 0 4px rgba(30,136,229,.2);
+}
+.btn-primary{
+  display:inline-block;
+  padding:14px 28px;
+  background:#ffffff;
+  color:#0d3b66;
+  font-weight:800;
+  border-radius:30px;
+  text-decoration:none;          /* Ã°Å¸â€Â¥ underline remove */
+  border:2px solid transparent;  /* default no border */
+  transition:all .3s ease;
+}
+
+/* HOVER EFFECT Ã¢â‚¬â€œ PREMIUM */
+.btn-primary:hover{
+  background:transparent;
+  color:#ffffff;
+  border:2px solid #ffffff;      /* Ã°Å¸â€Âµ proper border */
+  box-shadow:0 8px 25px rgba(0,0,0,.25);
+}
+
+/* HERO VISUAL */
+.hero-visual{position:relative}
+.phone-stack{
+  position:relative;
+  width:260px;
+  height:440px;
+  margin:auto;
+}
+.phone{
+  position:absolute;
+  inset:0;
+  border-radius:28px;
+  background-size:cover;
+  background-position:center;
+  box-shadow:0 25px 60px rgba(0,0,0,.35);
+  opacity:0;
+  transform:scale(.95);
+  transition:.6s;
+}
+.phone.active{opacity:1;transform:scale(1)}
+
+/* DOTS */
+.dots{
+  display:flex;
+  justify-content:center;
+  margin-top:14px;
+}
+.dot{
+  width:8px;height:8px;
+  background:rgba(255,255,255,.4);
+  border-radius:50%;
+  margin:0 4px;
+}
+.dot.active{background:#fff}
+
+/* ================= COMMON SECTIONS ================= */
+.section{padding:60px 20px}
+.section h2{
+  text-align:center;
+  font-size:26px;
+  font-weight:800;
+  margin-bottom:30px;
+}
+
+.grid{
+  max-width:1100px;
+  margin:auto;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:22px;
+}
+.no-style-link{
+  text-decoration:none;   /* underline remove */
+  color:inherit;          /* blue / purple text remove */
+  display:block;          /* full card clickable */
+}
+
+.no-style-link:hover{
+  color:inherit;
+}
+
+.card{
+  background:#fff;
+  padding:26px;
+  border-radius:18px;
+  text-align:center;
+  box-shadow:0 12px 30px rgba(0,0,0,.08);
+  border:2px solid transparent;
+  transition:.3s;
+}
+.card:hover{
+  border-color:#1e88e5;
+  box-shadow:0 0 0 4px rgba(30,136,229,.15);
+}
+.card i{
+  font-size:32px;
+  color:#1e88e5;
+  margin-bottom:10px;
+}
+
+/* ================= TRUST & CREDIBILITY ================= */
+.trust-text{
+  text-align:center;
+  max-width:900px;
+  margin:0 auto 30px;
+  color:#444;
+}
+.trust .card p{font-size:14px}
+
+/* ================= DASHBOARD ================= */
+.dashboard img{
+  width:100%;
+  max-width:900px;
+  display:block;
+  margin:auto;
+  border-radius:18px;
+  box-shadow:0 20px 50px rgba(0,0,0,.25);
+}
+
+/* ================= FAQ ================= */
+.faq{max-width:900px;margin:auto}
+.faq-item{
+  padding:16px;
+  border-bottom:1px solid #eee;
+}
+.faq-item b{display:block;margin-bottom:6px}
+
+/* ================= CONTACT ================= */
+.contact{text-align:center}
+.contact a{
+  display:inline-block;
+  margin-top:12px;
+  padding:14px 30px;
+  border-radius:40px;
+  background:#0d3b66;
+  color:#fff;
+  font-weight:800;
+  text-decoration:none;
+}
+
+/* ================= CHAT ================= */
+.chat{
+  position:fixed;
+  right:18px;bottom:18px;
+  background:#25D366;
+  width:56px;height:56px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+  font-size:26px;
+  z-index:99;
+}
+
+/* ================= MOBILE ================= */
+@media(max-width:768px){
+  nav{display:none}
+  .menu{display:block}
+  header{justify-content:center}
+  .hero-inner{grid-template-columns:1fr;text-align:center}
+  .hero h1{font-size:32px}
+}
+  .highlight-text{
+  font-weight:800;
+  font-size:18px;
+  color:#ffffff;              /* âœ… WHITE TEXT */
+  position:relative;
+  display:inline-block;
+  margin:0;
+}
+
+.highlight-text::after{
+  content:"";
+  position:absolute;
+  left:-50%;
+  top:0;
+  width:100%;
+  height:100%;
+  background:linear-gradient(
+    120deg,
+    transparent,
+    rgba(255,255,255,0.45),   /* âœ… WHITE SHINE */
+    transparent
+  );
+  animation:readSweep 2.8s infinite;
+}
+
+.sub-text{
+  font-size:16px;
+  color:#ffffff;              /* âœ… WHITE TEXT */
+  margin-top:4px;
+  opacity:0.9;
+}
+
+@keyframes readSweep{
+  0%{left:-10%}
+  10%{left:10%}
+}
+  /* WHO IS PAYMONEY FOR */
+.who-section{
+  padding:80px 20px;
+  text-align:center;
+}
+
+.who-title{
+  font-size:32px;
+  font-weight:700;
+  margin-bottom:50px;
+}
+
+.who-grid{
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  gap:24px;
+  max-width:1100px;
+  margin:auto;
+}
+
+.who-card{
+  height:160px;
+  background:#fff;
+  border-radius:12px;              /* square look */
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  gap:10px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.08);
+  cursor:pointer;
+  transition:0.3s ease;
+}
+
+.who-card .icon{
+  font-size:30px;
+}
+
+.who-card p{
+  font-size:16px;
+  font-weight:600;
+}
+
+/* Hover blue effect â€“ wahi rehne do */
+.who-card:hover,
+.who-card.active{
+  border:2px solid #1e88e5;
+  box-shadow:0 0 0 4px rgba(30,136,229,0.15);
+}
+
+/* ðŸ“± Mobile view â€“ 2 upar 2 neeche */
+@media(max-width:768px){
+  .who-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+  /* Ways to Use SECTION */
+.use-section{
+  padding:80px 20px;
+  text-align:center;
+}
+
+.use-title{
+  font-size:32px;
+  font-weight:700;
+  margin-bottom:50px;
+}
+
+.use-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:24px;
+  max-width:1100px;
+  margin:auto;
+}
+
+.use-card{
+  height:160px;
+  background:#fff;
+  border-radius:12px; /* square feel */
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.08);
+  cursor:pointer;
+  transition:0.3s ease;
+}
+
+.use-card .icon{
+  font-size:30px;
+}
+
+.use-card p{
+  font-size:16px;
+  font-weight:600;
+}
+
+/* Same blue hover effect */
+.use-card:hover,
+.use-card.active{
+  border:2px solid #1e88e5;
+  box-shadow:0 0 0 4px rgba(30,136,229,0.15);
+}
+
+/* ðŸ“± Mobile â€“ 2 upar 2 neeche */
+@media(max-width:768px){
+  .use-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+  /* Tools Section */
+.tools-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:24px;
+  max-width:1100px;
+  margin:auto;
+}
+
+.tool-card{
+  height:160px;
+  background:#fff;
+  border-radius:12px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.08);
+  cursor:pointer;
+  transition:0.3s ease;
+}
+
+/* SVG icon */
+.tool-icon{
+  width:34px;
+  height:34px;
+  stroke:#1e88e5;
+  fill:none;
+  stroke-width:2;
+}
+
+/* Text */
+.tool-card p{
+  font-size:15px;
+  font-weight:600;
+  text-align:center;
+}
+
+/* Hover + Active (blur border) */
+.tool-card:hover,
+.tool-card.active{
+  border:2px solid #1e88e5;
+  box-shadow:0 0 0 4px rgba(30,136,229,0.15),
+             0 10px 25px rgba(0,0,0,0.1);
+}
+
+/* Mobile view */
+@media(max-width:768px){
+  .tools-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+  /* Testimonials */
+.testimonials-section{
+  padding:90px 20px;
+  text-align:center;
+}
+
+.section-title{
+  font-size:32px;
+  font-weight:700;
+  margin-bottom:50px;
+}
+
+.testimonials-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:28px;
+  max-width:1100px;
+  margin:auto;
+}
+
+.testimonial-card{
+  background:#fff;
+  border-radius:14px;
+  padding:30px 22px;
+  box-shadow:0 12px 28px rgba(0,0,0,0.08);
+  transition:0.3s ease;
+}
+
+.testimonial-card:hover,
+.testimonial-card.active{
+  border:2px solid #1e88e5;
+  box-shadow:0 0 0 4px rgba(30,136,229,0.15),
+             0 12px 28px rgba(0,0,0,0.12);
+}
+
+/* Avatar */
+.avatar{
+  width:54px;
+  height:54px;
+  margin:0 auto 14px;
+  border-radius:50%;
+  background:#e3f2fd;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.avatar svg{
+  width:28px;
+  height:28px;
+  fill:none;
+  stroke:#1e88e5;
+  stroke-width:2;
+}
+
+/* Text */
+.quote{
+  font-size:16px;
+  line-height:1.6;
+  color:#333;
+  margin-bottom:14px;
+}
+
+.author{
+  font-size:16px;
+  font-weight:600;
+  color:#555;
+}
+
+/* Mobile */
+@media(max-width:768px){
+  .testimonials-grid{
+    grid-template-columns:1fr;
+  }
+}
+/* Security Section */
+.security-section{
+  padding:90px 20px;
+  text-align:center;
+}
+
+.security-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:24px;
+  max-width:1100px;
+  margin:auto;
+}
+
+.security-card{
+  height:150px;
+  background:#fff;
+  border-radius:12px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.08);
+  cursor:pointer;
+  transition:0.3s ease;
+}
+
+.security-card p{
+  font-size:16px;
+  font-weight:600;
+}
+
+/* SVG icons */
+.sec-icon{
+  width:32px;
+  height:32px;
+  fill:none;
+  stroke:#1e88e5;
+  stroke-width:2;
+}
+
+/* Hover + active */
+.security-card:hover,
+.security-card.active{
+  border:2px solid #1e88e5;
+  box-shadow:0 0 0 4px rgba(30,136,229,0.15),
+             0 10px 25px rgba(0,0,0,0.1);
+}
+
+/* Mobile */
+@media(max-width:768px){
+  .security-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+  /* FAQ Section */
+.faq-section{
+  padding:90px 20px;
+  max-width:900px;
+  margin:auto;
+}
+
+.faq-box{
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+}
+
+.faq-item{
+  background:#fff;
+  border-radius:14px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.08);
+  padding:18px 20px;
+}
+
+.faq-question{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  cursor:pointer;
+}
+
+.q-left{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  font-weight:600;
+}
+
+.q-icon{
+  width:26px;
+  height:26px;
+  fill:none;
+  stroke:#1e88e5;
+  stroke-width:2;
+}
+
+.more-btn{
+  background:#e3f2fd;
+  border:none;
+  color:#1e88e5;
+  padding:6px 12px;
+  border-radius:20px;
+  font-size:16px;
+  cursor:pointer;
+}
+
+.faq-answer{
+  display:none;
+  margin-top:14px;
+  gap:10px;
+  align-items:flex-start;
+}
+
+.faq-answer{
+  display:none;
+  margin-top:14px;
+  gap:10px;
+  align-items:flex-start;
+}
+
+.faq-item.active .faq-answer{
+  display:flex;
+}
+
+.faq-answer p{
+  margin:0;
+  font-size:14px;
+  line-height:1.6;
+}
+
+.a-icon{
+  width:20px;
+  height:20px;
+  stroke:#2e7d32;
+  stroke-width:2;
+  fill:none;
+}
+
+/* Active card style */
+.faq-item.active{
+  border:2px solid #1e88e5;
+  box-shadow:0 0 0 4px rgba(30,136,229,0.15);
+}
+
+
+.faq-item.active .faq-answer{
+  display:flex;
+}
+/* ===== PAYMONEY FOOTER ===== */
+.paymoney-footer{
+  background:linear-gradient(135deg,#0d3b66,#1e88e5);
+  color:#fff;
+  padding:80px 20px 40px;
+  text-align:center;
+}
+
+.footer-content{
+  max-width:900px;
+  margin:auto;
+}
+
+.paymoney-footer h2{
+  font-size:32px;
+  margin-bottom:20px;
+}
+
+.footer-text{
+  font-size:15px;
+  margin:6px 0;
+}
+
+.footer-text a{
+  color:#e3f2fd;
+  text-decoration:none;
+  font-weight:600;
+}
+
+/* WhatsApp Button */
+.whatsapp-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  background:#25D366;
+  color:#fff;
+  padding:14px 26px;
+  border-radius:40px;
+  margin:20px 0;
+  text-decoration:none;
+  font-weight:600;
+  box-shadow:0 10px 25px rgba(0,0,0,0.2);
+}
+
+.whatsapp-icon{
+  width:22px;
+  height:22px;
+  fill:#fff;
+}
+
+/* Social Icons */
+.social-icons{
+  display:flex;
+  justify-content:center;
+  gap:18px;
+  margin:25px 0;
+}
+
+.social-icons a{
+  font-size:22px;
+  background:rgba(255,255,255,0.15);
+  width:44px;
+  height:44px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:50%;
+  color:#fff;
+  text-decoration:none;
+  transition:0.3s;
+}
+
+.social-icons a:hover{
+  background:#fff;
+  color:#1e88e5;
+}
+
+/* Copyright */
+.footer-copy{
+  font-size:18px;
+  opacity:0.9;
+  margin-top:20px;
+}
+.whatsapp-float{
+  position: fixed;
+  bottom: 22px;
+  right: 22px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #25D366;
+  color: #fff;
+  padding: 12px 16px;
+  border-radius: 40px;
+  font-size: 18px;
+  text-decoration: none;
+  z-index: 9999;
+  box-shadow: 0 0 0 rgba(37,211,102,.6);
+  animation: pulse 2s infinite;
+}
+
+.whatsapp-float i{
+  font-size: 26px;
+}
+
+.wa-text{
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Pulse animation */
+@keyframes pulse{
+  0%{box-shadow:0 0 0 0 rgba(37,211,102,.6)}
+  70%{box-shadow:0 0 0 18px rgba(37,211,102,0)}
+  100%{box-shadow:0 0 0 0 rgba(37,211,102,0)}
+}
+
+/* Hover effect */
+.whatsapp-float:hover{
+  transform: scale(1.05);
+}
+
+/* ðŸ“± Mobile pe sirf icon dikhe */
+@media(max-width:600px){
+  .wa-text{display:none}
+  .whatsapp-float{
+    padding: 14px;
+    border-radius: 50%;
+  }
+}
+/* ===== HERO STYLE FOOTER ===== */
+/* ===== HERO STYLE FOOTER ===== */
+.paymoney-footer{
+  background:linear-gradient(135deg,#0d3b66 0%, #0f5c5c 50%, #1b7f6b 100%);
+  color:#ffffff;
+  padding:60px 20px 30px;   /* â¬…ï¸ height kam */
+  text-align:center;
+}
+
+.footer-inner{
+  max-width:900px;
+  margin:auto;
+}
+
+.paymoney-footer h2{
+  font-size:32px;
+  margin-bottom:20px;
+  font-weight:700;
+}
+
+.footer-info p{
+  font-size:16px;
+  margin:6px 0;
+  opacity:0.95;
+}
+
+.footer-info a{
+  color:#e0f7fa;
+  text-decoration:none;
+  font-weight:600;
+}
+
+.footer-info .icon{
+  margin-right:8px;
+}
+
+/* ===== WhatsApp Button (ICON + BOLD NUMBER) ===== */
+.whatsapp-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:14px;
+  background:#25D366;
+  color:#ffffff;
+  padding:16px 36px;
+  border-radius:50px;
+  margin:20px 0;
+  text-decoration:none;
+  box-shadow:0 12px 30px rgba(0,0,0,0.25);
+}
+
+/* WhatsApp Icon circle */
+.wa-icon{
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  background:#ffffff;
+  color:#25D366;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:20px;
+  font-weight:900;
+}
+
+/* Phone number text */
+.wa-number{
+  font-size:20px;      /* â¬…ï¸ thoda bada */
+  font-weight:800;     /* â¬…ï¸ bold */
+  letter-spacing:0.4px;
+}
+
+/* ===== Social Icons ===== */
+.footer-social{
+  display:flex;
+  justify-content:center;
+  gap:18px;
+  margin:25px 0;
+}
+
+.footer-social a{
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  background:rgba(255,255,255,0.18);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+  font-size:18px;
+  font-weight:700;
+  text-decoration:none;
+  transition:0.3s;
+}
+
+.footer-social a:hover{
+  background:#ffffff;
+  color:#0d3b66;
+}
+
+/* Divider */
+.footer-line{
+  height:1px;
+  background:rgba(255,255,255,0.25);
+  margin:20px auto;
+  max-width:600px;
+}
+
+/* Copyright */
+.footer-copy{
+  font-size:14px;
+  opacity:0.9;
+}
+
+/* ===== Mobile ===== */
+@media(max-width:768px){
+  .paymoney-footer{
+    padding:50px 15px 25px;
+  }
+
+  .paymoney-footer h2{
+    font-size:26px;
+  }
+
+  .wa-number{
+    font-size:18px;
+  }
+
+  .whatsapp-btn{
+    padding:14px 26px;
+  }
+}
+/* Step number badge */
+.how-grid .card{
+  position:relative; /* important */
+}
+
+.step-badge{
+  position:absolute;
+  top:-12px;
+  left:-12px;
+
+  width:36px;
+  height:36px;
+  border-radius:50%;
+
+  background:#1e88e5;
+  color:#ffffff;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-size:16px;
+  font-weight:800;
+
+  box-shadow:0 6px 16px rgba(30,136,229,0.4);
+}
+/* ðŸ”§ Desktop only: force 5 cards in one row */
+@media(min-width:1024px){
+  .how-grid{
+    display:flex;
+    gap:24px;
+    justify-content:space-between;
+    flex-wrap:nowrap; /* important */
+  }
+
+  .how-grid .card{
+    flex:1;
+    min-width:0;
+  }
+}
+/* ðŸ”µ Force SAME border on ALL 5 cards */
+#how .how-grid .card{
+  border:2px solid #1e88e5 !important;
+  box-shadow:0 0 0 4px rgba(30,136,229,0.15) !important;
+  border-radius:14px;
+  background:#fff;
+}
+ /* ===== Trust Strip ===== */
+.trust-strip{
+  max-width:1100px;
+  margin:40px auto;
+  padding:22px 30px;
+
+  background:rgba(255,255,255,0.15);
+  backdrop-filter:blur(10px);
+  border-radius:16px;
+
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:18px 40px;
+
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.25),
+    0 12px 30px rgba(0,0,0,0.25);
+}
+
+.trust-item{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  font-size:18px;
+  font-weight:700;
+  color:#ffffff;
+}
+
+.trust-item .tick{
+  width:30px;
+  height:30px;
+  border-radius:50%;
+  background:#18c37d;
+  color:#ffffff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:16px;
+  font-weight:900;
+}
+
+/* Mobile */
+@media(max-width:768px){
+  .trust-strip{
+    grid-template-columns:1fr;
+    padding:20px;
+  }
+
+  .trust-item{
+    font-size:17px;
+  }
+}
+ .trust-item{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  font-size:18px;
+  font-weight:800;
+  color:#0d3b66;
+}
+
+
+
+</style>
 </head>
+
 <body>
-  <h1>PayMoney</h1>
-  <a href="/builder">Create Payment Page</a>
+
+<header>
+  <div class="logo"><img src="pmc.png"></div>
+  <nav>
+    <a href="#tools">Tools</a>
+    <a href="#how">How it Works</a>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
+  </nav>
+</header>
+
+<!-- ================= HERO ================= -->
+<section class="hero">
+  <div class="hero-inner">
+
+    <div>
+      <h1>Create a Link.<br>Share it.<br>Get Paid Instantly.</h1>
+     <p class="highlight-text">
+  No transaction charges,Free landing page
+</p>
+      <a href="builder.html" class="btn-primary">Create Payment Link</a>
+
+    </div>
+
+    <div class="hero-visual">
+      <div class="phone-stack">
+        <div class="phone active" style="background-image:url('hero1.png')"></div>
+        <div class="phone" style="background-image:url('hero2.png')"></div>
+        <div class="phone" style="background-image:url('hero3.png')"></div>
+        <div class="phone" style="background-image:url('hero4.png')"></div>
+        <div class="phone" style="background-image:url('hero5.png')"></div>
+      </div>
+      <div class="dots">
+        <span class="dot active"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================= TRUST ================= -->
+<section class="section trust">
+  <h2>Trust & Credibility</h2>
+ <p class="trust-sub">
+  <strong>Fast, transparent payments for Indian sellers â€” no gateway fees.</strong>
+</p>
+
+
+ <div class="trust-strip">
+  <div class="trust-item">
+    <span class="tick">âœ”</span>
+    <span>Bank-grade security</span>
+  </div>
+
+  <div class="trust-item">
+    <span class="tick">âœ”</span>
+    <span>Zero hidden fees</span>
+  </div>
+
+  <div class="trust-item">
+    <span class="tick">âœ”</span>
+    <span>Instant money transfer</span>
+  </div>
+
+  <div class="trust-item">
+    <span class="tick">âœ”</span>
+    <span>Made for India</span>
+  </div>
+</div>
+
+</section>
+
+<!-- ================= HOW IT WORKS ================= -->
+<section class="section" id="how">
+  <h2>How Payment Link Works</h2>
+
+  <div class="grid how-grid">
+
+    <!-- STEP 1 -->
+    <a href="builder.html" class="no-style-link">
+      <div class="card">
+        <span class="step-badge">1</span>
+        <i class="fa-solid fa-link"></i>
+        <p>Create payment link</p>
+      </div>
+    </a>
+
+    <!-- STEP 2 -->
+    <div class="card">
+      <span class="step-badge">2</span>
+      <i class="fa-brands fa-whatsapp"></i>
+      <p>Share via WhatsApp / SMS</p>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="card">
+      <span class="step-badge">3</span>
+      <i class="fa-solid fa-qrcode"></i>
+      <p>Customer pays using UPI</p>
+    </div>
+
+    <!-- STEP 4 -->
+    <div class="card">
+      <span class="step-badge">4</span>
+      <i class="fa-solid fa-check"></i>
+      <p>Money goes directly to bank</p>
+    </div>
+
+    <!-- STEP 5 -->
+    <div class="card">
+      <span class="step-badge">5</span>
+      <i class="fa-solid fa-chart-line"></i>
+      <p>Track payments in Dashboard</p>
+    </div>
+
+  </div>
+</section>
+
+
+
+<!-- ================= DASHBOARD ================= -->
+<section class="section dashboard">
+  <h2>Dashboard Preview</h2>
+  <img src="dashboard.png" alt="PayMoney Dashboard Preview">
+</section>
+
+<!-- ================= TOOLS ================= -->
+<section class="section" id="tools">
+  <h2 class="tools-title">Landing Pages & Finance</h2>
+
+  <div class="tools-grid">
+
+  <!-- 1ï¸âƒ£ Build Landing Page -->
+  <div class="tool-card active">
+    <svg viewBox="0 0 24 24" class="tool-icon">
+      <rect x="3" y="3" width="18" height="18" rx="2"/>
+      <line x1="3" y1="9" x2="21" y2="9"/>
+    </svg>
+    <p>Build Landing Page</p>
+  </div>
+
+  <!-- 2ï¸âƒ£ HDFC Credit Card -->
+  <div class="tool-card">
+    <svg viewBox="0 0 24 24" class="tool-icon">
+      <rect x="2" y="5" width="20" height="14" rx="2"/>
+      <line x1="2" y1="10" x2="22" y2="10"/>
+    </svg>
+    <p>HDFC Credit Card</p>
+  </div>
+
+  <!-- 3ï¸âƒ£ LIC Insurance -->
+  <div class="tool-card">
+    <svg viewBox="0 0 24 24" class="tool-icon">
+      <path d="M12 2L3 7v6c0 5 4 9 9 9s9-4 9-9V7z"/>
+    </svg>
+    <p>LIC India Insurance</p>
+  </div>
+
+  <!-- 4ï¸âƒ£ Mutual Fund -->
+  <div class="tool-card">
+    <svg viewBox="0 0 24 24" class="tool-icon">
+      <polyline points="3 17 9 11 13 15 21 7"/>
+      <line x1="3" y1="21" x2="21" y2="21"/>
+    </svg>
+    <p>Mutual Fund Investment</p>
+  </div>
+
+</div>
+
+</section>
+
+<!-- ================= WHO IS IT FOR ================= -->
+<section class="who-section">
+  <h2 class="who-title">Who Is PayMoney For?</h2>
+
+  <div class="who-grid">
+
+    <div class="who-card active">
+      <span class="icon">ðŸ›’</span>
+      <p>Online Sellers</p>
+    </div>
+
+    <div class="who-card">
+      <span class="icon">ðŸŽ“</span>
+      <p>Trainers & Coaches</p>
+    </div>
+
+    <div class="who-card">
+      <span class="icon">ðŸ’¼</span>
+      <p>Consultants</p>
+    </div>
+
+    <div class="who-card">
+      <span class="icon">ðŸ“±</span>
+      <p>WhatsApp / Instagram Sellers</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================= USE CASES ================= -->
+<section class="use-section">
+  <h2 class="use-title">Ways to Use</h2>
+
+  <div class="use-grid">
+
+    <div class="use-card active">
+      <span class="icon">â³</span>
+      <p>Advance Payments</p>
+    </div>
+
+    <div class="use-card">
+      <span class="icon">ðŸ«</span>
+      <p>Fees Collection</p>
+    </div>
+
+    <div class="use-card">
+      <span class="icon">ðŸ“¦</span>
+      <p>Sell Digital Products</p>
+    </div>
+
+    <div class="use-card">
+      <span class="icon">ðŸ’°</span>
+      <p>Custom Amount Collection</p>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ================= TESTIMONIALS ================= -->
+<section class="testimonials-section">
+  <h2 class="section-title">What Sellers Say</h2>
+
+  <div class="testimonials-grid">
+
+    <!-- Card 1 -->
+    <div class="testimonial-card active">
+      <div class="avatar">
+        <svg viewBox="0 0 24 24">
+          <circle cx="12" cy="8" r="4"/>
+          <path d="M4 22c0-4 4-6 8-6s8 2 8 6"/>
+        </svg>
+      </div>
+      <p class="quote">
+        â€œPayMoney made collecting payments incredibly simple and fast.  
+        I now close deals directly on WhatsApp without any friction.â€
+      </p>
+      <span class="author">Sachin Wankhede â€” Online Seller, Mumbai</span>
+
+    </div>
+
+    <!-- Card 2 -->
+    <div class="testimonial-card">
+      <div class="avatar">
+        <svg viewBox="0 0 24 24">
+          <circle cx="12" cy="8" r="4"/>
+          <path d="M4 22c0-4 4-6 8-6s8 2 8 6"/>
+        </svg>
+      </div>
+      <p class="quote">
+        â€œNo gateway fees and instant bank credit is a game changer.  
+        PayMoney fits perfectly for coaches and consultants.â€
+      </p>
+      <span class="author">Neha Patel â€” Coach, Ahamdabad</span>
+
+    </div>
+
+    <!-- Card 3 -->
+    <div class="testimonial-card">
+      <div class="avatar">
+        <svg viewBox="0 0 24 24">
+          <circle cx="12" cy="8" r="4"/>
+          <path d="M4 22c0-4 4-6 8-6s8 2 8 6"/>
+        </svg>
+      </div>
+      <p class="quote">
+        â€œPerfect solution for WhatsApp-based selling.  
+        Clean links, fast payments, and no technical headache.â€
+      </p>
+      <span class="author">Ankit Mehta â€” Business Owner, Kanpur</span>
+
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ================= SECURITY ================= -->
+<section class="security-section">
+  <h2 class="section-title">Security & Compliance</h2>
+
+  <div class="security-grid">
+
+    <!-- Bank-grade security -->
+    <div class="security-card active">
+      <svg viewBox="0 0 24 24" class="sec-icon">
+        <path d="M12 2L4 6v6c0 5 4 9 8 10 4-1 8-5 8-10V6z"/>
+        <path d="M9 12l2 2 4-4"/>
+      </svg>
+      <p>Bank-grade Security</p>
+    </div>
+
+    <!-- UPI guidelines -->
+    <div class="security-card">
+      <svg viewBox="0 0 24 24" class="sec-icon">
+        <rect x="3" y="4" width="18" height="16" rx="2"/>
+        <line x1="3" y1="9" x2="21" y2="9"/>
+        <path d="M7 14h4"/>
+      </svg>
+      <p>UPI Guidelines Followed</p>
+    </div>
+
+    <!-- No card data -->
+    <div class="security-card">
+      <svg viewBox="0 0 24 24" class="sec-icon">
+        <rect x="3" y="5" width="18" height="14" rx="2"/>
+        <line x1="3" y1="10" x2="21" y2="10"/>
+        <line x1="6" y1="16" x2="18" y2="16"/>
+      </svg>
+      <p>No Card Data Stored</p>
+    </div>
+
+    <!-- Privacy -->
+    <div class="security-card">
+      <svg viewBox="0 0 24 24" class="sec-icon">
+        <circle cx="12" cy="12" r="9"/>
+        <path d="M12 8v4"/>
+        <circle cx="12" cy="16" r="1"/>
+      </svg>
+      <p>Privacy Protected</p>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ================= FAQ ================= -->
+<section class="faq-section">
+  <h2 class="section-title">FAQs</h2>
+
+  <div class="faq-box">
+
+    <!-- FAQ 1 -->
+    <div class="faq-item">
+      <div class="faq-question">
+        <div class="q-left">
+          <svg class="q-icon" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.8.4-1 1-.1 1.7"/>
+            <circle cx="12" cy="17" r="1"/>
+          </svg>
+          <span>How fast do I receive money?</span>
+        </div>
+        <button class="more-btn">More</button>
+      </div>
+      <div class="faq-answer">
+        <svg class="a-icon" viewBox="0 0 24 24">
+          <path d="M5 12l4 4L19 6"/>
+        </svg>
+        <p>Payments are credited instantly or within a few minutes.</p>
+      </div>
+    </div>
+
+    <!-- FAQ 2 -->
+    <div class="faq-item">
+      <div class="faq-question">
+        <div class="q-left">
+          <svg class="q-icon" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3"/>
+            <circle cx="12" cy="17" r="1"/>
+          </svg>
+          <span>Does customer need to install any app?</span>
+        </div>
+        <button class="more-btn">More</button>
+      </div>
+      <div class="faq-answer">
+        <svg class="a-icon" viewBox="0 0 24 24">
+          <path d="M5 12l4 4L19 6"/>
+        </svg>
+        <p>No app is required. Payment works directly via UPI.</p>
+      </div>
+    </div>
+
+    <!-- FAQ 3 -->
+    <div class="faq-item">
+      <div class="faq-question">
+        <div class="q-left">
+          <svg class="q-icon" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3"/>
+            <circle cx="12" cy="17" r="1"/>
+          </svg>
+          <span>Is desktop payment supported?</span>
+        </div>
+        <button class="more-btn">More</button>
+      </div>
+      <div class="faq-answer">
+        <svg class="a-icon" viewBox="0 0 24 24">
+          <path d="M5 12l4 4L19 6"/>
+        </svg>
+        <p>Yes, customers can pay using QR code or UPI from desktop.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ================= CONTACT ================= -->
+<footer class="paymoney-footer" id="contact">
+  <div class="footer-inner">
+
+    <h2>Contact & Support</h2>
+
+    <div class="footer-info">
+      <p>
+        <span class="icon">âœ‰ï¸</span>
+        Email:
+        <a href="mailto:support@paymoney24.in">support@paymoney24.in</a>
+      </p>
+
+      <p>
+        <span class="icon">â°</span>
+        Working Hours: 10:00 AM â€“ 5:00 PM
+      </p>
+    </div>
+
+    <!-- WhatsApp Button -->
+    <a href="https://wa.me/919115121575" target="_blank" class="whatsapp-btn">
+  <span class="wa-icon">
+    <svg viewBox="0 0 32 32" width="22" height="22" aria-hidden="true">
+      <path fill="#25D366" d="M16.02 2.01C8.84 2.01 3 7.86 3 15.04c0 2.67.8 5.16 2.18 7.24L3 30l7.94-2.09c2.02 1.1 4.34 1.73 6.78 1.73 7.18 0 13.02-5.85 13.02-13.03S23.2 2.01 16.02 2.01zm0 23.62c-2.14 0-4.15-.63-5.85-1.71l-.42-.25-4.7 1.23 1.25-4.58-.27-.47a9.52 9.52 0 0 1-1.47-5.04c0-5.28 4.29-9.58 9.58-9.58 5.28 0 9.57 4.3 9.57 9.58s-4.29 9.57-9.57 9.57zm5.52-7.17c-.3-.15-1.77-.87-2.05-.97-.28-.1-.48-.15-.68.15-.2.3-.78.97-.96 1.17-.18.2-.35.22-.65.07-.3-.15-1.27-.47-2.42-1.49-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.03-.52-.08-.15-.68-1.63-.93-2.23-.24-.58-.48-.5-.68-.5h-.58c-.2 0-.52.07-.8.37-.28.3-1.05 1.03-1.05 2.52s1.08 2.93 1.23 3.13c.15.2 2.12 3.24 5.13 4.54.72.31 1.28.49 1.72.63.72.23 1.37.2 1.89.12.58-.09 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.08-.12-.27-.2-.57-.35z"/>
+    </svg>
+  </span>
+  <span class="wa-number">+91 91151 21575</span>
+</a>
+
+
+    <!-- Social Icons -->
+    <div class="footer-social">
+      <a href="#" title="Facebook">f</a>
+      <a href="#" title="Instagram">â—Ž</a>
+      <a href="#" title="LinkedIn">in</a>
+      <a href="#" title="YouTube">â–¶</a>
+    </div>
+
+    <div class="footer-line"></div>
+
+    <p class="footer-copy">
+      Â© 2025 PayMoney Â· Indiaâ€™s Easy Payment Gateway
+    </p>
+
+  </div>
+</footer>
+
+
+<script>
+let idx = 0;
+const phones = document.querySelectorAll('.phone');
+const dots = document.querySelectorAll('.dot');
+
+setInterval(() => {
+  phones.forEach(p => p.classList.remove('active'));
+  dots.forEach(d => d.classList.remove('active'));
+
+  idx = (idx + 1) % phones.length;
+  phones[idx].classList.add('active');
+  dots[idx].classList.add('active');
+}, 3000);
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  const buttons = document.querySelectorAll(".more-btn");
+
+  buttons.forEach(function (btn) {
+    btn.addEventListener("click", function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const item = btn.closest(".faq-item");
+      if (!item) return;
+
+      item.classList.toggle("active");
+
+      // More / Less toggle
+      btn.textContent = item.classList.contains("active") ? "Less" : "More";
+    });
+  });
+
+});
+</script>
+<!-- WhatsApp Floating Button -->
+<a
+  href="https://wa.me/919115121575?text=Hi%20I%20want%20to%20know%20more%20about%20PayMoney"
+  class="whatsapp-float"
+  target="_blank"
+  aria-label="Chat on WhatsApp"
+>
+  <span class="wa-text">Need Help?</span>
+  <i class="fa-brands fa-whatsapp"></i>
+</a>
+
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
