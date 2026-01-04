@@ -5,69 +5,74 @@ const { nanoid } = require("nanoid");
 const path = require("path");
 
 const app = express();
+
+/* ================= BASIC MIDDLEWARE ================= */
 app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
 
-/* 🔐 FIREBASE INIT (ENV VARIABLE SE) */
-admin.initializeApp({
-  credential: admin.credential.cert(
-    JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)
-  )
-});
+/* ================= FIREBASE INIT (SERVERLESS SAFE) ================= */
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.cert(
+      JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT || "{}")
+    )
+  });
+}
 
 const db = admin.firestore();
 
-/* ===============================
-   CREATE PAYMENT / LANDING LINK
-   =============================== */
+/* ================= API: CREATE PAYMENT LINK ================= */
+/*
+  POST /api/create
+  body: { title, desc, image, amount, upi }
+*/
 app.post("/api/create", async (req, res) => {
   try {
     const id = "PM" + nanoid(5).toUpperCase();
 
     await db.collection("links").doc(id).set({
-      ...req.body,
+      title: req.body.title || "",
+      desc: req.body.desc || "",
+      image: req.body.image || "",
+      amount: req.body.amount || "",
+      upi: req.body.upi || "",
       createdAt: Date.now()
     });
 
-    res.json({
-      success: true,
-      shortUrl: `/p/${id}`,
-      id
-    });
+    res.json({ id });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ success: false, error: "Create failed" });
+    console.error("CREATE ERROR:", err);
+    res.status(500).json({ error: "Failed to create link" });
   }
 });
 
-/* ===============================
-   GET LANDING DATA (API)
-   =============================== */
+/* ================= API: GET PAYMENT DATA ================= */
+/*
+  GET /api/get/:id
+*/
 app.get("/api/get/:id", async (req, res) => {
   try {
     const doc = await db.collection("links").doc(req.params.id).get();
+
     if (!doc.exists) {
       return res.status(404).json({ error: "Not found" });
     }
+
     res.json(doc.data());
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Fetch failed" });
+    console.error("GET ERROR:", err);
+    res.status(500).json({ error: "Server error" });
   }
 });
 
-/* ===============================
-   SHORT LINK ROUTE
-   =============================== */
+/* ================= SHORT LINK ROUTE ================= */
+/*
+  /p/PM1023  →  public/lp.html
+*/
 app.get("/p/:id", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "lp.html"));
 });
 
-/* ===============================
-   START SERVER
-   =============================== */
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log("✅ PayMoney server running on port", PORT);
-});
+/* ================= VERCEL SERVERLESS EXPORT ================= */
+module.exports = app;
