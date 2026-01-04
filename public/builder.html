@@ -56,25 +56,30 @@ button{
 </div>
 
 <script>
-function generate(){
-  const title = encodeURIComponent(titleEl.value);
-  const desc = encodeURIComponent(descEl.value);
-  const image = encodeURIComponent(imageEl.value);
-  const amount = encodeURIComponent(amountEl.value);
-  const upi = encodeURIComponent(upiEl.value);
+async function generatePage() {
+  const title = document.getElementById("title").value;
+  const desc = document.getElementById("desc").value;
+  const image = document.getElementById("image").value;
+  const amount = document.getElementById("amount").value;
+  const upi = document.getElementById("upi").value;
 
-  const url =
-   `lp.html?title=${title}&desc=${desc}&image=${image}&amount=${amount}&upi=${upi}`;
+  const res = await fetch("/api/create", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ title, desc, image, amount, upi })
+  });
 
-  window.open(url,"_blank");
+  const data = await res.json();
+
+  if (data.success) {
+    window.location.href = data.shortUrl;
+  } else {
+    alert("Failed to generate link");
+  }
 }
-
-const titleEl = document.getElementById("title");
-const descEl  = document.getElementById("desc");
-const imageEl = document.getElementById("image");
-const amountEl= document.getElementById("amount");
-const upiEl   = document.getElementById("upi");
 </script>
+
 
 </body>
 </html>
+
