@@ -56,30 +56,31 @@ button{
 </div>
 
 <script>
-async function generatePage() {
-  const title = document.getElementById("title").value;
-  const desc = document.getElementById("desc").value;
-  const image = document.getElementById("image").value;
-  const amount = document.getElementById("amount").value;
-  const upi = document.getElementById("upi").value;
+async function generate() {
+  const data = {
+    title: document.getElementById("title").value,
+    desc: document.getElementById("desc").value,
+    image: document.getElementById("image").value,
+    amount: document.getElementById("amount").value,
+    upi: document.getElementById("upi").value
+  };
 
   const res = await fetch("/api/create", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ title, desc, image, amount, upi })
+    body: JSON.stringify(data)
   });
 
-  const data = await res.json();
+  const json = await res.json();
 
-  if (data.success) {
-    window.location.href = data.shortUrl;
-  } else {
-    alert("Failed to generate link");
-  }
+  // ✅ ONLY THIS REDIRECT
+  window.location.href = "/p/" + json.id;
 }
 </script>
 
 
+
 </body>
 </html>
+
 
