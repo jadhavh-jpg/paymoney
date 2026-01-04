@@ -1,128 +1,51 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <title>PayMoney – Secure Payment</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
+  <title>PayMoney</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f5f7fb;
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    .card {
-      background: #fff;
-      width: 100%;
-      max-width: 380px;
-      padding: 22px;
-      border-radius: 14px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.1);
-      text-align: center;
-    }
-    h2 {
-      margin: 0 0 6px;
-      color: #0d3b66;
-    }
-    p {
-      margin: 0 0 16px;
-      color: #555;
-      font-size: 14px;
-    }
-    #amount {
-      font-size: 22px;
-      font-weight: bold;
-      margin: 16px 0;
-      color: #111;
-    }
-    button {
-      width: 100%;
-      padding: 14px;
-      margin-top: 10px;
-      border: none;
-      border-radius: 10px;
-      font-size: 15px;
-      cursor: pointer;
-    }
-    #payBtn {
-      background: #22c55e;
-      color: #fff;
-      font-weight: bold;
-    }
-    #copyBtn {
-      background: #0d3b66;
-      color: #fff;
-    }
-    #waBtn {
-      background: #25d366;
-      color: #fff;
-    }
+    body{font-family:Arial;background:#f5f7fb}
+    .card{max-width:420px;margin:80px auto;background:#fff;padding:20px;border-radius:16px;text-align:center}
+    button{width:100%;padding:14px;margin-top:10px;border:none;border-radius:10px}
+    .pay{background:#22c55e;color:#fff;font-size:18px}
+    .copy,.wa{background:#0D3B66;color:#fff}
   </style>
 </head>
-
 <body>
-  <div class="card">
-    <h2 id="title">Loading…</h2>
-    <p id="desc"></p>
 
-    <div id="amount"></div>
+<div class="card">
+  <h2 id="title"></h2>
+  <p id="desc"></p>
 
-    <button id="payBtn">Pay Now</button>
-    <button id="copyBtn">Copy Link</button>
-    <button id="waBtn">Share on WhatsApp</button>
-  </div>
+  <button class="pay" id="payBtn"></button>
+  <button class="copy" onclick="copy()">Copy Link</button>
+  <button class="wa" onclick="wa()">WhatsApp</button>
+</div>
 
-  <!-- 🔥 BACKEND DATA LOADER -->
-  <script>
-    async function loadPage() {
-      // /p/PMxxxx se ID nikalega
-      const id = window.location.pathname.split("/").pop();
+<script>
+const q = new URLSearchParams(location.search);
+const title = q.get("title");
+const desc = q.get("desc");
+const amount = q.get("amount");
+const upi = q.get("upi");
 
-      try {
-        const res = await fetch("/api/get/" + id);
-        if (!res.ok) {
-          document.body.innerHTML = "<h2>Invalid or expired payment link</h2>";
-          return;
-        }
+document.getElementById("title").innerText = title;
+document.getElementById("desc").innerText = desc;
+document.getElementById("payBtn").innerText = "Pay ₹" + amount;
 
-        const data = await res.json();
+document.getElementById("payBtn").onclick = () => {
+  location.href = `upi://pay?pa=${upi}&am=${amount}&cu=INR`;
+};
 
-        document.getElementById("title").innerText = data.title;
-        document.getElementById("desc").innerText = data.desc;
-        document.getElementById("amount").innerText = "₹" + data.amount;
+function copy(){
+  navigator.clipboard.writeText(location.href);
+  alert("Link copied");
+}
 
-        const upiLink =
-          `upi://pay?pa=${data.upi}&pn=PayMoney&am=${data.amount}&cu=INR`;
+function wa(){
+  location.href = `https://wa.me/?text=${encodeURIComponent(location.href)}`;
+}
+</script>
 
-        document.getElementById("payBtn").onclick = () => {
-          window.location.href = upiLink;
-        };
-
-        document.getElementById("copyBtn").onclick = () => {
-          navigator.clipboard.writeText(window.location.href);
-          alert("Payment link copied");
-        };
-
-        document.getElementById("waBtn").onclick = () => {
-          const msg =
-            `Pay ₹${data.amount} using PayMoney:\n` +
-            window.location.href;
-          window.open(
-            "https://wa.me/?text=" + encodeURIComponent(msg),
-            "_blank"
-          );
-        };
-
-      } catch (e) {
-        document.body.innerHTML = "<h2>Server error. Try again later.</h2>";
-      }
-    }
-
-    loadPage();
-  </script>
 </body>
 </html>
