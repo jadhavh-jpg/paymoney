@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>PayMoney – Payment Landing Builder</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial;background:#f5f7fb}
+.wrap{max-width:1200px;margin:20px auto;padding:0 14px}
+.flex{display:flex;gap:20px}
+@media(max-width:900px){.flex{flex-direction:column}}
+.box{background:#fff;border-radius:18px;padding:20px;width:50%}
+@media(max-width:900px){.box{width:100%}}
+
+label{font-weight:600;margin-top:12px;display:block}
+input,textarea{width:100%;padding:12px;border-radius:8px;border:1px solid #ccc;margin-top:6px}
+textarea{min-height:90px}
+button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;font-weight:600;cursor:pointer;margin-top:14px}
+.primary{background:#0D3B66;color:#fff}
+
+.preview{text-align:center}
+.logo{width:110px;height:110px;margin:0 auto 10px;border-radius:16px;background:#eee;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.logo img{width:100%;height:100%;object-fit:contain}
+.poster{aspect-ratio:2/3;background:#ddd;border-radius:14px;overflow:hidden}
+.poster img{width:100%;height:100%;object-fit:cover}
+.brand{background:#0D3B66;color:#fff;padding:10px;border-radius:12px;margin-top:12px}
+.date{margin-top:8px;font-size:14px;color:#555}
+.desc{margin:12px 0;color:#333;font-size:14px}
+.footer{margin-top:16px;font-size:13px;color:#777}
+
+.pay-mobile{display:block;background:#2FB344;color:#fff;padding:14px;border-radius:14px;font-size:16px;font-weight:600;margin-top:14px;text-decoration:none}
+.pay-qr{background:#1f3c88;color:#fff;padding:14px;border-radius:14px;font-size:16px;font-weight:600;margin-top:12px;cursor:pointer}
+.qr-box{margin-top:14px;display:none}
+
+.share-btn{background:#2563eb;color:#fff}
+.copy-btn{background:#111827;color:#fff}
+</style>
+</head>
+
+<body>
+
+<!-- 🔐 LOGIN GUARD -->
+<script>
+if(localStorage.getItem("loggedIn")!=="yes"){
+  window.location.href="/index.html";
+}
+</script>
+
+<div class="wrap" id="builder">
+<div class="flex">
+
+<div class="box">
+<h2>Create Payment Landing</h2>
+
+<label>Logo</label>
+<input type="file" id="logoInput" accept="image/*">
+
+<label>Poster</label>
+<input type="file" id="posterInput" accept="image/*">
+
+<label>Brand</label>
+<input id="brand">
+
+<label>Date</label>
+<input type="datetime-local" id="dt">
+
+<label>UPI ID</label>
+<input id="upi">
+
+<label>Amount</label>
+<input id="amount" type="number">
+
+<label>Description</label>
+<textarea id="desc"></textarea>
+
+<button class="primary" id="genBtn">Generate Landing Page</button>
+</div>
+
+<div class="box preview">
+  <div class="logo" id="pLogo">LOGO</div>
+  <div class="poster" id="pPoster"></div>
+  <div class="brand" id="pBrand">Brand</div>
+  <div class="date" id="pDate">Date</di
