@@ -1061,6 +1061,43 @@ nav a{
   font-weight:800;
   color:#0d3b66;
 }
+.menu{
+  display:none;
+  font-size:26px;
+  cursor:pointer;
+  font-weight:700;
+}
+
+/* MOBILE */
+@media(max-width:768px){
+  .menu{
+    display:block;
+    position:absolute;
+    right:18px;
+  }
+
+  nav{
+    display:none;
+    position:absolute;
+    top:64px;
+    right:10px;
+    background:#fff;
+    border-radius:12px;
+    box-shadow:0 12px 30px rgba(0,0,0,.2);
+    flex-direction:column;
+    padding:14px;
+    gap:12px;
+    z-index:999;
+  }
+
+  nav.show{
+    display:flex;
+  }
+
+  nav a{
+    color:#111;
+  }
+}
 
 
 
@@ -1071,13 +1108,25 @@ nav a{
 
 <header>
   <div class="logo"><img src="pmc.png"></div>
-  <nav>
+
+  <!-- ☰ MOBILE MENU BUTTON -->
+  <div class="menu" onclick="toggleMenu()">☰</div>
+
+  <nav id="navMenu">
     <a href="#tools">Tools</a>
     <a href="#how">How it Works</a>
     <a href="#about">About</a>
     <a href="#contact">Contact</a>
+
+    <a href="javascript:void(0)"
+       onclick="openLogin()"
+       class="login-btn">
+       Login / Sign Up
+    </a>
   </nav>
 </header>
+
+
 
 <!-- ================= HERO ================= -->
 <section class="hero">
@@ -1632,9 +1681,15 @@ function verifyOTP(){
   }).catch(()=>alert("Wrong OTP"));
 }
 </script>
+<script>
+function toggleMenu(){
+  document.getElementById("navMenu").classList.toggle("show");
+}
+</script>
 
 </body>
 </html>
+
 
 
 
