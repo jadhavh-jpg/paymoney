@@ -14,6 +14,38 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 <link rel="stylesheet"
  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script type="module">
+  // Firebase core
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+
+  // Firebase Auth (OTP ke liye)
+  import {
+    getAuth,
+    RecaptchaVerifier,
+    signInWithPhoneNumber
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+  // Firebase config (ye aapka hi hai – correct)
+  const firebaseConfig = {
+    apiKey: "AIzaSyBbdCgVVsvWH6o8NnMXMn0FyjNAyfD3Shc",
+    authDomain: "paymoney24-cd9ad.firebaseapp.com",
+    projectId: "paymoney24-cd9ad",
+    storageBucket: "paymoney24-cd9ad.firebasestorage.app",
+    messagingSenderId: "387349063100",
+    appId: "1:387349063100:web:875bf9639beffe968177b9"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+
+  // Initialize Auth
+  const auth = getAuth(app);
+
+  // Global access (important)
+  window.auth = auth;
+  window.RecaptchaVerifier = RecaptchaVerifier;
+  window.signInWithPhoneNumber = signInWithPhoneNumber;
+</script>
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Inter,sans-serif}
@@ -1056,7 +1088,10 @@ nav a{
      <p class="highlight-text">
   No transaction charges,Free landing page
 </p>
-      <a href="builder.html" class="btn-primary">Create Payment Link</a>
+      <<button class="btn-primary" onclick="checkLogin('builder.html')">
+  Create Payment Link
+</button>
+
 
     </div>
 
@@ -1119,13 +1154,14 @@ nav a{
   <div class="grid how-grid">
 
     <!-- STEP 1 -->
-    <a href="builder.html" class="no-style-link">
-      <div class="card">
-        <span class="step-badge">1</span>
-        <i class="fa-solid fa-link"></i>
-        <p>Create payment link</p>
-      </div>
-    </a>
+   <div class="no-style-link" onclick="checkLogin('builder.html')" style="cursor:pointer;">
+  <div class="card">
+    <span class="step-badge">1</span>
+    <i class="fa-solid fa-link"></i>
+    <p>Create payment link</p>
+  </div>
+</div>
+
 
     <!-- STEP 2 -->
     <div class="card">
@@ -1545,9 +1581,61 @@ document.addEventListener("DOMContentLoaded", function () {
   <span class="wa-text">Need Help?</span>
   <i class="fa-brands fa-whatsapp"></i>
 </a>
+<!-- 🔐 Login Modal -->
+<div id="loginModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;">
+  <div style="max-width:360px;margin:10% auto;background:#fff;padding:20px;border-radius:12px">
+    <h3>Login to continue</h3>
+
+    <input id="phone" placeholder="+91XXXXXXXXXX" style="width:100%;padding:10px;margin:8px 0">
+    <div id="recaptcha-container"></div>
+    <button onclick="sendOTP()" style="width:100%;padding:10px">Send OTP</button>
+
+    <input id="otp" placeholder="Enter OTP" style="width:100%;padding:10px;margin:8px 0">
+    <button onclick="verifyOTP()" style="width:100%;padding:10px">Verify</button>
+
+    <button onclick="closeLogin()" style="margin-top:10px">Cancel</button>
+  </div>
+</div>
+<script>
+let nextPage = "";
+
+function openLogin(page){
+  nextPage = page || "";
+  document.getElementById("loginModal").style.display = "block";
+}
+
+function closeLogin(){
+  document.getElementById("loginModal").style.display = "none";
+}
+
+function sendOTP(){
+  const phone = document.getElementById("phone").value;
+  window.recaptchaVerifier = new RecaptchaVerifier(
+    'recaptcha-container',
+    { size: 'invisible' },
+    window.auth
+  );
+  signInWithPhoneNumber(window.auth, phone, window.recaptchaVerifier)
+    .then((confirmationResult)=>{
+      window.confirmationResult = confirmationResult;
+      alert("OTP sent");
+    })
+    .catch(e=>alert(e.message));
+}
+
+function verifyOTP(){
+  const code = document.getElementById("otp").value;
+  window.confirmationResult.confirm(code).then(()=>{
+    localStorage.setItem("loggedIn","yes");
+    closeLogin();
+    if(nextPage) window.location.href = nextPage;
+  }).catch(()=>alert("Wrong OTP"));
+}
+</script>
 
 </body>
 </html>
+
 
 
 
