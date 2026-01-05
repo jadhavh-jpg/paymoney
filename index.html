@@ -1717,35 +1717,30 @@ document.addEventListener("DOMContentLoaded", function () {
 </a>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { 
-  getAuth, 
-  GoogleAuthProvider, 
-  signInWithPopup, 
-  onAuthStateChanged 
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup } 
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
+/* 🔑 Firebase config (aapke screenshot se) */
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "paymoney24.firebaseapp.com",
-  projectId: "paymoney24",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyBbdCgVsvwHoo8NnMXm0FyjNAyfD3Shc",
+  authDomain: "paymoney24-cd9ad.firebaseapp.com",
+  projectId: "paymoney24-cd9ad",
+  appId: "1:387349063100:web:875bf9639beffe968177b9"
 };
 
-// Init Firebase
+/* 🔥 Initialize Firebase */
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
-// Button click
+/* 👉 Login button click */
 const loginBtn = document.getElementById("loginBtn");
 if (loginBtn) {
   loginBtn.addEventListener("click", () => {
     signInWithPopup(auth, provider)
       .then((result) => {
-        const user = result.user;
-        console.log("Logged in:", user.email);
-
-        // ✅ redirect after login
+        alert("Login successful: " + result.user.email);
+        // login ke baad redirect
         window.location.href = "dashboard.html";
       })
       .catch((error) => {
@@ -1754,17 +1749,12 @@ if (loginBtn) {
       });
   });
 }
-
-// Already logged in?
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    console.log("Session active:", user.email);
-  }
-});
 </script>
+
 
 </body>
 </html>
+
 
 
 
