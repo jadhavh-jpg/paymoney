@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>PayMoney – Create Payment Links & Get Paid Instantly</title>
+<title>PayMoney – PayMoney – Create UPI Payment Links & Get Paid Instantly
+y</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <!-- SEO -->
@@ -1199,6 +1200,9 @@ nav a{
   No transaction charges,Free landing page
 </p>
       <a href="builder.html" class="btn-primary">Create Payment Link</a>
+     <button id="loginBtn" class="btn-primary" style="margin-top:12px;">
+  Login with Google
+</button>
 
     </div>
 
@@ -1711,9 +1715,57 @@ document.addEventListener("DOMContentLoaded", function () {
   <span class="wa-text">Need Help?</span>
   <i class="fa-brands fa-whatsapp"></i>
 </a>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { 
+  getAuth, 
+  GoogleAuthProvider, 
+  signInWithPopup, 
+  onAuthStateChanged 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "paymoney24.firebaseapp.com",
+  projectId: "paymoney24",
+  appId: "YOUR_APP_ID"
+};
+
+// Init Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
+
+// Button click
+const loginBtn = document.getElementById("loginBtn");
+if (loginBtn) {
+  loginBtn.addEventListener("click", () => {
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        const user = result.user;
+        console.log("Logged in:", user.email);
+
+        // ✅ redirect after login
+        window.location.href = "dashboard.html";
+      })
+      .catch((error) => {
+        alert(error.message);
+        console.error(error);
+      });
+  });
+}
+
+// Already logged in?
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    console.log("Session active:", user.email);
+  }
+});
+</script>
 
 </body>
 </html>
+
 
 
 
