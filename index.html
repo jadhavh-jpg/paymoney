@@ -1118,11 +1118,8 @@ nav a{
     <a href="#about">About</a>
     <a href="#contact">Contact</a>
 
-    <a href="javascript:void(0)"
-       onclick="openLogin()"
-       class="login-btn">
-       Login / Sign Up
-    </a>
+   <a href="javascript:void(0)" onclick="openLogin()">Login / Sign Up</a>
+
   </nav>
 </header>
 
@@ -1581,6 +1578,32 @@ nav a{
 
   </div>
 </footer>
+<!-- 🔐 LOGIN MODAL -->
+<div id="loginModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;">
+  <div style="max-width:360px;margin:12% auto;background:#fff;padding:20px;border-radius:12px">
+    <h3>Login to continue</h3>
+
+    <input id="phone" placeholder="Enter mobile number"
+      style="width:100%;padding:10px;margin:8px 0">
+
+    <div id="recaptcha-container"></div>
+
+    <button onclick="sendOTP()" style="width:100%;padding:10px">
+      Send OTP
+    </button>
+
+    <input id="otp" placeholder="Enter OTP"
+      style="width:100%;padding:10px;margin:8px 0">
+
+    <button onclick="verifyOTP()" style="width:100%;padding:10px">
+      Verify OTP
+    </button>
+
+    <button onclick="closeLogin()" style="margin-top:10px">
+      Cancel
+    </button>
+  </div>
+</div>
 
 
 <script>
@@ -1633,61 +1656,47 @@ document.addEventListener("DOMContentLoaded", function () {
 <script>
 let nextPage = "";
 
-// Open modal
+function checkLogin(page){
+  if(localStorage.getItem("loggedIn")==="yes"){
+    window.location.href = page;
+  }else{
+    openLogin(page);
+  }
+}
+
 function openLogin(page){
   nextPage = page || "";
   document.getElementById("loginModal").style.display = "block";
-  initRecaptcha();
+
+  if(!window.recaptchaVerifier){
+    window.recaptchaVerifier = new RecaptchaVerifier(
+      'recaptcha-container',
+      { size:'invisible' },
+      window.auth
+    );
+  }
 }
 
-// Close modal
 function closeLogin(){
   document.getElementById("loginModal").style.display = "none";
 }
 
-// Init reCAPTCHA (ONLY ONCE)
-function initRecaptcha(){
-  if (!window.recaptchaVerifier) {
-   window.recaptchaVerifier = new window.RecaptchaVerifier(
-  'recaptcha-container',
-  { size: 'invisible' },
-  window.auth
-);
-
-  }
-}
-
-// Send OTP
 function sendOTP(){
   let phone = document.getElementById("phone").value.trim();
-
-  if(!phone){
-    alert("Enter mobile number");
-    return;
-  }
-
-  if(!phone.startsWith("+")){
-    phone = "+91" + phone;
-  }
+  if(!phone) return alert("Enter mobile number");
+  if(!phone.startsWith("+")) phone = "+91"+phone;
 
   signInWithPhoneNumber(window.auth, phone, window.recaptchaVerifier)
-    .then((confirmationResult)=>{
-      window.confirmationResult = confirmationResult;
-      alert("OTP sent successfully");
+    .then(cr=>{
+      window.confirmationResult = cr;
+      alert("OTP sent");
     })
-    .catch(e=>{
-      alert("OTP error: " + e.message);
-    });
+    .catch(e=>alert(e.message));
 }
 
-// Verify OTP
 function verifyOTP(){
-  const code = document.getElementById("otp").value;
-
-  if(!window.confirmationResult){
-    alert("Please send OTP first");
-    return;
-  }
+  let code = document.getElementById("otp").value;
+  if(!window.confirmationResult) return alert("Send OTP first");
 
   window.confirmationResult.confirm(code)
     .then(()=>{
@@ -1695,24 +1704,15 @@ function verifyOTP(){
       closeLogin();
       if(nextPage) window.location.href = nextPage;
     })
-    .catch(()=>{
-      alert("Wrong OTP");
-    });
+    .catch(()=>alert("Wrong OTP"));
 }
 </script>
-<script>
-function checkLogin(page){
-  if(localStorage.getItem("loggedIn") === "yes"){
-    window.location.href = page;
-  } else {
-    openLogin(page);
-  }
-}
-</script>
+
 
 
 </body>
 </html>
+
 
 
 
