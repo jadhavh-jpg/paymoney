@@ -1630,61 +1630,42 @@ document.addEventListener("DOMContentLoaded", function () {
   <span class="wa-text">Need Help?</span>
   <i class="fa-brands fa-whatsapp"></i>
 </a>
-<!-- 🔐 Login Modal -->
-<div id="loginModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;">
-  <div style="max-width:360px;margin:10% auto;background:#fff;padding:20px;border-radius:12px">
-    <h3>Login to continue</h3>
-  <input id="phone"
-       placeholder="Enter mobile number"
-       style="width:100%;padding:10px;margin:8px 0">
-
-<div id="recaptcha-container"></div>
-
-<button onclick="sendOTP()"
-        style="width:100%;padding:10px;margin-top:6px">
-  Send OTP
-</button>
-
-<input id="otp"
-       placeholder="Enter OTP"
-       style="width:100%;padding:10px;margin:8px 0">
-
-<button onclick="verifyOTP()"
-        style="width:100%;padding:10px">
-  Verify OTP
-</button>
-
-<button onclick="closeLogin()"
-        style="margin-top:10px">
-  Cancel
-</button>
-
-    <input id="phone" placeholder="+91XXXXXXXXXX" style="width:100%;padding:10px;margin:8px 0">
-    <div id="recaptcha-container"></div>
-    <button onclick="sendOTP()" style="width:100%;padding:10px">Send OTP</button>
-
-    <input id="otp" placeholder="Enter OTP" style="width:100%;padding:10px;margin:8px 0">
-    <button onclick="verifyOTP()" style="width:100%;padding:10px">Verify</button>
-
-    <button onclick="closeLogin()" style="margin-top:10px">Cancel</button>
-  </div>
-</div>
 <script>
 let nextPage = "";
 
+// Open modal
 function openLogin(page){
   nextPage = page || "";
   document.getElementById("loginModal").style.display = "block";
+  initRecaptcha();
 }
 
+// Close modal
 function closeLogin(){
   document.getElementById("loginModal").style.display = "none";
 }
 
+// Init reCAPTCHA (ONLY ONCE)
+function initRecaptcha(){
+  if (!window.recaptchaVerifier) {
+   window.recaptchaVerifier = new window.RecaptchaVerifier(
+  'recaptcha-container',
+  { size: 'invisible' },
+  window.auth
+);
+
+  }
+}
+
+// Send OTP
 function sendOTP(){
   let phone = document.getElementById("phone").value.trim();
 
-  // +91 auto add
+  if(!phone){
+    alert("Enter mobile number");
+    return;
+  }
+
   if(!phone.startsWith("+")){
     phone = "+91" + phone;
   }
@@ -1699,45 +1680,40 @@ function sendOTP(){
     });
 }
 
+// Verify OTP
 function verifyOTP(){
   const code = document.getElementById("otp").value;
-  window.confirmationResult.confirm(code).then(()=>{
-    localStorage.setItem("loggedIn","yes");
-    closeLogin();
-    if(nextPage) window.location.href = nextPage;
-  }).catch(()=>alert("Wrong OTP"));
+
+  if(!window.confirmationResult){
+    alert("Please send OTP first");
+    return;
+  }
+
+  window.confirmationResult.confirm(code)
+    .then(()=>{
+      localStorage.setItem("loggedIn","yes");
+      closeLogin();
+      if(nextPage) window.location.href = nextPage;
+    })
+    .catch(()=>{
+      alert("Wrong OTP");
+    });
 }
 </script>
 <script>
-function sendOTP(){
-  let phone = document.getElementById("phone").value.trim();
-
-  if(!phone.startsWith("+")){
-    phone = "+91" + phone;
+function checkLogin(page){
+  if(localStorage.getItem("loggedIn") === "yes"){
+    window.location.href = page;
+  } else {
+    openLogin(page);
   }
-
-  signInWithPhoneNumber(
-    window.auth,
-    phone,
-    window.recaptchaVerifier
-  )
-  .then((confirmationResult)=>{
-    window.confirmationResult = confirmationResult;
-    alert("OTP sent successfully");
-  })
-  .catch(e=>{
-    alert("OTP error: " + e.message);
-  });
 }
 </script>
 
-};
-
-
- 
 
 </body>
 </html>
+
 
 
 
