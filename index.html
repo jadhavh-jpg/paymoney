@@ -1709,35 +1709,36 @@ function verifyOTP(){
 }
 </script>
 <script>
-function toggleMenu(){
-  document.getElementById("navMenu").classList.toggle("show");
+function sendOTP(){
+  let phone = document.getElementById("phone").value.trim();
+
+  if(!phone.startsWith("+")){
+    phone = "+91" + phone;
+  }
+
+  signInWithPhoneNumber(
+    window.auth,
+    phone,
+    window.recaptchaVerifier
+  )
+  .then((confirmationResult)=>{
+    window.confirmationResult = confirmationResult;
+    alert("OTP sent successfully");
+  })
+  .catch(e=>{
+    alert("OTP error: " + e.message);
+  });
 }
 </script>
-<script>
-window.onload = function () {
-  window.recaptchaVerifier = new RecaptchaVerifier(
-    'recaptcha-container',
-    { size: 'invisible' },
-    window.auth
-  );
+
 };
-</script>
-<script>
-window.addEventListener("load", () => {
-  if (!window.recaptchaVerifier) {
-    window.recaptchaVerifier = new RecaptchaVerifier(
-      'recaptcha-container',
-      { size: 'invisible' },
-      window.auth
-    );
-  }
-});
-</script>
+
 
  
 
 </body>
 </html>
+
 
 
 
