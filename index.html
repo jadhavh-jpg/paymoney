@@ -1634,6 +1634,30 @@ document.addEventListener("DOMContentLoaded", function () {
 <div id="loginModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;">
   <div style="max-width:360px;margin:10% auto;background:#fff;padding:20px;border-radius:12px">
     <h3>Login to continue</h3>
+  <input id="phone"
+       placeholder="Enter mobile number"
+       style="width:100%;padding:10px;margin:8px 0">
+
+<div id="recaptcha-container"></div>
+
+<button onclick="sendOTP()"
+        style="width:100%;padding:10px;margin-top:6px">
+  Send OTP
+</button>
+
+<input id="otp"
+       placeholder="Enter OTP"
+       style="width:100%;padding:10px;margin:8px 0">
+
+<button onclick="verifyOTP()"
+        style="width:100%;padding:10px">
+  Verify OTP
+</button>
+
+<button onclick="closeLogin()"
+        style="margin-top:10px">
+  Cancel
+</button>
 
     <input id="phone" placeholder="+91XXXXXXXXXX" style="width:100%;padding:10px;margin:8px 0">
     <div id="recaptcha-container"></div>
@@ -1658,18 +1682,21 @@ function closeLogin(){
 }
 
 function sendOTP(){
-  const phone = document.getElementById("phone").value;
-  window.recaptchaVerifier = new RecaptchaVerifier(
-    'recaptcha-container',
-    { size: 'invisible' },
-    window.auth
-  );
+  let phone = document.getElementById("phone").value.trim();
+
+  // +91 auto add
+  if(!phone.startsWith("+")){
+    phone = "+91" + phone;
+  }
+
   signInWithPhoneNumber(window.auth, phone, window.recaptchaVerifier)
     .then((confirmationResult)=>{
       window.confirmationResult = confirmationResult;
-      alert("OTP sent");
+      alert("OTP sent successfully");
     })
-    .catch(e=>alert(e.message));
+    .catch(e=>{
+      alert("OTP error: " + e.message);
+    });
 }
 
 function verifyOTP(){
@@ -1686,9 +1713,32 @@ function toggleMenu(){
   document.getElementById("navMenu").classList.toggle("show");
 }
 </script>
+<script>
+window.onload = function () {
+  window.recaptchaVerifier = new RecaptchaVerifier(
+    'recaptcha-container',
+    { size: 'invisible' },
+    window.auth
+  );
+};
+</script>
+<script>
+window.addEventListener("load", () => {
+  if (!window.recaptchaVerifier) {
+    window.recaptchaVerifier = new RecaptchaVerifier(
+      'recaptcha-container',
+      { size: 'invisible' },
+      window.auth
+    );
+  }
+});
+</script>
+
+ 
 
 </body>
 </html>
+
 
 
 
