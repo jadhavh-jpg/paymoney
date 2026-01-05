@@ -1084,13 +1084,44 @@ nav a{
   }
 }
 
-/* Mobile */
+/* ===============================
+   MOBILE SPACE TUNING – PAYMONEY
+   =============================== */
 @media (max-width:768px){
+
+  /* Cards grid – spacing control */
   .cards-grid{
-    grid-template-columns:repeat(2,1fr); /* 2 upar + 2 neeche */
-    gap:16px;
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;               /* cards ke beech */
+    margin-top:12px;       /* section heading ke baad */
+    margin-bottom:12px;    /* next section se pehle */
+  }
+
+  /* Individual card compact */
+  .cards-grid .card{
+    padding:18px 14px;
+  }
+
+  /* Card title (Online Sellers etc.) */
+  .cards-grid .card h4{
+    margin:4px 0 0;
+    line-height:1.25;
+    font-size:14px;
+  }
+
+  /* Section title like "Ways to Use" */
+  .section-title{
+    margin-top:18px;
+    margin-bottom:14px;
+  }
+
+  /* Section wrapper (agar use ho raha ho) */
+  section{
+    padding-bottom:8px;
+    margin-bottom:16px;
   }
 }
+
 
 </style>
 </head>
@@ -1636,6 +1667,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 </body>
 </html>
+
 
 
 
