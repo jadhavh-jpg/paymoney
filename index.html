@@ -884,25 +884,38 @@ nav a{
   margin:25px 0;
 }
 
+.footer-social{
+  display:flex;
+  gap:14px;
+}
+
 .footer-social a{
-  width:44px;
-  height:44px;
+  width:40px;
+  height:40px;
   border-radius:50%;
-  background:rgba(255,255,255,0.18);
   display:flex;
   align-items:center;
   justify-content:center;
-  color:#fff;
-  font-size:18px;
-  font-weight:700;
-  text-decoration:none;
-  transition:0.3s;
+  background:#08706d;
+  transition:0.3s ease;
+}
+
+.footer-social a svg{
+  width:18px;
+  height:18px;
+  fill:#fff;
 }
 
 .footer-social a:hover{
-  background:#ffffff;
-  color:#0d3b66;
+  transform:translateY(-4px) scale(1.1);
+  box-shadow:0 8px 18px rgba(0,0,0,.3);
 }
+
+.footer-social .fb:hover{background:#1877f2}
+.footer-social .ig:hover{background:linear-gradient(45deg,#f58529,#dd2a7b,#8134af)}
+.footer-social .li:hover{background:#0a66c2}
+.footer-social .yt:hover{background:#ff0000}
+
 
 /* Divider */
 .footer-line{
@@ -1186,6 +1199,7 @@ nav a{
     margin-bottom:0;
   }
 }
+ 
 </style>
 
 </style>
@@ -1679,12 +1693,24 @@ nav a{
 
 
     <!-- Social Icons -->
-    <div class="footer-social">
-      <a href="#" title="Facebook">f</a>
-      <a href="#" title="Instagram">â—Ž</a>
-      <a href="#" title="LinkedIn">in</a>
-      <a href="#" title="YouTube">â–¶</a>
-    </div>
+  <div class="footer-social">
+  <a href="#" title="Facebook" class="fb" aria-label="Facebook">
+    <svg viewBox="0 0 24 24"><path d="M22 12a10 10 0 1 0-11.6 9.9v-7h-2v-2.9h2V9.4c0-2 1.2-3.1 3-3.1.9 0 1.8.1 1.8.1v2h-1c-1 0-1.3.6-1.3 1.2v1.5h2.3l-.4 2.9h-1.9v7A10 10 0 0 0 22 12z"/></svg>
+  </a>
+
+  <a href="#" title="Instagram" class="ig" aria-label="Instagram">
+    <svg viewBox="0 0 24 24"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm5 5.3a4.7 4.7 0 1 0 0 9.4 4.7 4.7 0 0 0 0-9.4zM17.5 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/></svg>
+  </a>
+
+  <a href="#" title="LinkedIn" class="li" aria-label="LinkedIn">
+    <svg viewBox="0 0 24 24"><path d="M4.98 3.5a2.48 2.48 0 1 0 0 5 2.48 2.48 0 0 0 0-5zM3 21h4v-11H3v11zM14 10c-1.3 0-2 .7-2.4 1.3V10H8v11h4v-5.6c0-1.5.3-3 2.2-3 1.8 0 1.8 1.7 1.8 3.1V21h4v-6.3C20 11.7 19.4 10 14 10z"/></svg>
+  </a>
+
+  <a href="#" title="YouTube" class="yt" aria-label="YouTube">
+    <svg viewBox="0 0 24 24"><path d="M23 7.5s-.2-1.7-.9-2.4c-.9-.9-1.9-.9-2.4-1C16.5 3.8 12 3.8 12 3.8s-4.5 0-7.7.3c-.5.1-1.5.1-2.4 1C1.2 5.8 1 7.5 1 7.5S.8 9.4.8 11.2v1.7c0 1.9.2 3.7.2 3.7s.2 1.7.9 2.4c.9.9 2.1.9 2.6 1 1.9.2 7.5.3 7.5.3s4.5 0 7.7-.3c.5-.1 1.5-.1 2.4-1 .7-.7.9-2.4.9-2.4s.2-1.9.2-3.7v-1.7c0-1.8-.2-3.7-.2-3.7zM9.5 14.6V9.4l5.2 2.6-5.2 2.6z"/></svg>
+  </a>
+</div>
+
 
     <div class="footer-line"></div>
 
@@ -1805,6 +1831,7 @@ logoutBtn.addEventListener("click", () => {
 
 </body>
 </html>
+
 
 
 
