@@ -9,9 +9,6 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 
-<!-- QR -->
-<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
-
 <style>
 *{box-sizing:border-box}
 body{margin:0;font-family:system-ui;background:#f5f7fb}
@@ -47,7 +44,6 @@ button{
 }
 .poster{aspect-ratio:2/3;background:#ddd;border-radius:14px;overflow:hidden}
 .poster img{width:100%;height:100%;object-fit:cover}
-.brand{background:#0D3B66;color:#fff;padding:10px;border-radius:12px;margin-top:12px}
 .date{margin-top:8px;font-size:14px;color:#555}
 .desc{margin:12px 0;color:#333;font-size:14px}
 .note{font-size:13px;color:#777}
@@ -56,7 +52,7 @@ button{
 
 <body>
 
-<div class="wrap" id="builder">
+<div class="wrap">
 <div class="flex">
 
 <!-- BUILDER -->
@@ -111,86 +107,107 @@ button{
 </div>
 
 <script>
-/* ================= FIREBASE CONFIG ================= */
-/* 🔴 YAHAN APNA CONFIG PASTE KARO 🔴 */
-firebase.initializeApp({
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT",
-  storageBucket: "YOUR_PROJECT.appspot.com"
-});
-const storage = firebase.storage();
+/* ================= FIREBASE SAFE INIT ================= */
+let storage = null;
+
+try{
+  firebase.initializeApp({
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    projectId: "YOUR_PROJECT",
+    storageBucket: "YOUR_PROJECT.appspot.com"
+  });
+  storage = firebase.storage();
+}catch(e){
+  console.warn("Firebase not configured – preview mode active");
+}
 
 /* ================= ELEMENTS ================= */
-const brand=document.getElementById("brand");
-const dt=document.getElementById("dt");
-const desc=document.getElementById("desc");
-const logoInput=document.getElementById("logoInput");
-const posterInput=document.getElementById("posterInput");
+const brand = document.getElementById("brand");
+const dt = document.getElementById("dt");
+const desc = document.getElementById("desc");
+const logoInput = document.getElementById("logoInput");
+const posterInput = document.getElementById("posterInput");
 
-const pBrand=document.getElementById("pBrand");
-const pDate=document.getElementById("pDate");
-const pDesc=document.getElementById("pDesc");
-const pLogo=document.getElementById("pLogo");
-const pPoster=document.getElementById("pPoster");
-const regBtn=document.getElementById("regBtn");
+const pBrand = document.getElementById("pBrand");
+const pDate = document.getElementById("pDate");
+const pDesc = document.getElementById("pDesc");
+const pLogo = document.getElementById("pLogo");
+const pPoster = document.getElementById("pPoster");
+const regBtn = document.getElementById("regBtn");
 
-let logoURL="", posterURL="";
+let logoURL = "", posterURL = "";
 const pid = Date.now();
 
 /* ================= LIVE TEXT PREVIEW ================= */
-brand.oninput=()=>pBrand.innerText=brand.value||"Brand";
-dt.oninput=()=>pDate.innerText=dt.value||"";
-desc.oninput=()=>pDesc.innerText=desc.value||"";
+brand.oninput = () => pBrand.innerText = brand.value || "Brand";
+dt.oninput    = () => pDate.innerText  = dt.value || "";
+desc.oninput  = () => pDesc.innerText  = desc.value || "";
 
-/* ================= IMAGE UPLOAD (FIREBASE) ================= */
-function uploadImage(file,cb){
+/* ================= IMAGE UPLOAD (SAFE) ================= */
+function uploadImage(file, cb){
+  if(!file) return;
+
+  // 🔥 Firebase ready nahi → temp preview
+  if(!storage){
+    const tempURL = URL.createObjectURL(file);
+    cb(tempURL);
+    return;
+  }
+
+  // 🔥 Firebase ready → permanent
   const ref = storage.ref("landing-images/"+Date.now()+"_"+file.name);
-  ref.put(file).then(()=>ref.getDownloadURL()).then(cb);
+  ref.put(file)
+     .then(()=>ref.getDownloadURL())
+     .then(cb);
 }
 
-logoInput.onchange=e=>{
-  uploadImage(e.target.files[0],url=>{
-    logoURL=url;
-    pLogo.innerHTML=`<img src="${url}">`;
+logoInput.onchange = e => {
+  uploadImage(e.target.files[0], url => {
+    logoURL = url;
+    pLogo.innerHTML = `<img src="${url}">`;
   });
 };
 
-posterInput.onchange=e=>{
-  uploadImage(e.target.files[0],url=>{
-    posterURL=url;
-    pPoster.innerHTML=`<img src="${url}">`;
+posterInput.onchange = e => {
+  uploadImage(e.target.files[0], url => {
+    posterURL = url;
+    pPoster.innerHTML = `<img src="${url}">`;
   });
 };
 
 /* ================= GENERATE LINK ================= */
-genBtn.onclick=()=>{
-  if(!posterURL||!upi.value||!amount.value){
+genBtn.onclick = () => {
+  if(!posterURL || !upi.value || !amount.value){
     alert("Poster, UPI & Amount required");
     return;
   }
 
-  const data={
-    brand:brand.value,
-    dt:dt.value,
-    desc:desc.value,
-    upi:upi.value,
-    amount:amount.value,
-    logo:logoURL,
-    poster:posterURL
+  const data = {
+    brand: brand.value,
+    dt: dt.value,
+    desc: desc.value,
+    upi: upi.value,
+    amount: amount.value,
+    logo: logoURL,
+    poster: posterURL
   };
 
-  localStorage.setItem("pm_"+pid,JSON.stringify(data));
+  localStorage.setItem("pm_"+pid, JSON.stringify(data));
 
-  const link=location.origin+"/landing.html?id="+pid;
-  shareLink.value=link;
-  shareLink.style.display="block";
-  regBtn.href=link;
+  const link = location.origin + "/landing.html?id=" + pid;
+  shareLink.value = link;
+  shareLink.style.display = "block";
+  regBtn.href = link;
 };
 
 /* ================= SHARE ================= */
-function copyLink(){navigator.clipboard.writeText(shareLink.value)}
-function shareWA(){window.open("https://wa.me/?text="+encodeURIComponent(shareLink.value))}
+function copyLink(){
+  navigator.clipboard.writeText(shareLink.value);
+}
+function shareWA(){
+  window.open("https://wa.me/?text="+encodeURIComponent(shareLink.value));
+}
 </script>
 
 </body>
