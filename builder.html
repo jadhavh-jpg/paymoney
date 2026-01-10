@@ -2,85 +2,105 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>PayMoney – Payment Landing Builder</title>
+<title>PayMoney Builder</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 
 <style>
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial;background:#f5f7fb}
-.wrap{max-width:1200px;margin:20px auto;padding:0 14px}
-.flex{display:flex;gap:20px}
-@media(max-width:900px){.flex{flex-direction:column}}
-.box{background:#fff;border-radius:18px;padding:20px;width:50%}
-@media(max-width:900px){.box{width:100%}}
-
-label{font-weight:600;margin-top:12px;display:block}
-input,textarea{width:100%;padding:12px;border-radius:8px;border:1px solid #ccc;margin-top:6px}
-textarea{min-height:90px}
-button{width:100%;padding:14px;border:none;border-radius:14px;font-size:16px;font-weight:600;cursor:pointer;margin-top:14px}
-.primary{background:#0D3B66;color:#fff}
-
-.preview{text-align:center}
-.logo{width:110px;height:110px;margin:0 auto 10px;border-radius:16px;background:#eee;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.logo img{width:100%;height:100%;object-fit:contain}
-.poster{aspect-ratio:2/3;background:#ddd;border-radius:14px;overflow:hidden}
-.poster img{width:100%;height:100%;object-fit:cover}
-.brand{background:#0D3B66;color:#fff;padding:10px;border-radius:12px;margin-top:12px}
-.date{margin-top:8px;font-size:14px;color:#555}
-.desc{margin:12px 0;color:#333;font-size:14px}
-.footer{margin-top:16px;font-size:13px;color:#777}
-
-.pay-mobile{display:block;background:#2FB344;color:#fff;padding:14px;border-radius:14px;font-size:16px;font-weight:600;margin-top:14px;text-decoration:none}
-.pay-qr{background:#1f3c88;color:#fff;padding:14px;border-radius:14px;font-size:16px;font-weight:600;margin-top:12px;cursor:pointer}
-.qr-box{margin-top:14px;display:none}
-
-.share-btn{background:#2563eb;color:#fff}
-.copy-btn{background:#111827;color:#fff}
+body{margin:0;font-family:system-ui;background:#f1f5f9}
+.wrap{max-width:420px;margin:30px auto;padding:16px}
+.card{background:#fff;border-radius:20px;padding:18px;box-shadow:0 20px 40px rgba(0,0,0,.15)}
+h2{text-align:center;margin:0 0 12px}
+input,textarea{
+  width:100%;padding:12px;margin-top:10px;
+  border-radius:10px;border:1px solid #cbd5e1
+}
+textarea{min-height:80px}
+button{
+  width:100%;padding:14px;margin-top:12px;
+  border:none;border-radius:14px;
+  font-size:16px;font-weight:700;cursor:pointer
+}
+.primary{background:#2563eb;color:#fff}
+.copy{background:#0f172a;color:#fff}
+.wa{background:#22c55e;color:#fff}
+.note{font-size:13px;color:#64748b;text-align:center;margin-top:10px}
 </style>
 </head>
 
 <body>
 
-<!-- 🔐 LOGIN GUARD -->
-<script>
-if(localStorage.getItem("loggedIn")!=="yes"){
-  window.location.href="/index.html";
-}
-</script>
+<div class="wrap">
+  <div class="card">
+    <h2>Create Payment Page</h2>
 
-<div class="wrap" id="builder">
-<div class="flex">
+    <input id="title" placeholder="Title (Yoga Class)">
+    <textarea id="desc" placeholder="Description"></textarea>
+    <input id="upi" placeholder="UPI ID (jadhav.h3@ybl)">
+    <input id="amount" type="number" placeholder="Amount (INR)">
 
-<div class="box">
-<h2>Create Payment Landing</h2>
+    <input type="file" accept="image/*" onchange="uploadImage(event)">
 
-<label>Logo</label>
-<input type="file" id="logoInput" accept="image/*">
+    <button class="primary" onclick="generate()">Generate Landing</button>
 
-<label>Poster</label>
-<input type="file" id="posterInput" accept="image/*">
+    <input id="linkBox" readonly style="display:none">
 
-<label>Brand</label>
-<input id="brand">
+    <button class="copy" style="display:none" onclick="copyLink()">📋 Copy Link</button>
+    <button class="wa" style="display:none" onclick="shareWA()">📤 Share WhatsApp</button>
 
-<label>Date</label>
-<input type="datetime-local" id="dt">
-
-<label>UPI ID</label>
-<input id="upi">
-
-<label>Amount</label>
-<input id="amount" type="number">
-
-<label>Description</label>
-<textarea id="desc"></textarea>
-
-<button class="primary" id="genBtn">Generate Landing Page</button>
+    <div class="note">Image Firebase me upload hogi (all devices safe)</div>
+  </div>
 </div>
 
-<div class="box preview">
-  <div class="logo" id="pLogo">LOGO</div>
-  <div class="poster" id="pPoster"></div>
-  <div class="brand" id="pBrand">Brand</div>
-  <div class="date" id="pDate">Date</di
+<script>
+/* 🔥 FIREBASE CONFIG (APNA DALO) */
+firebase.initializeApp({
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT",
+  storageBucket: "YOUR_PROJECT.appspot.com"
+});
+const storage = firebase.storage();
+
+let posterURL="";
+
+/* IMAGE UPLOAD */
+function uploadImage(e){
+  const file=e.target.files[0];
+  if(!file) return;
+  const ref=storage.ref("posters/"+Date.now()+"_"+file.name);
+  ref.put(file).then(()=>ref.getDownloadURL().then(url=>{
+    posterURL=url;
+    alert("Image uploaded ✔");
+  }));
+}
+
+/* GENERATE LINK */
+function generate(){
+  if(!posterURL||!upi.value||!amount.value){
+    alert("Image, UPI & Amount required");
+    return;
+  }
+  const id=Date.now();
+  localStorage.setItem("pm_"+id,JSON.stringify({
+    title:title.value,
+    desc:desc.value,
+    poster:posterURL,
+    upi:upi.value,
+    amount:amount.value
+  }));
+  const link=location.origin+"/landing.html?id="+id;
+  linkBox.value=link;
+  linkBox.style.display="block";
+  document.querySelector(".copy").style.display="block";
+  document.querySelector(".wa").style.display="block";
+}
+function copyLink(){navigator.clipboard.writeText(linkBox.value)}
+function shareWA(){window.open("https://wa.me/?text="+encodeURIComponent(linkBox.value))}
+</script>
+
+</body>
+</html>
