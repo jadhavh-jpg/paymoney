@@ -1,122 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Create Payment Page</title>
-
+<meta charset="UTF-8">
+<title>PayMoney Builder</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-body{
-  font-family: system-ui;
-  background:#f3f4f6;
-  margin:0;
-  padding:20px;
-}
-.container{
-  max-width:900px;
-  margin:auto;
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:20px;
-}
-.card{
-  background:#fff;
-  border-radius:16px;
-  padding:20px;
-  box-shadow:0 10px 30px rgba(0,0,0,.08);
-}
-input,textarea{
-  width:100%;
-  padding:12px;
-  border-radius:10px;
-  border:1px solid #ddd;
-  margin-bottom:12px;
-}
-button{
-  width:100%;
-  padding:14px;
-  border:none;
-  border-radius:999px;
-  font-size:16px;
-  font-weight:700;
-  cursor:pointer;
-}
-.btn-main{background:#111827;color:#fff}
-.preview-card{
-  text-align:center;
-}
-.preview-card img{
-  width:100%;
-  border-radius:16px;
-}
-.preview-title{
-  font-size:22px;
-  font-weight:800;
-  margin-top:10px;
-}
-.preview-desc{opacity:.85}
-@media(max-width:768px){
-  .container{grid-template-columns:1fr}
-}
+body{font-family:system-ui;background:#f4f6fb;margin:0}
+.card{max-width:420px;margin:20px auto;background:#fff;padding:20px;border-radius:18px;box-shadow:0 15px 35px rgba(0,0,0,.12)}
+input,textarea,select{width:100%;padding:12px;margin-bottom:10px;border-radius:10px;border:1px solid #d1d5db}
+button{width:100%;padding:14px;border-radius:999px;border:none;font-weight:700}
+.primary{background:#020617;color:#fff}
 </style>
 </head>
-
 <body>
 
-<div class="container">
-
-<!-- BUILDER -->
 <div class="card">
-  <h2>Create Payment Page</h2>
+<h2>Create Payment Page</h2>
 
-  <input type="file" id="poster" accept="image/*" />
-  <input id="brand" placeholder="Brand Name" />
-  <input id="title" placeholder="Title" />
-  <textarea id="desc" placeholder="Description"></textarea>
-  <input id="upi" placeholder="UPI ID" />
-  <input id="amount" type="number" placeholder="Amount (₹)" />
+<input type="file" id="img">
+<input id="brand" placeholder="Brand Name">
+<input id="title" placeholder="Title">
+<textarea id="desc" placeholder="Sub Title / Description"></textarea>
+<input id="datetime" placeholder="Date & Time">
+<select id="mode">
+  <option>Online</option>
+  <option>Offline</option>
+</select>
+<input id="upi" placeholder="UPI ID">
+<input id="amount" type="number" placeholder="Amount ₹">
 
-  <button class="btn-main" onclick="generate()">Generate Page</button>
-</div>
-
-<!-- LIVE PREVIEW -->
-<div class="card preview-card">
-  <img id="pimg" />
-  <div class="preview-title" id="ptitle">Title</div>
-  <div class="preview-desc" id="pdesc">Description</div>
-</div>
-
+<button class="primary" onclick="generate()">Generate Page</button>
 </div>
 
 <script>
-let imageData="";
+const CLOUD="ddusj34vn";
+const PRESET="paymoney_unsigned";
+let imgURL="";
 
-poster.onchange=e=>{
-  const r=new FileReader();
-  r.onload=()=>{imageData=r.result;pimg.src=imageData}
-  r.readAsDataURL(e.target.files[0]);
-}
-
-title.oninput=()=>ptitle.innerText=title.value;
-desc.oninput=()=>pdesc.innerText=desc.value;
+img.onchange=async()=>{
+ const f=new FormData();
+ f.append("file",img.files[0]);
+ f.append("upload_preset",PRESET);
+ const r=await fetch(`https://api.cloudinary.com/v1_1/${CLOUD}/image/upload`,{method:"POST",body:f});
+ imgURL=(await r.json()).secure_url;
+};
 
 function generate(){
-  if(!imageData||!upi.value||!amount.value){
-    alert("All fields required");
-    return;
-  }
-
-  const id=Date.now();
-  localStorage.setItem("pay_"+id,JSON.stringify({
-    image:imageData,
-    brand:brand.value,
-    title:title.value,
-    desc:desc.value,
-    upi:upi.value,
-    amount:amount.value
-  }));
-
-  location.href="landing.html?id="+id;
+ if(!imgURL||!upi.value||!amount.value){alert("Required fields missing");return}
+ const q=new URLSearchParams({
+  img:imgURL,
+  brand:brand.value,
+  title:title.value,
+  desc:desc.value,
+  time:datetime.value,
+  mode:mode.value,
+  upi:upi.value,
+  amt:amount.value
+ });
+ location.href="landing.html?"+q.toString();
 }
 </script>
 
