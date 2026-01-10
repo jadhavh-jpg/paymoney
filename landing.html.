@@ -6,13 +6,44 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body{margin:0;background:#f1f5f9;font-family:system-ui}
-.card{max-width:420px;margin:30px auto;background:#fff;border-radius:24px;padding:20px;box-shadow:0 20px 40px rgba(0,0,0,.15);text-align:center}
-img{width:100%;border-radius:18px}
-h1{font-size:28px;font-weight:900;margin:10px 0}
-h2{margin:6px 0}
-p{color:#475569}
-button{width:100%;padding:14px;border:none;border-radius:999px;font-weight:700;margin-top:10px}
+body{
+  margin:0;
+  background:#f1f5f9;
+  font-family:system-ui;
+}
+.card{
+  max-width:420px;
+  margin:30px auto;
+  background:#fff;
+  border-radius:24px;
+  padding:20px;
+  box-shadow:0 20px 40px rgba(0,0,0,.15);
+  text-align:center;
+}
+img{
+  width:100%;
+  border-radius:18px;
+}
+h1{
+  font-size:28px;
+  font-weight:900;
+  margin:10px 0;
+}
+h2{
+  margin:6px 0;
+}
+p{
+  color:#475569;
+}
+button{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:999px;
+  font-weight:700;
+  margin-top:10px;
+  cursor:pointer;
+}
 .green{background:#22c55e;color:#fff}
 .dark{background:#020617;color:#fff}
 </style>
@@ -20,44 +51,64 @@ button{width:100%;padding:14px;border:none;border-radius:999px;font-weight:700;m
 
 <body>
 
-<div class="card">
-<img id="img">
-<h1 id="brand"></h1>
-<h2 id="title"></h2>
-<p id="desc"></p>
-<p id="dt"></p>
-<p id="mode"></p>
+<div class="card" id="app">
+  <img id="img">
+  <h1 id="brand"></h1>
+  <h2 id="title"></h2>
+  <p id="desc"></p>
+  <p id="dt"></p>
+  <p id="mode"></p>
 
-<button class="green" onclick="openUPI()">Open UPI App</button>
-<button class="dark" onclick="showQR()">Scan QR</button>
-<button class="green" onclick="shareWA()">Share on WhatsApp</button>
+  <button class="green" onclick="openUPI()">📱 Open UPI App</button>
+  <button class="dark" onclick="showQR()">💻 Scan QR</button>
+  <button class="green" onclick="shareWA()">📤 Share on WhatsApp</button>
 </div>
 
 <script>
-const q=new URLSearchParams(location.search);
+const params = new URLSearchParams(window.location.search);
 
-brand.innerText=q.get("brand");
-title.innerText=q.get("title");
-desc.innerText=q.get("desc");
-img.src=q.get("img");
-mode.innerText="Mode: "+q.get("mode");
+const data = {
+  brand: params.get("brand"),
+  title: params.get("title"),
+  desc: params.get("desc"),
+  img: params.get("img"),
+  dt: params.get("dt"),
+  mode: params.get("mode"),
+  upi: params.get("upi"),
+  amt: params.get("amt")
+};
 
-const d=new Date(q.get("dt"));
-dt.innerText=d.toLocaleString();
+if(!data.title || !data.img || !data.upi || !data.amt){
+  document.getElementById("app").innerHTML = "<h2>Invalid or incomplete payment link</h2>";
+}else{
+  document.getElementById("brand").innerText = data.brand || "";
+  document.getElementById("title").innerText = data.title;
+  document.getElementById("desc").innerText = data.desc || "";
+  document.getElementById("img").src = data.img;
+  document.getElementById("mode").innerText = "Mode: " + (data.mode || "");
 
-const upi=q.get("upi");
-const amt=q.get("amt");
+  const d = new Date(data.dt);
+  document.getElementById("dt").innerText = isNaN(d)
+    ? ""
+    : "📅 " + d.toLocaleString();
+}
 
 function openUPI(){
-  location.href=`upi://pay?pa=${upi}&am=${amt}&cu=INR`;
+  location.href = `upi://pay?pa=${data.upi}&am=${data.amt}&cu=INR`;
 }
 
 function showQR(){
-  window.open(`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=upi://pay?pa=${upi}&am=${amt}&cu=INR`);
+  const qrUrl =
+    `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=` +
+    encodeURIComponent(`upi://pay?pa=${data.upi}&am=${data.amt}&cu=INR`);
+  window.open(qrUrl, "_blank");
 }
 
 function shareWA(){
-  window.open("https://wa.me/?text="+encodeURIComponent(location.href));
+  window.open(
+    "https://wa.me/?text=" + encodeURIComponent(window.location.href),
+    "_blank"
+  );
 }
 </script>
 
