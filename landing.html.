@@ -2,58 +2,126 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>PayMoney – Pay</title>
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PayMoney – Payment</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+
 <style>
-body{margin:0;background:#f8fafc;font-family:system-ui}
-.card{max-width:420px;margin:30px auto;background:#fff;padding:20px;border-radius:22px;box-shadow:0 20px 40px rgba(0,0,0,.15)}
-img{width:100%;border-radius:16px}
-h1{font-size:26px;margin:12px 0}
-h2{font-size:18px;margin:6px 0;color:#475569}
-.btn{width:100%;padding:14px;border:none;border-radius:999px;margin-top:10px;font-size:16px;font-weight:700;cursor:pointer}
-.upi{background:#22c55e;color:#fff}
-.qr{background:#020617;color:#fff}
-.wa{background:#16a34a;color:#fff}
-.copy{background:#334155;color:#fff}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont;
+  background:#f4f6fb;
+}
+.wrap{
+  max-width:420px;
+  margin:24px auto;
+  padding:16px;
+}
+.card{
+  background:#fff;
+  border-radius:22px;
+  padding:18px;
+  box-shadow:0 20px 45px rgba(0,0,0,.15);
+  text-align:center;
+}
+.logo{
+  width:72px;height:72px;
+  margin:0 auto 10px;
+  border-radius:16px;
+  overflow:hidden;
+}
+.logo img{width:100%;height:100%;object-fit:contain}
+.poster{
+  aspect-ratio:2/3;
+  border-radius:18px;
+  overflow:hidden;
+  background:#e5e7eb;
+}
+.poster img{width:100%;height:100%;object-fit:cover}
+h2{margin:14px 0 6px}
+p{font-size:14px;color:#475569;margin:0 0 12px}
+.amount{
+  font-size:18px;
+  font-weight:800;
+  margin-bottom:12px;
+}
+button{
+  width:100%;
+  padding:15px;
+  border:none;
+  border-radius:999px;
+  font-size:16px;
+  font-weight:700;
+  cursor:pointer;
+}
+.pay{background:#22c55e;color:#fff}
+.qrbtn{background:#1e40af;color:#fff;margin-top:10px}
+.qrbox{margin-top:14px;display:none}
+.note{font-size:13px;color:#64748b;margin-top:10px}
+.footer{
+  margin-top:14px;
+  font-size:12px;
+  color:#94a3b8;
+}
 </style>
 </head>
+
 <body>
 
-<div class="card">
-<img id="img">
-<h1 id="brand"></h1>
-<h2 id="title"></h2>
-<p id="desc"></p>
-<p id="time"></p>
-
-<button class="btn upi" onclick="openUPI()">📱 Open UPI App</button>
-<button class="btn qr" onclick="showQR()">💻 Scan QR</button>
-<button class="btn wa" onclick="share()">📤 Share on WhatsApp</button>
-
-<hr style="margin:16px 0">
-
-<button class="btn copy" onclick="copy()">🔗 Copy Link</button>
-<button class="btn wa" onclick="share()">📤 Share WhatsApp</button>
+<div class="wrap">
+  <div class="card" id="app">Loading…</div>
 </div>
 
 <script>
-const id=new URLSearchParams(location.search).get("id");
-const d=JSON.parse(localStorage.getItem(id));
-if(!d){document.body.innerHTML="404 NOT FOUND";}
+const params = new URLSearchParams(location.search);
+const id = params.get("id");
 
-img.src=d.img;
-brand.innerText=d.brand;
-title.innerText=d.title;
-desc.innerText=d.desc;
-time.innerText=d.time;
+if(!id){
+  document.getElementById("app").innerHTML = "Invalid link";
+  throw "";
+}
 
-const upiURL=`upi://pay?pa=${d.upi}&pn=${encodeURIComponent(d.brand)}&am=${d.amount}&cu=INR`;
+const data = JSON.parse(localStorage.getItem("pm_"+id));
+if(!data){
+  document.getElementById("app").innerHTML = "Link expired or invalid";
+  throw "";
+}
 
-function openUPI(){location.href=upiURL;}
-function showQR(){window.open("https://api.qrserver.com/v1/create-qr-code/?size=300x300&data="+encodeURIComponent(upiURL));}
-function copy(){navigator.clipboard.writeText(location.href);alert("Link copied");}
-function share(){
-  location.href=`https://wa.me/?text=${encodeURIComponent(location.href)}`;
+const upiLink =
+  "upi://pay?pa="+encodeURIComponent(data.upi)+
+  "&pn="+encodeURIComponent(data.title||"PayMoney")+
+  "&am="+encodeURIComponent(data.amount)+
+  "&cu=INR";
+
+document.getElementById("app").innerHTML = `
+  ${data.logo?`<div class="logo"><img src="${data.logo}"></div>`:""}
+  <div class="poster"><img src="${data.poster}"></div>
+  <h2>${data.title||"PayMoney"}</h2>
+  <p>${data.desc||""}</p>
+  <div class="amount">₹ ${data.amount}</div>
+
+  <button class="pay" onclick="openUPI()">Register Now</button>
+  <button class="qrbtn" onclick="showQR()">Scan QR & Pay</button>
+
+  <div class="qrbox" id="qrBox"></div>
+  <div class="note">UPI app na khule to QR scan kare</div>
+  <div class="footer">© 2026 PayMoney</div>
+`;
+
+function openUPI(){
+  location.href = upiLink;
+  setTimeout(showQR,1500);
+}
+
+function showQR(){
+  const box=document.getElementById("qrBox");
+  box.style.display="block";
+  box.innerHTML="";
+  QRCode.toCanvas(document.createElement("canvas"),upiLink,{width:240},
+    (e,c)=>box.appendChild(c)
+  );
 }
 </script>
 
