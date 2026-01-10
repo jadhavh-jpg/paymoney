@@ -1,67 +1,52 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
 <title>PayMoney</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-body{margin:0;background:#f3f4f6;font-family:system-ui}
-.card{max-width:420px;margin:20px auto;background:#fff;border-radius:26px;box-shadow:0 20px 40px rgba(0,0,0,.2);overflow:hidden}
-img{width:100%}
-.c{padding:18px;text-align:center}
-h1{margin:6px 0;font-size:26px}
-h2{margin:4px 0;font-size:20px}
-p{color:#475569}
-button{width:100%;padding:14px;margin-top:10px;border:none;border-radius:999px;font-weight:700}
+body{font-family:system-ui;background:#f8fafc}
+.card{max-width:420px;margin:20px auto;background:#fff;padding:20px;border-radius:22px;text-align:center}
+h1{font-size:26px;font-weight:900}
+h2{font-size:20px;font-weight:800}
+img{width:100%;border-radius:16px;margin:12px 0}
+.btn{padding:14px;border:none;border-radius:999px;font-weight:700;width:100%;margin-top:10px}
 .upi{background:#22c55e;color:#fff}
-.qr{background:#020617;color:#fff}
-.share{background:#16a34a;color:#fff}
+.qr{background:#0f172a;color:#fff}
+.wa{background:#25d366;color:#fff}
 </style>
 </head>
 
 <body>
 <div class="card">
-<img id="img">
-<div class="c">
 <h1 id="brand"></h1>
+<img id="img">
 <h2 id="title"></h2>
 <p id="desc"></p>
+<p><b id="dt"></b> • <span id="mode"></span></p>
 
-<p id="dt"></p>
-<p id="mode"></p>
-
-<button class="upi" onclick="openUPI()">📱 Open UPI App</button>
-<button class="qr" onclick="showQR()">💻 Scan QR</button>
-<button class="share" onclick="shareWA()">📤 Share on WhatsApp</button>
-
-<div id="qrbox"></div>
-</div>
+<button class="btn upi" onclick="openUPI()">Open UPI App</button>
+<button class="btn qr" onclick="showQR()">Scan QR</button>
+<button class="btn wa" onclick="shareWA()">Share WhatsApp</button>
 </div>
 
 <script>
 const q=new URLSearchParams(location.search);
-const d=JSON.parse(localStorage.getItem("pm_"+q.get("id")));
-if(!d) document.body.innerHTML="<h2>Invalid Link</h2>";
-
-img.src=d.image;
-brand.innerText=d.brand;
-title.innerText=d.title;
-desc.innerText=d.desc;
-dt.innerText=`📅 ${d.date} ⏰ ${d.time}`;
-mode.innerText=`Mode: ${d.mode}`;
+brand.innerText=q.get("brand");
+title.innerText=q.get("title");
+desc.innerText=q.get("desc");
+img.src=q.get("img");
+dt.innerText=q.get("dt");
+mode.innerText=q.get("mode");
 
 function openUPI(){
-  location.href=`upi://pay?pa=${d.upi}&pn=${encodeURIComponent(d.brand)}&am=${d.amount}&cu=INR`;
+ location.href=`upi://pay?pa=${q.get("upi")}&am=${q.get("amt")}&cu=INR`;
 }
-
 function showQR(){
-  qrbox.innerHTML=`<img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=upi://pay?pa=${d.upi}&am=${d.amount}">`;
+ window.open(`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=upi://pay?pa=${q.get("upi")}&am=${q.get("amt")}`);
 }
-
 function shareWA(){
-  const link=location.href;
-  location.href=`https://wa.me/?text=${encodeURIComponent(link)}`;
+ window.open(`https://wa.me/?text=${encodeURIComponent(location.href)}`);
 }
 </script>
 </body>
