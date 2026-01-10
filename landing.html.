@@ -5,16 +5,36 @@
 <title>PayMoney – Pay</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<!-- QR -->
 <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 
 <style>
 body{margin:0;font-family:system-ui;background:#f5f7fb}
 .wrap{max-width:420px;margin:20px auto;padding:16px}
-.card{background:#fff;border-radius:22px;padding:18px;box-shadow:0 20px 40px rgba(0,0,0,.15)}
+.card{
+  background:#fff;border-radius:22px;padding:18px;
+  box-shadow:0 20px 40px rgba(0,0,0,.15)
+}
 h2{text-align:center;margin:0 0 12px}
-.poster{aspect-ratio:2/3;border-radius:16px;overflow:hidden;background:#e5e7eb}
+
+.header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:10px
+}
+.logo{
+  width:60px;height:60px;border-radius:12px;
+  background:#eee;overflow:hidden
+}
+.logo img{width:100%;height:100%;object-fit:contain}
+
+.poster{
+  aspect-ratio:2/3;border-radius:16px;
+  overflow:hidden;background:#e5e7eb;margin-top:10px
+}
 .poster img{width:100%;height:100%;object-fit:cover}
+
 p{font-size:14px;color:#334155}
+
 button{
   width:100%;padding:14px;margin-top:12px;
   border:none;border-radius:14px;
@@ -22,8 +42,11 @@ button{
 }
 .pay{background:#22c55e;color:#fff}
 .qrbtn{background:#1e40af;color:#fff}
+
 .qr-box{text-align:center;margin-top:14px;display:none}
 .note{text-align:center;font-size:13px;color:#64748b;margin-top:10px}
+.error{text-align:center;color:red;font-weight:700;margin-top:40px}
+.footer{text-align:center;font-size:12px;color:#94a3b8;margin-top:14px}
 </style>
 </head>
 
@@ -32,35 +55,97 @@ button{
 <div class="wrap" id="app"></div>
 
 <script>
-const q=new URLSearchParams(location.search);
-const d=JSON.parse(localStorage.getItem("pm_"+q.get("id")));
-if(!d){document.body.innerHTML="Invalid link";}
+/* ========== GET DATA FROM LOCALSTORAGE ========== */
+const params = new URLSearchParams(location.search);
+const id = params.get("id");
 
-const upiLink=`upi://pay?pa=${encodeURIComponent(d.upi)}&pn=${encodeURIComponent(d.title||"PayMoney")}&am=${d.amount}&cu=INR`;
+if(!id){
+  document.getElementById("app").innerHTML =
+    `<div class="error">Invalid payment link</div>`;
+  throw new Error("No ID");
+}
 
-app.innerHTML=`
+const raw = localStorage.getItem("pm_" + id);
+if(!raw){
+  document.getElementById("app").innerHTML =
+    `<div class="error">Payment link expired or opened on new device</div>`;
+  throw new Error("No data");
+}
+
+const d = JSON.parse(raw);
+
+/* ========== BUILD UPI LINK ========== */
+const upiLink =
+  `upi://pay?pa=${encodeURIComponent(d.upi)}` +
+  `&pn=${encodeURIComponent(d.brand || "PayMoney")}` +
+  `&am=${encodeURIComponent(d.amount)}` +
+  `&cu=INR`;
+
+/* ========== RENDER UI ========== */
+document.getElementById("app").innerHTML = `
   <div class="card">
-    <h2>${d.title||"PayMoney"}</h2>
-    <div class="poster"><img src="${d.poster}"></div>
-    <p>${d.desc||""}</p>
 
-    <button class="pay" onclick="openUPI()">📱 Open UPI App</button>
-    <button class="qrbtn" onclick="showQR()">💻 Scan QR & Pay</button>
+    <div class="header">
+      <div style="display:flex;align-items:center;gap:10px">
+        ${d.logo ? `<div class="logo"><img src="${d.logo}"></div>` : ``}
+        <strong>${d.brand || "PayMoney"}</strong>
+      </div>
+    </div>
+
+    <div class="poster">
+      <img src="${d.poster}">
+    </div>
+
+    ${d.desc ? `<p>${d.desc}</p>` : ``}
+
+    <button class="pay" onclick="openUPI()">
+      📱 Open UPI App
+    </button>
+
+    <button class="qrbtn" onclick="showQR()">
+      💻 Scan QR & Pay
+    </button>
 
     <div class="qr-box" id="qrBox"></div>
-    <div class="note">UPI app na khule to QR scan kare</div>
+
+    <div class="note">
+      If UPI app does not open, QR code will appear automatically
+    </div>
+
+    <div class="footer">© 2026 PayMoney • India</div>
   </div>
 `;
 
+/* ========== UPI OPEN + AUTO QR FALLBACK ========== */
 function openUPI(){
-  location.href=upiLink;
-  setTimeout(showQR,1500);
+  // try opening UPI app (mobile)
+  window.location.href = upiLink;
+
+  // auto fallback to QR
+  setTimeout(showQR, 1500);
 }
+
+/* ========== QR GENERATE ========== */
 function showQR(){
-  const box=document.getElementById("qrBox");
-  box.style.display="block";
-  box.innerHTML="";
-  QRCode.toCanvas(document.createElement("canvas"),upiLink,{width:240},(e,c)=>box.appendChild(c));
+  const box = document.getElementById("qrBox");
+  if(box.style.display === "block") return;
+
+  box.style.display = "block";
+  box.innerHTML = "";
+
+  QRCode.toCanvas(
+    document.createElement("canvas"),
+    upiLink,
+    { width: 240 },
+    (err, canvas) => {
+      if(!err) box.appendChild(canvas);
+    }
+  );
+}
+
+/* ========== DESKTOP: SHOW QR DIRECT ========== */
+if(!/Android|iPhone/i.test(navigator.userAgent)){
+  showQR();
 }
 </script>
 
