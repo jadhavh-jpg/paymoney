@@ -2,66 +2,180 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>PayMoney – Pay</title>
+<title>PayMoney – Create Payment Page</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 
 <style>
-body{
-  margin:0;
-  font-family:system-ui;
-  background:#f1f5f9;
+*{box-sizing:border-box;font-family:system-ui}
+body{margin:0;background:#f4f6fb}
+
+.container{max-width:1100px;margin:30px auto;padding:0 16px}
+.grid{display:flex;gap:24px}
+@media(max-width:900px){.grid{flex-direction:column}}
+
+.card{
+  background:#fff;border-radius:20px;
+  padding:20px;box-shadow:0 20px 40px rgba(0,0,0,.1)
 }
-.box{
-  max-width:420px;
-  margin:30px auto;
-  background:#fff;
+
+h2{margin-top:0}
+
+input,textarea{
+  width:100%;padding:12px;
+  border-radius:10px;border:1px solid #d1d5db;
+  margin-bottom:12px
+}
+textarea{min-height:80px}
+
+button{
+  width:100%;padding:14px;
+  border:none;border-radius:999px;
+  font-size:16px;font-weight:700;
+  cursor:pointer
+}
+.primary{background:#0f172a;color:#fff}
+.green{background:#22c55e;color:#fff;margin-top:10px}
+.dark{background:#020617;color:#fff;margin-top:10px}
+
+.preview-card{
+  max-width:360px;margin:auto;
   border-radius:24px;
-  padding:20px;
-  box-shadow:0 20px 40px rgba(0,0,0,.15);
-  text-align:center;
+  overflow:hidden;
+  box-shadow:0 20px 40px rgba(0,0,0,.15)
 }
-img{width:100%;border-radius:16px}
-h2{margin:12px 0}
-p{color:#475569}
-.pay{
-  background:#22c55e;
-  color:#fff;
-  padding:14px;
-  border-radius:999px;
-  font-weight:700;
-  margin-top:12px;
-  cursor:pointer;
-}
-canvas{margin-top:16px}
+.preview-card img{width:100%;display:block}
+.preview-body{padding:16px;text-align:center}
+.preview-body h3{margin:10px 0}
+.preview-body p{font-size:14px;color:#475569}
+
+.hidden{display:none}
+
+.qr-box{margin-top:16px;text-align:center}
 </style>
 </head>
 
 <body>
 
-<div class="box">
-  <img id="img">
-  <h2 id="title"></h2>
-  <p id="desc"></p>
-  <div class="pay" onclick="pay()">Pay ₹<span id="amt"></span></div>
-  <canvas id="qr"></canvas>
+<div class="container">
+
+<!-- ================= BUILDER ================= -->
+<div id="builder" class="grid">
+
+  <div class="card">
+    <h2>Create Payment Page</h2>
+
+    <label>Poster Image *</label>
+    <input type="file" id="poster" accept="image/*">
+
+    <input id="title" placeholder="Title">
+    <textarea id="desc" placeholder="Description"></textarea>
+    <input id="upi" placeholder="UPI ID">
+    <input id="amount" type="number" placeholder="Amount (₹)">
+
+    <button class="primary" onclick="generate()">Generate Page</button>
+  </div>
+
+  <div class="card">
+    <h2>Live Preview</h2>
+    <div class="preview-card">
+      <img id="pImg" src="https://via.placeholder.com/400x600?text=Poster">
+      <div class="preview-body">
+        <h3 id="pTitle">Title</h3>
+        <p id="pDesc">Description</p>
+        <button class="green">Register Now</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ================= LANDING ================= -->
+<div id="landing" class="hidden">
+  <div class="card" style="max-width:420px;margin:auto;text-align:center">
+    <img id="lImg" style="width:100%;border-radius:16px">
+    <h2 id="lTitle"></h2>
+    <p id="lDesc"></p>
+
+    <button class="green" onclick="openUPI()">📱 Open UPI App</button>
+    <button class="dark" onclick="showQR()">💻 Scan QR</button>
+
+    <div class="qr-box" id="qrBox"></div>
+
+    <button class="green" onclick="shareWA()">📤 Share on WhatsApp</button>
+  </div>
+</div>
+
 </div>
 
 <script>
-const q = new URLSearchParams(location.search);
-const data = JSON.parse(sessionStorage.getItem("pm_"+q.get("id")));
+/* ================= CLOUDINARY CONFIG ================= */
+const CLOUD_NAME = "ddusj34vn";          // tumhara cloud name
+const UPLOAD_PRESET = "paymoney_unsigned";
 
-img.src = data.img;
-title.innerText = data.title;
-desc.innerText  = data.desc;
-amt.innerText   = data.amt;
+let posterURL="", upiLink="";
 
-const upi = `upi://pay?pa=${data.upi}&am=${data.amt}&cu=INR`;
+/* ================= LIVE PREVIEW ================= */
+poster.onchange = async ()=>{
+  const file = poster.files[0];
+  posterURL = await uploadImage(file);
+  pImg.src = posterURL;
+};
 
-QRCode.toCanvas(qr, upi);
+title.oninput = ()=>pTitle.innerText = title.value || "Title";
+desc.oninput  = ()=>pDesc.innerText  = desc.value  || "Description";
 
-function pay(){
-  location.href = upi;
+/* ================= UPLOAD ================= */
+async function uploadImage(file){
+  const fd = new FormData();
+  fd.append("file", file);
+  fd.append("upload_preset", UPLOAD_PRESET);
+
+  const res = await fetch(
+    `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
+    { method:"POST", body:fd }
+  );
+  const data = await res.json();
+  return data.secure_url;
+}
+
+/* ================= GENERATE ================= */
+function generate(){
+  if(!posterURL || !upi.value || !amount.value){
+    alert("Poster, UPI & Amount required");
+    return;
+  }
+
+  upiLink = `upi://pay?pa=${encodeURIComponent(upi.value)}&am=${amount.value}&cu=INR`;
+
+  // fill landing
+  lImg.src   = posterURL;
+  lTitle.innerText = title.value;
+  lDesc.innerText  = desc.value;
+
+  // switch view
+  builder.classList.add("hidden");
+  landing.classList.remove("hidden");
+}
+
+/* ================= PAYMENT ================= */
+function openUPI(){
+  location.href = upiLink;
+  setTimeout(showQR,1200);
+}
+
+function showQR(){
+  qrBox.innerHTML="";
+  QRCode.toCanvas(document.createElement("canvas"),upiLink,{width:220},
+    (e,c)=>qrBox.appendChild(c)
+  );
+}
+
+/* ================= SHARE ================= */
+function shareWA(){
+  const text = `Pay here:\n${upiLink}`;
+  window.open("https://wa.me/?text="+encodeURIComponent(text));
 }
 </script>
 
