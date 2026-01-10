@@ -2,154 +2,82 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Pay Now</title>
+<title>Create Payment Page</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<!-- WhatsApp Preview -->
-<meta property="og:title" content="Payment Request">
-<meta property="og:description" content="Pay securely using UPI">
-<meta property="og:type" content="website">
-
 <style>
-body{
-  margin:0;
-  background:#f1f5f9;
-  font-family:system-ui,-apple-system;
-}
-.card{
+body{font-family:system-ui;background:#f1f5f9;margin:0}
+.box{
   max-width:420px;
-  margin:24px auto;
+  margin:40px auto;
   background:#fff;
   padding:20px;
-  border-radius:22px;
+  border-radius:20px;
   box-shadow:0 20px 40px rgba(0,0,0,.15);
 }
-.hero{
+input,textarea{
   width:100%;
-  border-radius:16px;
-  display:none;
-  margin-bottom:12px;
+  padding:12px;
+  margin-top:10px;
+  border-radius:8px;
+  border:1px solid #cbd5e1;
 }
-h2{margin:0}
-p{color:#475569}
-.amount{
-  font-size:24px;
-  font-weight:800;
-  margin:14px 0;
-}
-.btn{
+button{
   width:100%;
   padding:14px;
-  margin-top:10px;
+  margin-top:16px;
   border:none;
   border-radius:999px;
+  background:#22c55e;
+  color:#fff;
   font-weight:700;
   cursor:pointer;
 }
-.pay{background:#22c55e;color:#fff}
-.wa{background:#25D366;color:#fff}
-.copy{background:#0ea5e9;color:#fff}
-.qr{
-  text-align:center;
-  margin-top:16px;
-}
-.qr img{
-  width:180px;
-}
-.note{
-  font-size:13px;
-  color:#64748b;
-  text-align:center;
-  margin-top:6px;
-}
-.error{
-  text-align:center;
-  padding:40px;
-  font-size:18px;
-}
+.note{font-size:13px;color:#64748b;margin-top:10px}
 </style>
 </head>
-
 <body>
 
-<div id="app"></div>
+<div class="box">
+  <h2>Create Payment Link</h2>
+
+  <input id="title" placeholder="Title (e.g. Yoga Class)">
+  <textarea id="desc" placeholder="Description"></textarea>
+  <input id="amount" type="number" placeholder="Amount">
+  <input id="upi" placeholder="UPI ID">
+  <input id="img" placeholder="Image URL (optional)">
+
+  <button onclick="generate()">Generate & Open</button>
+
+  <div class="note">
+    ⚠️ Builder link share mat karo<br>
+    Jo page open hoga wahi share karo
+  </div>
+</div>
 
 <script>
-const params = new URLSearchParams(window.location.search);
+function generate(){
+  const title = document.getElementById("title").value.trim();
+  const desc  = document.getElementById("desc").value.trim();
+  const amount = document.getElementById("amount").value;
+  const upi = document.getElementById("upi").value.trim();
+  const img = document.getElementById("img").value.trim();
 
-const title  = params.get("title");
-const desc   = params.get("desc");
-const amount = params.get("amount");
-const upi    = params.get("upi");
-const img    = params.get("img");
+  if(!title || !amount || !upi){
+    alert("Title, Amount aur UPI required hai");
+    return;
+  }
 
-// ❌ Agar required data nahi hai → clear error
-if(!title || !amount || !upi){
-  document.getElementById("app").innerHTML =
-    "<div class='error'>❌ Invalid or incomplete payment link</div>";
-  throw new Error("Invalid link");
+  let link =
+    "/landing.html" +
+    "?title=" + encodeURIComponent(title) +
+    "&desc=" + encodeURIComponent(desc) +
+    "&amount=" + amount +
+    "&upi=" + encodeURIComponent(upi);
+
+  if(img) link += "&img=" + encodeURIComponent(img);
+
+  window.open(link, "_blank");
 }
-
-// UPI link
-const upiLink =
-  "upi://pay" +
-  "?pa=" + encodeURIComponent(upi) +
-  "&am=" + encodeURIComponent(amount) +
-  "&cu=INR" +
-  "&pn=" + encodeURIComponent(title);
-
-// HTML render
-document.getElementById("app").innerHTML = `
-  <div class="card">
-    <img id="hero" class="hero">
-    <h2>${title}</h2>
-    <p>${desc || ""}</p>
-    <div class="amount">₹ ${amount}</div>
-
-    <button class="btn pay" id="payBtn">Open UPI App</button>
-    <button class="btn wa" id="waBtn">Share on WhatsApp</button>
-    <button class="btn copy" id="copyBtn">Copy Link</button>
-
-    <div class="qr">
-      <img id="qrImg">
-      <div class="note">Scan QR if UPI app doesn’t open</div>
-    </div>
-  </div>
-`;
-
-// Image
-if(img){
-  const hero = document.getElementById("hero");
-  hero.src = img;
-  hero.style.display = "block";
-}
-
-// Pay
-document.getElementById("payBtn").onclick = () => {
-  window.location.href = upiLink;
-};
-
-// QR
-document.getElementById("qrImg").src =
-  "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" +
-  encodeURIComponent(upiLink);
-
-// WhatsApp share
-document.getElementById("waBtn").onclick = () => {
-  const msg =
-    "*" + title + "*\n" +
-    (desc || "") + "\n" +
-    "Amount: ₹" + amount + "\n\n" +
-    "Pay here:\n" + window.location.href;
-
-  window.open("https://wa.me/?text=" + encodeURIComponent(msg));
-};
-
-// Copy link
-document.getElementById("copyBtn").onclick = async () => {
-  await navigator.clipboard.writeText(window.location.href);
-  alert("Link copied");
-};
 </script>
 
 </body>
