@@ -1,97 +1,56 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Payment</title>
-
+<title>PayMoney</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 <style>
-body{
-  background:#f3f4f6;
-  font-family:system-ui;
-  margin:0;
-  padding:20px;
-}
-.card{
-  max-width:420px;
-  margin:auto;
-  background:#fff;
-  border-radius:20px;
-  padding:20px;
-  box-shadow:0 15px 40px rgba(0,0,0,.12);
-  text-align:center;
-}
+body{font-family:system-ui;background:#f4f6fb;margin:0}
+.card{max-width:420px;margin:20px auto;background:#fff;padding:20px;border-radius:20px;text-align:center}
 img{width:100%;border-radius:16px}
-.brand{font-size:24px;font-weight:900;margin-top:10px}
-.title{font-size:20px;font-weight:800}
-.desc{opacity:.85;margin-bottom:14px}
-.btn{
-  width:100%;
-  padding:14px;
-  border:none;
-  border-radius:999px;
-  font-size:16px;
-  font-weight:700;
-  margin-top:10px;
-}
+h1{font-size:28px;margin:10px 0}
+h2{font-size:22px}
+p{color:#475569}
+button{width:100%;padding:14px;border-radius:999px;border:none;font-weight:700;margin-top:10px}
 .green{background:#22c55e;color:#fff}
-.dark{background:#111827;color:#fff}
-.share-box{
-  margin-top:20px;
-}
+.dark{background:#020617;color:#fff}
 </style>
 </head>
-
 <body>
 
 <div class="card">
-  <img id="img">
-  <div class="brand" id="brand"></div>
-  <div class="title" id="title"></div>
-  <div class="desc" id="desc"></div>
+<h1 id="brand"></h1>
+<h2 id="title"></h2>
+<p id="desc"></p>
+<p id="time"></p>
+<p id="mode"></p>
 
-  <button class="btn green" onclick="openUPI()">📱 Open UPI App</button>
-  <button class="btn dark" onclick="showQR()">💻 Scan QR</button>
+<img id="img">
 
-  <div class="share-box">
-    <button class="btn dark" onclick="copyLink()">📋 Copy Link</button>
-    <button class="btn green" onclick="shareWA()">🟢 Share on WhatsApp</button>
-  </div>
+<button class="green" onclick="openUPI()">📱 Open UPI App</button>
+<button class="dark" onclick="showQR()">💻 Scan QR</button>
+<div id="qr"></div>
+
+<button class="dark" onclick="copyLink()">📋 Copy Link</button>
+<button class="green" onclick="shareWA()">📤 Share on WhatsApp</button>
 </div>
 
 <script>
-const id=new URLSearchParams(location.search).get("id");
-const data=JSON.parse(localStorage.getItem("pay_"+id));
+const q=new URLSearchParams(location.search);
+brand.innerText=q.get("brand");
+title.innerText=q.get("title");
+desc.innerText=q.get("desc");
+time.innerText=q.get("time");
+mode.innerText="Mode: "+q.get("mode");
+img.src=q.get("img");
 
-img.src=data.image;
-brand.innerText=data.brand;
-title.innerText=data.title;
-desc.innerText=data.desc;
+const upi=`upi://pay?pa=${q.get("upi")}&am=${q.get("amt")}&cu=INR`;
 
-const upiLink=`upi://pay?pa=${data.upi}&am=${data.amount}&cu=INR&tn=${encodeURIComponent(data.title)}`;
-
-function openUPI(){
-  location.href=upiLink;
-}
-
-function showQR(){
-  const qr=`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(upiLink)}`;
-  window.open(qr,"_blank");
-}
-
-function copyLink(){
-  navigator.clipboard.writeText(location.href);
-  alert("Link copied");
-}
-
-function shareWA(){
-  window.open(
-    "https://wa.me/?text="+encodeURIComponent(
-      "Pay securely using this link 👇\n"+location.href
-    ),
-    "_blank"
-  );
-}
+function openUPI(){location.href=upi}
+function showQR(){qr.innerHTML="";QRCode.toCanvas(upi,{width:220},(_,c)=>qr.appendChild(c))}
+function copyLink(){navigator.clipboard.writeText(location.href);alert("Link copied")}
+function shareWA(){window.open("https://wa.me/?text="+encodeURIComponent(location.href))}
 </script>
 
 </body>
