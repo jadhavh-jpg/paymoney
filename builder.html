@@ -2,20 +2,57 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>PayMoney Builder</title>
+<title>PayMoney – Create Payment Page</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+
 <style>
-body{font-family:system-ui;background:#f1f5f9;margin:0}
-.container{max-width:1000px;margin:auto;padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:20px}
-.card{background:#fff;border-radius:18px;padding:20px;box-shadow:0 20px 40px rgba(0,0,0,.1)}
-input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px solid #cbd5e1;margin:8px 0}
-button{width:100%;padding:14px;border:none;border-radius:999px;font-weight:700;cursor:pointer}
-.primary{background:#020617;color:#fff}
+*{box-sizing:border-box;font-family:system-ui}
+body{margin:0;background:#f4f6fb}
+
+.container{max-width:1100px;margin:30px auto;padding:0 16px}
+.grid{display:flex;gap:24px}
+@media(max-width:900px){.grid{flex-direction:column}}
+
+.card{
+  background:#fff;border-radius:20px;
+  padding:20px;box-shadow:0 20px 40px rgba(0,0,0,.1)
+}
+
+h2{margin-top:0}
+
+input,textarea{
+  width:100%;padding:12px;
+  border-radius:10px;border:1px solid #d1d5db;
+  margin-bottom:12px
+}
+textarea{min-height:80px}
+
+button{
+  width:100%;padding:14px;
+  border:none;border-radius:999px;
+  font-size:16px;font-weight:700;
+  cursor:pointer
+}
+.primary{background:#0f172a;color:#fff}
 .green{background:#22c55e;color:#fff;margin-top:10px}
-.preview img{width:100%;border-radius:14px}
-.preview h2{margin:10px 0 0;font-size:26px;font-weight:900}
-.preview p{color:#475569}
+.dark{background:#020617;color:#fff;margin-top:10px}
+
+.preview-card{
+  max-width:360px;margin:auto;
+  border-radius:24px;
+  overflow:hidden;
+  box-shadow:0 20px 40px rgba(0,0,0,.15)
+}
+.preview-card img{width:100%;display:block}
+.preview-body{padding:16px;text-align:center}
+.preview-body h3{margin:10px 0}
+.preview-body p{font-size:14px;color:#475569}
+
+.hidden{display:none}
+
+.qr-box{margin-top:16px;text-align:center}
 </style>
 </head>
 
@@ -23,90 +60,122 @@ button{width:100%;padding:14px;border:none;border-radius:999px;font-weight:700;c
 
 <div class="container">
 
-<!-- BUILDER -->
-<div class="card">
-<h2>Create Payment Page</h2>
+<!-- ================= BUILDER ================= -->
+<div id="builder" class="grid">
 
-<input type="file" id="imgFile" accept="image/*">
-<input id="brand" placeholder="Brand Name">
-<input id="title" placeholder="Title">
-<textarea id="desc" placeholder="Description"></textarea>
+  <div class="card">
+    <h2>Create Payment Page</h2>
 
-<input type="datetime-local" id="dt">
-<select id="mode">
-<option>Online</option>
-<option>Offline</option>
-</select>
+    <label>Poster Image *</label>
+    <input type="file" id="poster" accept="image/*">
 
-<input id="upi" placeholder="UPI ID">
-<input id="amt" placeholder="Amount">
+    <input id="title" placeholder="Title">
+    <textarea id="desc" placeholder="Description"></textarea>
+    <input id="upi" placeholder="UPI ID">
+    <input id="amount" type="number" placeholder="Amount (₹)">
 
-<button class="primary" onclick="generate()">Generate Page</button>
-<button class="green" onclick="copyLink()">Copy Link</button>
-<button class="green" onclick="shareWA()">Share WhatsApp</button>
+    <button class="primary" onclick="generate()">Generate Page</button>
+  </div>
+
+  <div class="card">
+    <h2>Live Preview</h2>
+    <div class="preview-card">
+      <img id="pImg" src="https://via.placeholder.com/400x600?text=Poster">
+      <div class="preview-body">
+        <h3 id="pTitle">Title</h3>
+        <p id="pDesc">Description</p>
+        <button class="green">Register Now</button>
+      </div>
+    </div>
+  </div>
 
 </div>
 
-<!-- PREVIEW -->
-<div class="card preview">
-<img id="pimg">
-<h2 id="ptitle">Title</h2>
-<p id="pdesc">Description</p>
-<button class="green">Register Now</button>
+<!-- ================= LANDING ================= -->
+<div id="landing" class="hidden">
+  <div class="card" style="max-width:420px;margin:auto;text-align:center">
+    <img id="lImg" style="width:100%;border-radius:16px">
+    <h2 id="lTitle"></h2>
+    <p id="lDesc"></p>
+
+    <button class="green" onclick="openUPI()">📱 Open UPI App</button>
+    <button class="dark" onclick="showQR()">💻 Scan QR</button>
+
+    <div class="qr-box" id="qrBox"></div>
+
+    <button class="green" onclick="shareWA()">📤 Share on WhatsApp</button>
+  </div>
 </div>
 
 </div>
 
 <script>
-let imageURL="";
+/* ================= CLOUDINARY CONFIG ================= */
+const CLOUD_NAME = "ddusj34vn";          // tumhara cloud name
+const UPLOAD_PRESET = "paymoney_unsigned";
 
-document.getElementById("imgFile").onchange = async e=>{
-  const f=e.target.files[0];
-  const fd=new FormData();
-  fd.append("file",f);
-  fd.append("upload_preset","paymoney_unsigned");
+let posterURL="", upiLink="";
 
-  const r=await fetch("https://api.cloudinary.com/v1_1/ddusj34vn/image/upload",{method:"POST",body:fd});
-  const d=await r.json();
-  imageURL=d.secure_url;
-  document.getElementById("pimg").src=imageURL;
+/* ================= LIVE PREVIEW ================= */
+poster.onchange = async ()=>{
+  const file = poster.files[0];
+  posterURL = await uploadImage(file);
+  pImg.src = posterURL;
 };
 
-["title","desc"].forEach(id=>{
-  document.getElementById(id).oninput=()=>{
-    document.getElementById("p"+id).innerText=document.getElementById(id).value;
-  }
-});
+title.oninput = ()=>pTitle.innerText = title.value || "Title";
+desc.oninput  = ()=>pDesc.innerText  = desc.value  || "Description";
 
-function buildURL(){
-  const q=new URLSearchParams({
-    brand:brand.value,
-    title:title.value,
-    desc:desc.value,
-    img:imageURL,
-    dt:dt.value,
-    mode:mode.value,
-    upi:upi.value,
-    amt:amt.value
-  });
-  return location.origin+"/landing.html?"+q.toString();
+/* ================= UPLOAD ================= */
+async function uploadImage(file){
+  const fd = new FormData();
+  fd.append("file", file);
+  fd.append("upload_preset", UPLOAD_PRESET);
+
+  const res = await fetch(
+    `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
+    { method:"POST", body:fd }
+  );
+  const data = await res.json();
+  return data.secure_url;
 }
 
-let finalURL="";
-
+/* ================= GENERATE ================= */
 function generate(){
-  if(!imageURL||!upi.value||!amt.value){alert("Fill all");return;}
-  finalURL=buildURL();
-  alert("Page Ready");
+  if(!posterURL || !upi.value || !amount.value){
+    alert("Poster, UPI & Amount required");
+    return;
+  }
+
+  upiLink = `upi://pay?pa=${encodeURIComponent(upi.value)}&am=${amount.value}&cu=INR`;
+
+  // fill landing
+  lImg.src   = posterURL;
+  lTitle.innerText = title.value;
+  lDesc.innerText  = desc.value;
+
+  // switch view
+  builder.classList.add("hidden");
+  landing.classList.remove("hidden");
 }
 
-function copyLink(){
-  navigator.clipboard.writeText(finalURL);
-  alert("Link copied");
+/* ================= PAYMENT ================= */
+function openUPI(){
+  location.href = upiLink;
+  setTimeout(showQR,1200);
 }
 
+function showQR(){
+  qrBox.innerHTML="";
+  QRCode.toCanvas(document.createElement("canvas"),upiLink,{width:220},
+    (e,c)=>qrBox.appendChild(c)
+  );
+}
+
+/* ================= SHARE ================= */
 function shareWA(){
-  window.open("https://wa.me/?text="+encodeURIComponent(finalURL));
+  const text = `Pay here:\n${upiLink}`;
+  window.open("https://wa.me/?text="+encodeURIComponent(text));
 }
 </script>
 
