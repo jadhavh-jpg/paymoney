@@ -1,116 +1,61 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<title>PayMoney – Create Payment Page</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<title>PayMoney Builder</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-body{margin:0;background:#f3f4f6;font-family:system-ui}
-.wrap{max-width:980px;margin:20px auto;display:grid;grid-template-columns:1fr 1fr;gap:20px}
-.card{background:#fff;border-radius:18px;padding:20px;box-shadow:0 20px 40px rgba(0,0,0,.12)}
-h2{margin:0 0 12px}
-input,textarea,select{width:100%;padding:12px;margin:8px 0;border-radius:10px;border:1px solid #d1d5db}
-button{width:100%;padding:14px;border:none;border-radius:999px;font-weight:700;cursor:pointer}
-.primary{background:#020617;color:#fff}
-.preview{display:flex;justify-content:center}
-.phone{width:320px;border-radius:26px;box-shadow:0 20px 50px rgba(0,0,0,.25);overflow:hidden;background:#fff}
-.phone img{width:100%}
-.phone .p{padding:16px;text-align:center}
-.phone h3{margin:10px 0 6px}
-.btn{margin-top:10px;background:#22c55e;color:#fff}
+body{font-family:system-ui;background:#f1f5f9}
+.card{max-width:420px;margin:20px auto;background:#fff;padding:20px;border-radius:18px}
+input,textarea,select{width:100%;padding:12px;margin:8px 0;border-radius:10px;border:1px solid #ccc}
+button{width:100%;padding:14px;border:none;border-radius:999px;font-weight:700;margin-top:10px}
+.gen{background:#0f172a;color:#fff}
 </style>
 </head>
 
 <body>
-<div class="wrap">
-
-<!-- BUILDER -->
 <div class="card">
 <h2>Create Payment Page</h2>
 
-<input type="file" id="img" accept="image/*" required>
-<input id="brand" placeholder="Brand Name (eg. PayMoney)">
-<input id="title" placeholder="Title">
-<textarea id="desc" placeholder="Description"></textarea>
-
-<input id="date" type="date">
-<input id="time" type="time">
-
+<input type="file" id="img">
+<input placeholder="Brand Name" id="brand">
+<input placeholder="Title" id="title">
+<textarea placeholder="Description" id="desc"></textarea>
+<input type="datetime-local" id="datetime">
 <select id="mode">
-  <option>Online</option>
-  <option>Offline</option>
+<option>Online</option>
+<option>Offline</option>
 </select>
+<input placeholder="UPI ID" id="upi">
+<input placeholder="Amount" id="amount">
 
-<input id="upi" placeholder="UPI ID">
-<input id="amount" placeholder="Amount (₹)" type="number">
-
-<button class="primary" onclick="generate()">Generate Page</button>
-</div>
-
-<!-- LIVE PREVIEW -->
-<div class="card preview">
-<div class="phone">
-<img id="pimg" src="https://via.placeholder.com/400x300?text=Poster">
-<div class="p">
-<strong id="pbrand"></strong>
-<h3 id="ptitle">Title</h3>
-<p id="pdesc">Description</p>
-<button class="btn">Register Now</button>
-</div>
-</div>
-</div>
-
+<button class="gen" onclick="generate()">Generate Page</button>
 </div>
 
 <script>
-/* 🔑 Cloudinary config (replace with YOUR details) */
-const CLOUD = {
-  cloudName: "YOUR_CLOUD_NAME",
-  uploadPreset: "paymoney_unsigned"
-};
+async function generate(){
+  const file=document.getElementById("img").files[0];
+  if(!file)return alert("Image required");
 
-img.onchange = e=>{
-  const f=e.target.files[0];
-  if(f) pimg.src=URL.createObjectURL(f);
-};
-
-["brand","title","desc"].forEach(id=>{
-  document.getElementById(id).oninput=()=>{
-    pbrand.innerText=brand.value;
-    ptitle.innerText=title.value||"Title";
-    pdesc.innerText=desc.value||"Description";
-  }
-});
-
-async function uploadImage(file){
   const fd=new FormData();
   fd.append("file",file);
-  fd.append("upload_preset",CLOUD.uploadPreset);
-  const r=await fetch(`https://api.cloudinary.com/v1_1/${CLOUD.cloudName}/image/upload`,{method:"POST",body:fd});
-  return (await r.json()).secure_url;
-}
+  fd.append("upload_preset","paymoney_unsigned");
 
-async function generate(){
-  if(!img.files[0]) return alert("Image required");
+  const r=await fetch("https://api.cloudinary.com/v1_1/ddusj34vn/image/upload",{method:"POST",body:fd});
+  const j=await r.json();
 
-  const imageUrl = await uploadImage(img.files[0]);
-  const id = Date.now();
+  const url=`https://paymoney24.in/landing.html
+?brand=${encodeURIComponent(brand.value)}
+&title=${encodeURIComponent(title.value)}
+&desc=${encodeURIComponent(desc.value)}
+&img=${encodeURIComponent(j.secure_url)}
+&dt=${encodeURIComponent(datetime.value)}
+&mode=${encodeURIComponent(mode.value)}
+&upi=${encodeURIComponent(upi.value)}
+&amt=${encodeURIComponent(amount.value)}`;
 
-  const data={
-    brand:brand.value,
-    title:title.value,
-    desc:desc.value,
-    date:date.value,
-    time:time.value,
-    mode:mode.value,
-    upi:upi.value,
-    amount:amount.value,
-    image:imageUrl
-  };
-
-  localStorage.setItem("pm_"+id,JSON.stringify(data));
-  window.location.href=`landing.html?id=${id}`;
+  navigator.clipboard.writeText(url);
+  alert("Link copied!");
 }
 </script>
 </body>
