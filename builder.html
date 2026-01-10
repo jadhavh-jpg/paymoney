@@ -1,62 +1,114 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <title>PayMoney Builder</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
-body{font-family:system-ui;background:#f1f5f9}
-.card{max-width:420px;margin:20px auto;background:#fff;padding:20px;border-radius:18px}
-input,textarea,select{width:100%;padding:12px;margin:8px 0;border-radius:10px;border:1px solid #ccc}
-button{width:100%;padding:14px;border:none;border-radius:999px;font-weight:700;margin-top:10px}
-.gen{background:#0f172a;color:#fff}
+body{font-family:system-ui;background:#f1f5f9;margin:0}
+.container{max-width:1000px;margin:auto;padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.card{background:#fff;border-radius:18px;padding:20px;box-shadow:0 20px 40px rgba(0,0,0,.1)}
+input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px solid #cbd5e1;margin:8px 0}
+button{width:100%;padding:14px;border:none;border-radius:999px;font-weight:700;cursor:pointer}
+.primary{background:#020617;color:#fff}
+.green{background:#22c55e;color:#fff;margin-top:10px}
+.preview img{width:100%;border-radius:14px}
+.preview h2{margin:10px 0 0;font-size:26px;font-weight:900}
+.preview p{color:#475569}
 </style>
 </head>
 
 <body>
+
+<div class="container">
+
+<!-- BUILDER -->
 <div class="card">
 <h2>Create Payment Page</h2>
 
-<input type="file" id="img">
-<input placeholder="Brand Name" id="brand">
-<input placeholder="Title" id="title">
-<textarea placeholder="Description" id="desc"></textarea>
-<input type="datetime-local" id="datetime">
+<input type="file" id="imgFile" accept="image/*">
+<input id="brand" placeholder="Brand Name">
+<input id="title" placeholder="Title">
+<textarea id="desc" placeholder="Description"></textarea>
+
+<input type="datetime-local" id="dt">
 <select id="mode">
 <option>Online</option>
 <option>Offline</option>
 </select>
-<input placeholder="UPI ID" id="upi">
-<input placeholder="Amount" id="amount">
 
-<button class="gen" onclick="generate()">Generate Page</button>
+<input id="upi" placeholder="UPI ID">
+<input id="amt" placeholder="Amount">
+
+<button class="primary" onclick="generate()">Generate Page</button>
+<button class="green" onclick="copyLink()">Copy Link</button>
+<button class="green" onclick="shareWA()">Share WhatsApp</button>
+
+</div>
+
+<!-- PREVIEW -->
+<div class="card preview">
+<img id="pimg">
+<h2 id="ptitle">Title</h2>
+<p id="pdesc">Description</p>
+<button class="green">Register Now</button>
+</div>
+
 </div>
 
 <script>
-async function generate(){
-  const file=document.getElementById("img").files[0];
-  if(!file)return alert("Image required");
+let imageURL="";
 
+document.getElementById("imgFile").onchange = async e=>{
+  const f=e.target.files[0];
   const fd=new FormData();
-  fd.append("file",file);
+  fd.append("file",f);
   fd.append("upload_preset","paymoney_unsigned");
 
   const r=await fetch("https://api.cloudinary.com/v1_1/ddusj34vn/image/upload",{method:"POST",body:fd});
-  const j=await r.json();
+  const d=await r.json();
+  imageURL=d.secure_url;
+  document.getElementById("pimg").src=imageURL;
+};
 
-  const url=`https://paymoney24.in/landing.html
-?brand=${encodeURIComponent(brand.value)}
-&title=${encodeURIComponent(title.value)}
-&desc=${encodeURIComponent(desc.value)}
-&img=${encodeURIComponent(j.secure_url)}
-&dt=${encodeURIComponent(datetime.value)}
-&mode=${encodeURIComponent(mode.value)}
-&upi=${encodeURIComponent(upi.value)}
-&amt=${encodeURIComponent(amount.value)}`;
+["title","desc"].forEach(id=>{
+  document.getElementById(id).oninput=()=>{
+    document.getElementById("p"+id).innerText=document.getElementById(id).value;
+  }
+});
 
-  navigator.clipboard.writeText(url);
-  alert("Link copied!");
+function buildURL(){
+  const q=new URLSearchParams({
+    brand:brand.value,
+    title:title.value,
+    desc:desc.value,
+    img:imageURL,
+    dt:dt.value,
+    mode:mode.value,
+    upi:upi.value,
+    amt:amt.value
+  });
+  return location.origin+"/landing.html?"+q.toString();
+}
+
+let finalURL="";
+
+function generate(){
+  if(!imageURL||!upi.value||!amt.value){alert("Fill all");return;}
+  finalURL=buildURL();
+  alert("Page Ready");
+}
+
+function copyLink(){
+  navigator.clipboard.writeText(finalURL);
+  alert("Link copied");
+}
+
+function shareWA(){
+  window.open("https://wa.me/?text="+encodeURIComponent(finalURL));
 }
 </script>
+
 </body>
 </html>
