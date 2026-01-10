@@ -2,169 +2,65 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>PayMoney – Payment Landing</title>
+<title>PayMoney – Pay</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
-
-<!-- QR -->
 <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 
 <style>
-*{box-sizing:border-box}
 body{margin:0;font-family:system-ui;background:#f5f7fb}
 .wrap{max-width:420px;margin:20px auto;padding:16px}
-.card{
-  background:#fff;border-radius:22px;
-  padding:18px;box-shadow:0 20px 40px rgba(0,0,0,.15)
-}
+.card{background:#fff;border-radius:22px;padding:18px;box-shadow:0 20px 40px rgba(0,0,0,.15)}
 h2{text-align:center;margin:0 0 12px}
-
-input,textarea{
-  width:100%;padding:12px;border-radius:10px;
-  border:1px solid #cbd5e1;margin-top:10px
-}
-textarea{min-height:80px}
-
+.poster{aspect-ratio:2/3;border-radius:16px;overflow:hidden;background:#e5e7eb}
+.poster img{width:100%;height:100%;object-fit:cover}
+p{font-size:14px;color:#334155}
 button{
   width:100%;padding:14px;margin-top:12px;
   border:none;border-radius:14px;
   font-size:16px;font-weight:700;cursor:pointer
 }
-.primary{background:#2563eb;color:#fff}
 .pay{background:#22c55e;color:#fff}
 .qrbtn{background:#1e40af;color:#fff}
-
-.poster{
-  width:100%;aspect-ratio:2/3;
-  background:#e5e7eb;border-radius:16px;
-  overflow:hidden;margin-top:12px
-}
-.poster img{width:100%;height:100%;object-fit:cover}
-
-.qr-box{display:none;text-align:center;margin-top:14px}
-.note{font-size:13px;color:#64748b;margin-top:10px;text-align:center}
-.footer{text-align:center;font-size:12px;color:#94a3b8;margin-top:14px}
+.qr-box{text-align:center;margin-top:14px;display:none}
+.note{text-align:center;font-size:13px;color:#64748b;margin-top:10px}
 </style>
 </head>
 
 <body>
 
-<div class="wrap" id="builder">
-  <div class="card">
-    <h2>Create Payment</h2>
-
-    <input id="title" placeholder="Title (Yoga Class)">
-    <textarea id="desc" placeholder="Description"></textarea>
-
-    <input id="upi" placeholder="UPI ID (jadhav.h3@ybl)">
-    <input id="amount" type="number" placeholder="Amount (INR)">
-
-    <input type="file" accept="image/*" onchange="uploadImage(event)">
-
-    <button class="primary" onclick="createLanding()">Generate Landing</button>
-  </div>
-</div>
-
-<div class="wrap" id="landing" style="display:none"></div>
+<div class="wrap" id="app"></div>
 
 <script>
-/* 🔥 FIREBASE CONFIG – APNA CONFIG DALO */
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-};
-firebase.initializeApp(firebaseConfig);
-const storage = firebase.storage();
+const q=new URLSearchParams(location.search);
+const d=JSON.parse(localStorage.getItem("pm_"+q.get("id")));
+if(!d){document.body.innerHTML="Invalid link";}
 
-let posterURL="";
+const upiLink=`upi://pay?pa=${encodeURIComponent(d.upi)}&pn=${encodeURIComponent(d.title||"PayMoney")}&am=${d.amount}&cu=INR`;
 
-/* IMAGE → FIREBASE STORAGE */
-function uploadImage(e){
-  const file = e.target.files[0];
-  if(!file) return;
+app.innerHTML=`
+  <div class="card">
+    <h2>${d.title||"PayMoney"}</h2>
+    <div class="poster"><img src="${d.poster}"></div>
+    <p>${d.desc||""}</p>
 
-  const ref = storage.ref("posters/"+Date.now()+"_"+file.name);
-  ref.put(file).then(()=>{
-    ref.getDownloadURL().then(url=>{
-      posterURL = url;
-      alert("Image uploaded successfully");
-    });
-  });
+    <button class="pay" onclick="openUPI()">📱 Open UPI App</button>
+    <button class="qrbtn" onclick="showQR()">💻 Scan QR & Pay</button>
+
+    <div class="qr-box" id="qrBox"></div>
+    <div class="note">UPI app na khule to QR scan kare</div>
+  </div>
+`;
+
+function openUPI(){
+  location.href=upiLink;
+  setTimeout(showQR,1500);
 }
-
-/* CREATE LANDING */
-function createLanding(){
-  if(!posterURL || !upi.value || !amount.value){
-    alert("Image, UPI & Amount required");
-    return;
-  }
-
-  const id = Date.now();
-  localStorage.setItem("pm_"+id, JSON.stringify({
-    title:title.value,
-    desc:desc.value,
-    poster:posterURL,
-    upi:upi.value,
-    amount:amount.value
-  }));
-
-  location.href = location.pathname + "?id=" + id;
-}
-
-/* LANDING MODE */
-const q = new URLSearchParams(location.search);
-if(q.get("id")){
-  const d = JSON.parse(localStorage.getItem("pm_"+q.get("id")));
-  if(d){
-    document.getElementById("builder").style.display="none";
-    const upiLink =
-      `upi://pay?pa=${encodeURIComponent(d.upi)}&pn=${encodeURIComponent(d.title||"PayMoney")}&am=${d.amount}&cu=INR`;
-
-    document.getElementById("landing").style.display="block";
-    document.getElementById("landing").innerHTML = `
-      <div class="card">
-        <h2>${d.title||"PayMoney"}</h2>
-        <div class="poster"><img src="${d.poster}"></div>
-        <p>${d.desc||""}</p>
-
-        <button class="pay" onclick="openUPI('${upiLink}')">
-          📱 Open UPI App
-        </button>
-
-        <button class="qrbtn" onclick="showQR('${upiLink}')">
-          💻 Scan QR & Pay
-        </button>
-
-        <div class="qr-box" id="qrBox"></div>
-        <div class="note">If UPI app doesn’t open, QR code will appear</div>
-        <div class="footer">© 2026 PayMoney • India</div>
-      </div>
-    `;
-  }
-}
-
-/* UPI OPEN + FALLBACK QR */
-function openUPI(link){
-  window.location.href = link;
-  setTimeout(()=>showQR(link),1500);
-}
-
-/* QR GENERATE */
-function showQR(link){
+function showQR(){
   const box=document.getElementById("qrBox");
   box.style.display="block";
   box.innerHTML="";
-  QRCode.toCanvas(
-    document.createElement("canvas"),
-    link,
-    {width:240},
-    (e,c)=>box.appendChild(c)
-  );
+  QRCode.toCanvas(document.createElement("canvas"),upiLink,{width:240},(e,c)=>box.appendChild(c));
 }
 </script>
 
