@@ -2,64 +2,98 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>PayMoney Builder</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PayMoney – Builder</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
-body{font-family:system-ui;background:#f4f6fb;margin:0}
-.card{max-width:420px;margin:20px auto;background:#fff;padding:20px;border-radius:18px;box-shadow:0 15px 35px rgba(0,0,0,.12)}
-input,textarea,select{width:100%;padding:12px;margin-bottom:10px;border-radius:10px;border:1px solid #d1d5db}
-button{width:100%;padding:14px;border-radius:999px;border:none;font-weight:700}
-.primary{background:#020617;color:#fff}
+body{margin:0;font-family:system-ui;background:#f1f5f9}
+.wrap{max-width:1100px;margin:auto;padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.card{background:#fff;border-radius:18px;padding:20px;box-shadow:0 20px 40px rgba(0,0,0,.1)}
+input,textarea,select{width:100%;padding:12px;margin:8px 0;border-radius:10px;border:1px solid #cbd5e1}
+button{width:100%;padding:14px;border:none;border-radius:999px;background:#020617;color:#fff;font-size:16px;font-weight:700;cursor:pointer}
+.preview img{width:100%;border-radius:16px}
+.preview h1{font-size:26px;margin:10px 0}
+.preview h2{font-size:20px;margin:6px 0}
+.badge{background:#22c55e;color:#fff;padding:6px 14px;border-radius:999px;display:inline-block;margin-top:8px}
+@media(max-width:900px){.wrap{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 
+<div class="wrap">
+
+<!-- BUILDER -->
 <div class="card">
 <h2>Create Payment Page</h2>
 
 <input type="file" id="img">
-<input id="brand" placeholder="Brand Name">
+<input id="brand" placeholder="Brand name">
 <input id="title" placeholder="Title">
-<textarea id="desc" placeholder="Sub Title / Description"></textarea>
-<input id="datetime" placeholder="Date & Time">
-<select id="mode">
-  <option>Online</option>
-  <option>Offline</option>
-</select>
-<input id="upi" placeholder="UPI ID">
-<input id="amount" type="number" placeholder="Amount ₹">
+<textarea id="desc" placeholder="Subtitle / Description"></textarea>
 
-<button class="primary" onclick="generate()">Generate Page</button>
+<input id="time" placeholder="12 Jan 2026 | 7:00 PM – 9:00 PM">
+
+<select id="mode">
+<option>Online</option>
+<option>Offline</option>
+</select>
+
+<input id="upi" placeholder="UPI ID">
+<input id="amount" placeholder="Amount ₹">
+
+<button onclick="generate()">Generate Page</button>
+</div>
+
+<!-- LIVE PREVIEW -->
+<div class="card preview">
+<img id="pImg" style="display:none">
+<h1 id="pBrand"></h1>
+<h2 id="pTitle"></h2>
+<p id="pDesc"></p>
+<p id="pTime"></p>
+<span class="badge" id="pMode"></span>
+</div>
+
 </div>
 
 <script>
-const CLOUD="ddusj34vn";
-const PRESET="paymoney_unsigned";
+const CLOUD="ddusj34vn";               // 🔁 your cloudinary cloud name
+const PRESET="paymoney_unsigned";     // 🔁 unsigned preset
+
 let imgURL="";
 
+["brand","title","desc","time","mode"].forEach(id=>{
+  document.getElementById(id).oninput=update;
+  document.getElementById(id).onchange=update;
+});
+
+function update(){
+  pBrand.innerText=brand.value;
+  pTitle.innerText=title.value;
+  pDesc.innerText=desc.value;
+  pTime.innerText=time.value;
+  pMode.innerText=mode.value;
+}
+
 img.onchange=async()=>{
- const f=new FormData();
- f.append("file",img.files[0]);
- f.append("upload_preset",PRESET);
- const r=await fetch(`https://api.cloudinary.com/v1_1/${CLOUD}/image/upload`,{method:"POST",body:f});
- imgURL=(await r.json()).secure_url;
-};
+  const f=new FormData();
+  f.append("file",img.files[0]);
+  f.append("upload_preset",PRESET);
+  const r=await fetch(`https://api.cloudinary.com/v1_1/${CLOUD}/image/upload`,{method:"POST",body:f});
+  imgURL=(await r.json()).secure_url;
+  pImg.src=imgURL;
+  pImg.style.display="block";
+}
 
 function generate(){
- if(!imgURL||!upi.value||!amount.value){alert("Required fields missing");return}
- const q=new URLSearchParams({
-  img:imgURL,
-  brand:brand.value,
-  title:title.value,
-  desc:desc.value,
-  time:datetime.value,
-  mode:mode.value,
-  upi:upi.value,
-  amt:amount.value
- });
- location.href="landing.html?"+q.toString();
+  if(!imgURL||!upi.value||!amount.value){alert("All fields required");return;}
+  const id=Date.now();
+  localStorage.setItem(id,JSON.stringify({
+    img:imgURL,brand:brand.value,title:title.value,
+    desc:desc.value,time:time.value,mode:mode.value,
+    upi:upi.value,amount:amount.value
+  }));
+  location.href=`landing.html?id=${id}`;
 }
 </script>
-
 </body>
 </html>
