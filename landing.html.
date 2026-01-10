@@ -4,148 +4,64 @@
 <meta charset="UTF-8">
 <title>PayMoney – Pay</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<!-- QR -->
 <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 
 <style>
-body{margin:0;font-family:system-ui;background:#f5f7fb}
-.wrap{max-width:420px;margin:20px auto;padding:16px}
-.card{
-  background:#fff;border-radius:22px;padding:18px;
-  box-shadow:0 20px 40px rgba(0,0,0,.15)
+body{
+  margin:0;
+  font-family:system-ui;
+  background:#f1f5f9;
 }
-h2{text-align:center;margin:0 0 12px}
-
-.header{
-  display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:10px
+.box{
+  max-width:420px;
+  margin:30px auto;
+  background:#fff;
+  border-radius:24px;
+  padding:20px;
+  box-shadow:0 20px 40px rgba(0,0,0,.15);
+  text-align:center;
 }
-.logo{
-  width:60px;height:60px;border-radius:12px;
-  background:#eee;overflow:hidden
+img{width:100%;border-radius:16px}
+h2{margin:12px 0}
+p{color:#475569}
+.pay{
+  background:#22c55e;
+  color:#fff;
+  padding:14px;
+  border-radius:999px;
+  font-weight:700;
+  margin-top:12px;
+  cursor:pointer;
 }
-.logo img{width:100%;height:100%;object-fit:contain}
-
-.poster{
-  aspect-ratio:2/3;border-radius:16px;
-  overflow:hidden;background:#e5e7eb;margin-top:10px
-}
-.poster img{width:100%;height:100%;object-fit:cover}
-
-p{font-size:14px;color:#334155}
-
-button{
-  width:100%;padding:14px;margin-top:12px;
-  border:none;border-radius:14px;
-  font-size:16px;font-weight:700;cursor:pointer
-}
-.pay{background:#22c55e;color:#fff}
-.qrbtn{background:#1e40af;color:#fff}
-
-.qr-box{text-align:center;margin-top:14px;display:none}
-.note{text-align:center;font-size:13px;color:#64748b;margin-top:10px}
-.error{text-align:center;color:red;font-weight:700;margin-top:40px}
-.footer{text-align:center;font-size:12px;color:#94a3b8;margin-top:14px}
+canvas{margin-top:16px}
 </style>
 </head>
 
 <body>
 
-<div class="wrap" id="app"></div>
+<div class="box">
+  <img id="img">
+  <h2 id="title"></h2>
+  <p id="desc"></p>
+  <div class="pay" onclick="pay()">Pay ₹<span id="amt"></span></div>
+  <canvas id="qr"></canvas>
+</div>
 
 <script>
-/* ========== GET DATA FROM LOCALSTORAGE ========== */
-const params = new URLSearchParams(location.search);
-const id = params.get("id");
+const q = new URLSearchParams(location.search);
+const data = JSON.parse(sessionStorage.getItem("pm_"+q.get("id")));
 
-if(!id){
-  document.getElementById("app").innerHTML =
-    `<div class="error">Invalid payment link</div>`;
-  throw new Error("No ID");
-}
+img.src = data.img;
+title.innerText = data.title;
+desc.innerText  = data.desc;
+amt.innerText   = data.amt;
 
-const raw = localStorage.getItem("pm_" + id);
-if(!raw){
-  document.getElementById("app").innerHTML =
-    `<div class="error">Payment link expired or opened on new device</div>`;
-  throw new Error("No data");
-}
+const upi = `upi://pay?pa=${data.upi}&am=${data.amt}&cu=INR`;
 
-const d = JSON.parse(raw);
+QRCode.toCanvas(qr, upi);
 
-/* ========== BUILD UPI LINK ========== */
-const upiLink =
-  `upi://pay?pa=${encodeURIComponent(d.upi)}` +
-  `&pn=${encodeURIComponent(d.brand || "PayMoney")}` +
-  `&am=${encodeURIComponent(d.amount)}` +
-  `&cu=INR`;
-
-/* ========== RENDER UI ========== */
-document.getElementById("app").innerHTML = `
-  <div class="card">
-
-    <div class="header">
-      <div style="display:flex;align-items:center;gap:10px">
-        ${d.logo ? `<div class="logo"><img src="${d.logo}"></div>` : ``}
-        <strong>${d.brand || "PayMoney"}</strong>
-      </div>
-    </div>
-
-    <div class="poster">
-      <img src="${d.poster}">
-    </div>
-
-    ${d.desc ? `<p>${d.desc}</p>` : ``}
-
-    <button class="pay" onclick="openUPI()">
-      📱 Open UPI App
-    </button>
-
-    <button class="qrbtn" onclick="showQR()">
-      💻 Scan QR & Pay
-    </button>
-
-    <div class="qr-box" id="qrBox"></div>
-
-    <div class="note">
-      If UPI app does not open, QR code will appear automatically
-    </div>
-
-    <div class="footer">© 2026 PayMoney • India</div>
-  </div>
-`;
-
-/* ========== UPI OPEN + AUTO QR FALLBACK ========== */
-function openUPI(){
-  // try opening UPI app (mobile)
-  window.location.href = upiLink;
-
-  // auto fallback to QR
-  setTimeout(showQR, 1500);
-}
-
-/* ========== QR GENERATE ========== */
-function showQR(){
-  const box = document.getElementById("qrBox");
-  if(box.style.display === "block") return;
-
-  box.style.display = "block";
-  box.innerHTML = "";
-
-  QRCode.toCanvas(
-    document.createElement("canvas"),
-    upiLink,
-    { width: 240 },
-    (err, canvas) => {
-      if(!err) box.appendChild(canvas);
-    }
-  );
-}
-
-/* ========== DESKTOP: SHOW QR DIRECT ========== */
-if(!/Android|iPhone/i.test(navigator.userAgent)){
-  showQR();
+function pay(){
+  location.href = upi;
 }
 </script>
 
