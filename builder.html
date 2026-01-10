@@ -2,181 +2,154 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>PayMoney – Create Payment Page</title>
+<title>Pay Now</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+<!-- WhatsApp Preview -->
+<meta property="og:title" content="Payment Request">
+<meta property="og:description" content="Pay securely using UPI">
+<meta property="og:type" content="website">
 
 <style>
-*{box-sizing:border-box;font-family:system-ui}
-body{margin:0;background:#f4f6fb}
-
-.container{max-width:1100px;margin:30px auto;padding:0 16px}
-.grid{display:flex;gap:24px}
-@media(max-width:900px){.grid{flex-direction:column}}
-
+body{
+  margin:0;
+  background:#f1f5f9;
+  font-family:system-ui,-apple-system;
+}
 .card{
-  background:#fff;border-radius:20px;
-  padding:20px;box-shadow:0 20px 40px rgba(0,0,0,.1)
+  max-width:420px;
+  margin:24px auto;
+  background:#fff;
+  padding:20px;
+  border-radius:22px;
+  box-shadow:0 20px 40px rgba(0,0,0,.15);
 }
-
-h2{margin-top:0}
-
-input,textarea{
-  width:100%;padding:12px;
-  border-radius:10px;border:1px solid #d1d5db;
-  margin-bottom:12px
+.hero{
+  width:100%;
+  border-radius:16px;
+  display:none;
+  margin-bottom:12px;
 }
-textarea{min-height:80px}
-
-button{
-  width:100%;padding:14px;
-  border:none;border-radius:999px;
-  font-size:16px;font-weight:700;
-  cursor:pointer
+h2{margin:0}
+p{color:#475569}
+.amount{
+  font-size:24px;
+  font-weight:800;
+  margin:14px 0;
 }
-.primary{background:#0f172a;color:#fff}
-.green{background:#22c55e;color:#fff;margin-top:10px}
-.dark{background:#020617;color:#fff;margin-top:10px}
-
-.preview-card{
-  max-width:360px;margin:auto;
-  border-radius:24px;
-  overflow:hidden;
-  box-shadow:0 20px 40px rgba(0,0,0,.15)
+.btn{
+  width:100%;
+  padding:14px;
+  margin-top:10px;
+  border:none;
+  border-radius:999px;
+  font-weight:700;
+  cursor:pointer;
 }
-.preview-card img{width:100%;display:block}
-.preview-body{padding:16px;text-align:center}
-.preview-body h3{margin:10px 0}
-.preview-body p{font-size:14px;color:#475569}
-
-.hidden{display:none}
-
-.qr-box{margin-top:16px;text-align:center}
+.pay{background:#22c55e;color:#fff}
+.wa{background:#25D366;color:#fff}
+.copy{background:#0ea5e9;color:#fff}
+.qr{
+  text-align:center;
+  margin-top:16px;
+}
+.qr img{
+  width:180px;
+}
+.note{
+  font-size:13px;
+  color:#64748b;
+  text-align:center;
+  margin-top:6px;
+}
+.error{
+  text-align:center;
+  padding:40px;
+  font-size:18px;
+}
 </style>
 </head>
 
 <body>
 
-<div class="container">
-
-<!-- ================= BUILDER ================= -->
-<div id="builder" class="grid">
-
-  <div class="card">
-    <h2>Create Payment Page</h2>
-
-    <label>Poster Image *</label>
-    <input type="file" id="poster" accept="image/*">
-
-    <input id="title" placeholder="Title">
-    <textarea id="desc" placeholder="Description"></textarea>
-    <input id="upi" placeholder="UPI ID">
-    <input id="amount" type="number" placeholder="Amount (₹)">
-
-    <button class="primary" onclick="generate()">Generate Page</button>
-  </div>
-
-  <div class="card">
-    <h2>Live Preview</h2>
-    <div class="preview-card">
-      <img id="pImg" src="https://via.placeholder.com/400x600?text=Poster">
-      <div class="preview-body">
-        <h3 id="pTitle">Title</h3>
-        <p id="pDesc">Description</p>
-        <button class="green">Register Now</button>
-      </div>
-    </div>
-  </div>
-
-</div>
-
-<!-- ================= LANDING ================= -->
-<div id="landing" class="hidden">
-  <div class="card" style="max-width:420px;margin:auto;text-align:center">
-    <img id="lImg" style="width:100%;border-radius:16px">
-    <h2 id="lTitle"></h2>
-    <p id="lDesc"></p>
-
-    <button class="green" onclick="openUPI()">📱 Open UPI App</button>
-    <button class="dark" onclick="showQR()">💻 Scan QR</button>
-
-    <div class="qr-box" id="qrBox"></div>
-
-    <button class="green" onclick="shareWA()">📤 Share on WhatsApp</button>
-  </div>
-</div>
-
-</div>
+<div id="app"></div>
 
 <script>
-/* ================= CLOUDINARY CONFIG ================= */
-const CLOUD_NAME = "ddusj34vn";          // tumhara cloud name
-const UPLOAD_PRESET = "paymoney_unsigned";
+const params = new URLSearchParams(window.location.search);
 
-let posterURL="", upiLink="";
+const title  = params.get("title");
+const desc   = params.get("desc");
+const amount = params.get("amount");
+const upi    = params.get("upi");
+const img    = params.get("img");
 
-/* ================= LIVE PREVIEW ================= */
-poster.onchange = async ()=>{
-  const file = poster.files[0];
-  posterURL = await uploadImage(file);
-  pImg.src = posterURL;
+// ❌ Agar required data nahi hai → clear error
+if(!title || !amount || !upi){
+  document.getElementById("app").innerHTML =
+    "<div class='error'>❌ Invalid or incomplete payment link</div>";
+  throw new Error("Invalid link");
+}
+
+// UPI link
+const upiLink =
+  "upi://pay" +
+  "?pa=" + encodeURIComponent(upi) +
+  "&am=" + encodeURIComponent(amount) +
+  "&cu=INR" +
+  "&pn=" + encodeURIComponent(title);
+
+// HTML render
+document.getElementById("app").innerHTML = `
+  <div class="card">
+    <img id="hero" class="hero">
+    <h2>${title}</h2>
+    <p>${desc || ""}</p>
+    <div class="amount">₹ ${amount}</div>
+
+    <button class="btn pay" id="payBtn">Open UPI App</button>
+    <button class="btn wa" id="waBtn">Share on WhatsApp</button>
+    <button class="btn copy" id="copyBtn">Copy Link</button>
+
+    <div class="qr">
+      <img id="qrImg">
+      <div class="note">Scan QR if UPI app doesn’t open</div>
+    </div>
+  </div>
+`;
+
+// Image
+if(img){
+  const hero = document.getElementById("hero");
+  hero.src = img;
+  hero.style.display = "block";
+}
+
+// Pay
+document.getElementById("payBtn").onclick = () => {
+  window.location.href = upiLink;
 };
 
-title.oninput = ()=>pTitle.innerText = title.value || "Title";
-desc.oninput  = ()=>pDesc.innerText  = desc.value  || "Description";
+// QR
+document.getElementById("qrImg").src =
+  "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" +
+  encodeURIComponent(upiLink);
 
-/* ================= UPLOAD ================= */
-async function uploadImage(file){
-  const fd = new FormData();
-  fd.append("file", file);
-  fd.append("upload_preset", UPLOAD_PRESET);
+// WhatsApp share
+document.getElementById("waBtn").onclick = () => {
+  const msg =
+    "*" + title + "*\n" +
+    (desc || "") + "\n" +
+    "Amount: ₹" + amount + "\n\n" +
+    "Pay here:\n" + window.location.href;
 
-  const res = await fetch(
-    `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
-    { method:"POST", body:fd }
-  );
-  const data = await res.json();
-  return data.secure_url;
-}
+  window.open("https://wa.me/?text=" + encodeURIComponent(msg));
+};
 
-/* ================= GENERATE ================= */
-function generate(){
-  if(!posterURL || !upi.value || !amount.value){
-    alert("Poster, UPI & Amount required");
-    return;
-  }
-
-  upiLink = `upi://pay?pa=${encodeURIComponent(upi.value)}&am=${amount.value}&cu=INR`;
-
-  // fill landing
-  lImg.src   = posterURL;
-  lTitle.innerText = title.value;
-  lDesc.innerText  = desc.value;
-
-  // switch view
-  builder.classList.add("hidden");
-  landing.classList.remove("hidden");
-}
-
-/* ================= PAYMENT ================= */
-function openUPI(){
-  location.href = upiLink;
-  setTimeout(showQR,1200);
-}
-
-function showQR(){
-  qrBox.innerHTML="";
-  QRCode.toCanvas(document.createElement("canvas"),upiLink,{width:220},
-    (e,c)=>qrBox.appendChild(c)
-  );
-}
-
-/* ================= SHARE ================= */
-function shareWA(){
-  const text = `Pay here:\n${upiLink}`;
-  window.open("https://wa.me/?text="+encodeURIComponent(text));
-}
+// Copy link
+document.getElementById("copyBtn").onclick = async () => {
+  await navigator.clipboard.writeText(window.location.href);
+  alert("Link copied");
+};
 </script>
 
 </body>
