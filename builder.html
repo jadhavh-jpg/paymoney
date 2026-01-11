@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>PayMoney – Create Payment Page</title>
+<title>Payment Page Builder</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -12,35 +12,36 @@ body{margin:0;background:#f1f5f9}
 /* Header */
 header{
   position:sticky;top:0;z-index:10;
-  display:flex;align-items:center;justify-content:space-between;
+  display:flex;justify-content:space-between;align-items:center;
   padding:12px 20px;background:#fff;border-bottom:1px solid #e5e7eb
 }
-header img{height:36px}
+header h2{margin:0;font-size:18px}
 header button{
-  padding:10px 18px;border:none;border-radius:999px;
-  background:#22c55e;color:#fff;font-weight:700;cursor:pointer
+  background:#22c55e;color:#fff;border:none;
+  padding:10px 18px;border-radius:999px;font-weight:700;cursor:pointer
 }
 
 /* Layout */
 .wrapper{display:flex;gap:20px;padding:20px}
-.form,.preview{flex:1;background:#fff;border-radius:20px;
-  box-shadow:0 20px 40px rgba(0,0,0,.12);padding:20px}
+.form,.preview{
+  flex:1;background:#fff;border-radius:20px;
+  padding:20px;box-shadow:0 20px 40px rgba(0,0,0,.12)
+}
 @media(max-width:900px){.wrapper{flex-direction:column}}
 
-/* Form */
+/* Inputs */
 label{font-size:13px;font-weight:600}
-input,textarea,select{
+input,textarea{
   width:100%;padding:10px;margin:6px 0 14px;
   border-radius:8px;border:1px solid #cbd5e1
 }
-.radio{display:flex;gap:12px;margin-bottom:14px}
+.radio{display:flex;gap:16px;margin-bottom:14px}
 .primary{
   width:100%;padding:14px;border:none;border-radius:999px;
   background:#0ea5e9;color:#fff;font-weight:800;cursor:pointer
 }
-.note{font-size:12px;color:#64748b;margin-top:8px}
 
-/* Preview card */
+/* Preview */
 .card{
   max-width:420px;margin:auto;background:#fff;padding:18px;
   border-radius:22px;box-shadow:0 20px 40px rgba(0,0,0,.15)
@@ -48,7 +49,7 @@ input,textarea,select{
 .card img{width:100%;border-radius:16px;display:none;margin-bottom:10px}
 .badge{
   display:inline-block;padding:4px 10px;border-radius:999px;
-  font-size:12px;font-weight:700;background:#e0f2fe;color:#0369a1
+  background:#dcfce7;color:#166534;font-size:12px;font-weight:700
 }
 .amount{font-size:22px;font-weight:900;margin:10px 0}
 .disabled{opacity:.5;pointer-events:none}
@@ -58,15 +59,15 @@ input,textarea,select{
 <body>
 
 <header>
-  <img src="https://paymoney24.in/pmc.png" alt="PayMoney">
+  <h2>PayMoney Builder</h2>
   <button>Register Now</button>
 </header>
 
 <div class="wrapper">
 
-<!-- BUILDER FORM -->
+<!-- FORM -->
 <div class="form">
-  <h2>Create Payment Page</h2>
+  <h3>Create Payment Page</h3>
 
   <label>Title *</label>
   <input id="title">
@@ -95,17 +96,13 @@ input,textarea,select{
   <label>UPI ID *</label>
   <input id="upi">
 
-  <label>Mobile (optional)</label>
-  <input id="mobile">
-
-  <label>Poster Image *</label>
+  <label>Upload Logo / Poster *</label>
   <input type="file" id="image">
 
   <button class="primary" onclick="generate()">Generate & Open Page</button>
-  <div class="note">⚠️ Share only the opened landing page link</div>
 </div>
 
-<!-- LIVE PREVIEW -->
+<!-- PREVIEW -->
 <div class="preview">
   <h3>Live Preview</h3>
   <div class="card">
@@ -117,21 +114,19 @@ input,textarea,select{
     <p id="pDT"></p>
     <div class="amount" id="pAmount">₹0</div>
     <button class="primary disabled">Open UPI App</button>
-    <button class="primary disabled" style="background:#25D366">WhatsApp</button>
   </div>
 </div>
 
 </div>
 
 <script>
-// 🔹 Cloudinary config (CHANGE THESE)
-// 🔹 Cloudinary config
+// 🔴 CHANGE THESE (Cloudinary)
 const CLOUD_NAME = "ddusj34vn";
-const UPLOAD_PRESET = "paymoney_unsigned";
+const UPLOAD_PRESET = "paymoney_unsigned"; 
 
-let uploadedImageURL = "";
+let imageURL = "";
 
-// Live preview binding
+// Live preview bindings
 ["title","subtitle","desc","amount","date","time"].forEach(id=>{
   document.getElementById(id).oninput = updatePreview;
 });
@@ -139,23 +134,24 @@ document.querySelectorAll("input[name=mode]").forEach(r=>{
   r.onchange = updatePreview;
 });
 
+// Image upload
 document.getElementById("image").onchange = async e=>{
   const file = e.target.files[0];
   if(!file) return;
-  uploadedImageURL = await uploadImage(file);
+  imageURL = await uploadImage(file);
   updatePreview();
 };
 
 function updatePreview(){
   pTitle.innerText = title.value || "Title";
-  pSub.innerText   = subtitle.value || "";
-  pDesc.innerText  = desc.value || "";
+  pSub.innerText = subtitle.value || "";
+  pDesc.innerText = desc.value || "";
   pAmount.innerText = "₹ " + (amount.value || 0);
   pMode.innerText = document.querySelector("input[name=mode]:checked").value;
   pDT.innerText = (date.value || "") + " " + (time.value || "");
 
-  if(uploadedImageURL){
-    pImg.src = uploadedImageURL;
+  if(imageURL){
+    pImg.src = imageURL;
     pImg.style.display = "block";
   }
 }
@@ -176,7 +172,7 @@ async function uploadImage(file){
 
 // Generate landing page
 function generate(){
-  if(!title.value || !amount.value || !upi.value || !uploadedImageURL){
+  if(!title.value || !amount.value || !upi.value || !imageURL){
     alert("Title, Amount, UPI & Image required");
     return;
   }
@@ -184,7 +180,7 @@ function generate(){
   const mode = document.querySelector("input[name=mode]:checked").value;
 
   const link =
-    "landing.html" +
+    "/landing.html"+
     "?title="+encodeURIComponent(title.value)+
     "&subtitle="+encodeURIComponent(subtitle.value)+
     "&desc="+encodeURIComponent(desc.value)+
@@ -193,7 +189,7 @@ function generate(){
     "&mode="+mode+
     "&amount="+amount.value+
     "&upi="+encodeURIComponent(upi.value)+
-    "&img="+encodeURIComponent(uploadedImageURL);
+    "&img="+encodeURIComponent(imageURL);
 
   window.open(link,"_blank");
 }
