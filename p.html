@@ -3,47 +3,49 @@
 <head>
 <meta charset="UTF-8">
 <title>Loading...</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+body{font-family:system-ui;text-align:center;padding:40px}
+</style>
 </head>
-<body style="font-family:system-ui;text-align:center;margin-top:40px">
+<body>
 
-Loading payment page...
+<p>Loading payment page…</p>
 
 <script>
-(async () => {
-  const params = new URLSearchParams(location.search);
-  const id = params.get("id");
+const id = new URLSearchParams(location.search).get("id");
+if(!id){
+  document.body.innerHTML = "Invalid link";
+  throw "";
+}
 
-  if (!id) {
-    document.body.innerHTML = "Invalid link";
-    return;
-  }
-
-  const res = await fetch("/data/links.json");
-  const data = await res.json();
-
-  if (!data[id]) {
+fetch("/data/links.json")
+.then(r=>r.json())
+.then(data=>{
+  if(!data[id]){
     document.body.innerHTML = "Link expired or not found";
     return;
   }
 
   const d = data[id];
+  let url =
+    "/landing.html"+
+    "?title="+encodeURIComponent(d.title)+
+    "&subtitle="+encodeURIComponent(d.subtitle||"")+
+    "&desc="+encodeURIComponent(d.desc||"")+
+    "&date="+d.date+
+    "&time="+d.time+
+    "&mode="+d.mode+
+    "&amount="+d.amount+
+    "&upi="+encodeURIComponent(d.upi)+
+    "&img="+encodeURIComponent(d.img);
 
-  const url =
-    "/landing.html" +
-    "?title=" + encodeURIComponent(d.title) +
-    "&subtitle=" + encodeURIComponent(d.subtitle || "") +
-    "&desc=" + encodeURIComponent(d.desc || "") +
-    "&date=" + (d.date || "") +
-    "&time=" + (d.time || "") +
-    "&mode=" + (d.mode || "") +
-    "&amount=" + d.amount +
-    "&upi=" + encodeURIComponent(d.upi) +
-    "&img=" + encodeURIComponent(d.img || "") +
-    (d.group ? "&group=" + encodeURIComponent(d.group) : "");
+  if(d.group){
+    url += "&group="+encodeURIComponent(d.group);
+  }
 
   location.replace(url);
-})();
+});
 </script>
 
 </body>
