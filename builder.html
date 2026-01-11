@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Payment Page Builder</title>
+<title>PayMoney Builder</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -40,8 +40,9 @@ input,textarea{
   width:100%;padding:14px;border:none;border-radius:999px;
   background:#0ea5e9;color:#fff;font-weight:800;cursor:pointer
 }
+.disabled{opacity:.5;pointer-events:none}
 
-/* Preview */
+/* Preview Card */
 .card{
   max-width:420px;margin:auto;background:#fff;padding:18px;
   border-radius:22px;box-shadow:0 20px 40px rgba(0,0,0,.15)
@@ -52,7 +53,6 @@ input,textarea{
   background:#dcfce7;color:#166534;font-size:12px;font-weight:700
 }
 .amount{font-size:22px;font-weight:900;margin:10px 0}
-.disabled{opacity:.5;pointer-events:none}
 </style>
 </head>
 
@@ -65,7 +65,7 @@ input,textarea{
 
 <div class="wrapper">
 
-<!-- FORM -->
+<!-- LEFT : FORM -->
 <div class="form">
   <h3>Create Payment Page</h3>
 
@@ -96,15 +96,19 @@ input,textarea{
   <label>UPI ID *</label>
   <input id="upi">
 
+  <label>WhatsApp Group Link (optional)</label>
+  <input id="waGroup" placeholder="https://chat.whatsapp.com/...">
+
   <label>Upload Logo / Poster *</label>
   <input type="file" id="image">
 
   <button class="primary" onclick="generate()">Generate & Open Page</button>
 </div>
 
-<!-- PREVIEW -->
+<!-- RIGHT : LIVE PREVIEW -->
 <div class="preview">
   <h3>Live Preview</h3>
+
   <div class="card">
     <img id="pImg">
     <span class="badge" id="pMode">Online</span>
@@ -113,22 +117,51 @@ input,textarea{
     <p id="pDesc"></p>
     <p id="pDT"></p>
     <div class="amount" id="pAmount">₹0</div>
+
     <button class="primary disabled">Open UPI App</button>
+
+    <!-- ✅ WhatsApp Group Preview Button -->
+    <button
+      id="pGroupBtn"
+      class="primary disabled"
+      style="background:#25D366;margin-top:8px">
+      Access WhatsApp Group
+    </button>
   </div>
 </div>
 
 </div>
 
 <script>
-// 🔴 CHANGE THESE (Cloudinary)
+// 🔴 Cloudinary config (FILLED)
 const CLOUD_NAME = "ddusj34vn";
-const UPLOAD_PRESET = "paymoney_unsigned"; 
+const UPLOAD_PRESET = "paymoney_unsigned";
 
 let imageURL = "";
 
-// Live preview bindings
-["title","subtitle","desc","amount","date","time"].forEach(id=>{
-  document.getElementById(id).oninput = updatePreview;
+// Inputs
+const title = document.getElementById("title");
+const subtitle = document.getElementById("subtitle");
+const desc = document.getElementById("desc");
+const date = document.getElementById("date");
+const time = document.getElementById("time");
+const amount = document.getElementById("amount");
+const upi = document.getElementById("upi");
+const waGroupInput = document.getElementById("waGroup");
+
+// Preview elements
+const pTitle = document.getElementById("pTitle");
+const pSub = document.getElementById("pSub");
+const pDesc = document.getElementById("pDesc");
+const pDT = document.getElementById("pDT");
+const pAmount = document.getElementById("pAmount");
+const pMode = document.getElementById("pMode");
+const pImg = document.getElementById("pImg");
+const pGroupBtn = document.getElementById("pGroupBtn");
+
+// Live preview binding
+[title, subtitle, desc, date, time, amount, waGroupInput].forEach(el=>{
+  el.oninput = updatePreview;
 });
 document.querySelectorAll("input[name=mode]").forEach(r=>{
   r.onchange = updatePreview;
@@ -147,12 +180,20 @@ function updatePreview(){
   pSub.innerText = subtitle.value || "";
   pDesc.innerText = desc.value || "";
   pAmount.innerText = "₹ " + (amount.value || 0);
-  pMode.innerText = document.querySelector("input[name=mode]:checked").value;
+  pMode.innerText =
+    document.querySelector("input[name=mode]:checked").value;
   pDT.innerText = (date.value || "") + " " + (time.value || "");
 
   if(imageURL){
     pImg.src = imageURL;
     pImg.style.display = "block";
+  }
+
+  // ✅ WhatsApp Group button enable / disable
+  if(waGroupInput.value.trim()){
+    pGroupBtn.classList.remove("disabled");
+  } else {
+    pGroupBtn.classList.add("disabled");
   }
 }
 
@@ -177,9 +218,10 @@ function generate(){
     return;
   }
 
-  const mode = document.querySelector("input[name=mode]:checked").value;
+  const mode =
+    document.querySelector("input[name=mode]:checked").value;
 
-  const link =
+  let link =
     "/landing.html"+
     "?title="+encodeURIComponent(title.value)+
     "&subtitle="+encodeURIComponent(subtitle.value)+
@@ -190,6 +232,10 @@ function generate(){
     "&amount="+amount.value+
     "&upi="+encodeURIComponent(upi.value)+
     "&img="+encodeURIComponent(imageURL);
+
+  if(waGroupInput.value.trim()){
+    link += "&group=" + encodeURIComponent(waGroupInput.value.trim());
+  }
 
   window.open(link,"_blank");
 }
