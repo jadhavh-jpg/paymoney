@@ -86,6 +86,41 @@ function copy(){
   navigator.clipboard.writeText(location.href);
   alert("Link copied");
 }
+  <script>
+const p = new URLSearchParams(location.search);
+
+// 1️⃣ params read
+const title = p.get("title");
+const amount = p.get("amount");
+const upi = p.get("upi");
+
+// (validation code yahin hota hai)
+
+// 2️⃣ HTML render
+document.getElementById("app").innerHTML = `
+  <div class="card">
+    ...
+    <button id="groupBtn"
+      class="btn wa"
+      style="display:none">
+      Access WhatsApp Group
+    </button>
+    ...
+  </div>
+`;
+
+// 3️⃣ 👇 YAHI PASTE KARNA HAI
+const group = p.get("group");
+
+if(group){
+  const gBtn = document.getElementById("groupBtn");
+  gBtn.style.display = "block";
+  gBtn.onclick = () => {
+    window.open(group, "_blank");
+  };
+}
+</script>
+
 </script>
 
 </body>
