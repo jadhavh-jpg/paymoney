@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <meta property="og:title" content="Payment Request">
-<meta property="og:description" content="Pay securely via UPI">
+<meta property="og:description" content="Pay securely using UPI">
 <meta property="og:type" content="website">
 
 <style>
@@ -40,15 +40,21 @@ img{width:100%;border-radius:16px;margin-bottom:10px}
 
 <script>
 const p = new URLSearchParams(location.search);
-const title=p.get("title"), amount=p.get("amount"), upi=p.get("upi");
+
+const title=p.get("title"),
+      amount=p.get("amount"),
+      upi=p.get("upi");
 
 if(!title || !amount || !upi){
   app.innerHTML="<div class='error'>❌ Invalid or expired payment link</div>";
   throw "";
 }
 
-const desc=p.get("desc")||"", img=p.get("img"), mode=p.get("mode")||"";
-const date=p.get("date")||"", time=p.get("time")||"";
+const desc=p.get("desc")||"",
+      img=p.get("img"),
+      mode=p.get("mode")||"",
+      date=p.get("date")||"",
+      time=p.get("time")||"";
 
 const upiLink =
 `upi://pay?pa=${upi}&am=${amount}&cu=INR&pn=${encodeURIComponent(title)}`;
