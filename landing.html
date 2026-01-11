@@ -39,36 +39,51 @@ img{width:100%;border-radius:16px;margin-bottom:10px}
 <div id="app"></div>
 
 <script>
+// 🔹 Read URL params ONCE
 const p = new URLSearchParams(location.search);
 
-const title=p.get("title"),
-      amount=p.get("amount"),
-      upi=p.get("upi");
+const title  = p.get("title");
+const amount = p.get("amount");
+const upi    = p.get("upi");
 
+// 🔹 Validation
 if(!title || !amount || !upi){
-  app.innerHTML="<div class='error'>❌ Invalid or expired payment link</div>";
-  throw "";
+  document.getElementById("app").innerHTML =
+    "<div class='error'>❌ Invalid or expired payment link</div>";
+  throw new Error("Invalid link");
 }
 
-const desc=p.get("desc")||"",
-      img=p.get("img"),
-      mode=p.get("mode")||"",
-      date=p.get("date")||"",
-      time=p.get("time")||"";
+// 🔹 Optional params
+const desc  = p.get("desc") || "";
+const img   = p.get("img") || "";
+const mode  = p.get("mode") || "";
+const date  = p.get("date") || "";
+const time  = p.get("time") || "";
+const group = p.get("group"); // 👈 WhatsApp Group
 
+// 🔹 UPI link
 const upiLink =
-`upi://pay?pa=${upi}&am=${amount}&cu=INR&pn=${encodeURIComponent(title)}`;
+  `upi://pay?pa=${upi}&am=${amount}&cu=INR&pn=${encodeURIComponent(title)}`;
 
-app.innerHTML=`
+// 🔹 Render HTML ONCE
+document.getElementById("app").innerHTML = `
 <div class="card">
-  <img src="${img}">
-  <span class="badge">${mode}</span>
+  ${img ? `<img src="${img}">` : ""}
+  ${mode ? `<span class="badge">${mode}</span>` : ""}
   <h2>${title}</h2>
   <p>${desc}</p>
   <p>${date} ${time}</p>
   <div class="amount">₹ ${amount}</div>
 
-  <button class="btn pay" onclick="location.href='${upiLink}'">Open UPI App</button>
+  <button class="btn pay" onclick="location.href='${upiLink}'">
+    Open UPI App
+  </button>
+
+  ${group ? `
+  <button id="groupBtn" class="btn wa">
+    Access WhatsApp Group
+  </button>` : ""}
+
   <button class="btn wa" onclick="share()">Share on WhatsApp</button>
   <button class="btn copy" onclick="copy()">Copy Link</button>
 
@@ -78,6 +93,14 @@ app.innerHTML=`
   </div>
 </div>`;
 
+// 🔹 Attach group click AFTER render
+if(group){
+  document.getElementById("groupBtn").onclick = () => {
+    window.open(group, "_blank");
+  };
+}
+
+// 🔹 Share & Copy
 function share(){
   const msg = `${title}\nAmount: ₹${amount}\n\nPay here:\n${location.href}`;
   window.open("https://wa.me/?text="+encodeURIComponent(msg));
@@ -86,41 +109,6 @@ function copy(){
   navigator.clipboard.writeText(location.href);
   alert("Link copied");
 }
-  <script>
-const p = new URLSearchParams(location.search);
-
-// 1️⃣ params read
-const title = p.get("title");
-const amount = p.get("amount");
-const upi = p.get("upi");
-
-// (validation code yahin hota hai)
-
-// 2️⃣ HTML render
-document.getElementById("app").innerHTML = `
-  <div class="card">
-    ...
-    <button id="groupBtn"
-      class="btn wa"
-      style="display:none">
-      Access WhatsApp Group
-    </button>
-    ...
-  </div>
-`;
-
-// 3️⃣ 👇 YAHI PASTE KARNA HAI
-const group = p.get("group");
-
-if(group){
-  const gBtn = document.getElementById("groupBtn");
-  gBtn.style.display = "block";
-  gBtn.onclick = () => {
-    window.open(group, "_blank");
-  };
-}
-</script>
-
 </script>
 
 </body>
