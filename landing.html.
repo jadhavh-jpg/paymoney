@@ -2,129 +2,84 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Pay & Join</title>
+<title>Pay Now</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- SEO for WhatsApp -->
 <meta property="og:title" content="Payment Request">
-<meta property="og:description" content="Pay securely using UPI">
+<meta property="og:description" content="Pay securely via UPI">
 <meta property="og:type" content="website">
 
 <style>
-body{margin:0;font-family:system-ui;background:#f1f5f9}
+body{margin:0;background:#f1f5f9;font-family:system-ui}
 .card{
-  max-width:420px;
-  margin:24px auto;
-  background:#fff;
-  padding:20px;
-  border-radius:24px;
-  box-shadow:0 20px 40px rgba(0,0,0,.15);
+  max-width:420px;margin:24px auto;background:#fff;padding:20px;
+  border-radius:22px;box-shadow:0 20px 40px rgba(0,0,0,.15)
 }
-img.hero{
-  width:100%;
-  border-radius:16px;
-  margin-bottom:12px;
-  display:none;
+img{width:100%;border-radius:16px;margin-bottom:10px}
+.badge{
+  display:inline-block;padding:4px 10px;border-radius:999px;
+  background:#dcfce7;color:#166534;font-weight:700;font-size:12px
 }
-h2{margin:0}
-p{color:#475569}
-.amount{
-  font-size:22px;
-  font-weight:800;
-  margin:12px 0;
-}
+.amount{font-size:24px;font-weight:900;margin:12px 0}
 .btn{
-  width:100%;
-  padding:14px;
-  border:none;
-  border-radius:999px;
-  font-weight:700;
-  margin-top:10px;
-  cursor:pointer;
+  width:100%;padding:14px;margin-top:10px;border:none;
+  border-radius:999px;font-weight:800;cursor:pointer
 }
 .pay{background:#22c55e;color:#fff}
 .wa{background:#25D366;color:#fff}
 .copy{background:#0ea5e9;color:#fff}
-.qr{
-  text-align:center;
-  margin-top:16px;
-}
-.qr img{
-  width:180px;
-}
-.note{
-  font-size:13px;
-  color:#64748b;
-  text-align:center;
-  margin-top:6px;
-}
+.qr{text-align:center;margin-top:14px}
+.qr img{width:180px}
+.error{text-align:center;padding:40px;font-size:18px}
 </style>
 </head>
 
 <body>
 
-<div class="card">
-  <img id="img" class="hero">
-  <h2 id="title">Payment</h2>
-  <p id="desc">Please complete payment</p>
-  <div class="amount" id="amount"></div>
-
-  <button class="btn pay" id="payBtn">Open UPI App</button>
-  <button class="btn wa" id="waBtn">Share on WhatsApp</button>
-  <button class="btn copy" id="copyBtn">Copy Link</button>
-
-  <div class="qr">
-    <img id="qrImg">
-    <div class="note">Scan QR if UPI app doesn’t open</div>
-  </div>
-</div>
+<div id="app"></div>
 
 <script>
 const p = new URLSearchParams(location.search);
+const title=p.get("title"), amount=p.get("amount"), upi=p.get("upi");
 
-const title = p.get("title") || "Payment";
-const desc  = p.get("desc") || "Please complete payment";
-const amount = p.get("amount");
-const upi = p.get("upi");
-const img = p.get("img");
-
-if(!upi || !amount){
-  document.body.innerHTML = "<h3 style='text-align:center'>Invalid or expired link</h3>";
+if(!title || !amount || !upi){
+  app.innerHTML="<div class='error'>❌ Invalid or expired payment link</div>";
+  throw "";
 }
 
-document.getElementById("title").innerText = title;
-document.getElementById("desc").innerText = desc;
-document.getElementById("amount").innerText = "₹ " + amount;
+const desc=p.get("desc")||"", img=p.get("img"), mode=p.get("mode")||"";
+const date=p.get("date")||"", time=p.get("time")||"";
 
-if(img){
-  const i = document.getElementById("img");
-  i.src = img;
-  i.style.display = "block";
+const upiLink =
+`upi://pay?pa=${upi}&am=${amount}&cu=INR&pn=${encodeURIComponent(title)}`;
+
+app.innerHTML=`
+<div class="card">
+  <img src="${img}">
+  <span class="badge">${mode}</span>
+  <h2>${title}</h2>
+  <p>${desc}</p>
+  <p>${date} ${time}</p>
+  <div class="amount">₹ ${amount}</div>
+
+  <button class="btn pay" onclick="location.href='${upiLink}'">Open UPI App</button>
+  <button class="btn wa" onclick="share()">Share on WhatsApp</button>
+  <button class="btn copy" onclick="copy()">Copy Link</button>
+
+  <div class="qr">
+    <img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(upiLink)}">
+    <div>Scan if app doesn’t open</div>
+  </div>
+</div>`;
+
+function share(){
+  const msg = `${title}\nAmount: ₹${amount}\n\nPay here:\n${location.href}`;
+  window.open("https://wa.me/?text="+encodeURIComponent(msg));
 }
-
-const upiLink = `upi://pay?pa=${upi}&am=${amount}&cu=INR&pn=${encodeURIComponent(title)}`;
-
-// Pay button
-document.getElementById("payBtn").onclick = () => {
-  location.href = upiLink;
-};
-
-// QR
-document.getElementById("qrImg").src =
-  "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" +
-  encodeURIComponent(upiLink);
-
-// WhatsApp share
-document.getElementById("waBtn").onclick = () => {
-  const msg = `*${title}*\n${desc}\nAmount: ₹${amount}\n\nPay here:\n${location.href}`;
-  window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`);
-};
-
-// Copy link
-document.getElementById("copyBtn").onclick = async () => {
-  await navigator.clipboard.writeText(location.href);
+function copy(){
+  navigator.clipboard.writeText(location.href);
   alert("Link copied");
-};
+}
 </script>
 
 </body>
