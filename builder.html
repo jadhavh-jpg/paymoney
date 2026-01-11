@@ -233,18 +233,15 @@ function generate(){
     "&upi="+encodeURIComponent(upi.value)+
     "&img="+encodeURIComponent(imageURL);
 
-  if(waGroupInput.value.trim()){
-    link += "&group=" + encodeURIComponent(waGroupInput.value.trim());
-  }
-
-  window.open(link,"_blank");
-}
-  function makeId(){
+ // 🔑 Short ID generator (ONLY ONCE)
+function makeId(){
   return Math.random().toString(36).slice(2,8);
 }
 
+// 🎯 Generate short ID
 const shortId = makeId();
 
+// 📦 Payload for short link
 const payload = {
   [shortId]: {
     title: title.value,
@@ -256,19 +253,22 @@ const payload = {
     amount: amount.value,
     upi: upi.value,
     img: imageURL,
-    group: waGroupInput.value || ""
+    group: waGroupInput.value.trim() || ""
   }
 };
 
-console.log("ADD THIS TO links.json:", payload);
+// 🧾 Console output (for manual save in data/links.json)
+console.log("ADD THIS TO data/links.json:", payload);
 
+// 🔔 User info (optional but useful)
 alert(
   "Short link created!\n\n" +
-  "Now add this data to data/links.json\n\n" +
+  "Add console data to data/links.json\n\n" +
   "Short link:\n" +
   location.origin + "/p.html?id=" + shortId
 );
 
+// 🚀 FINAL: Open short link
 window.open("/p.html?id=" + shortId, "_blank");
 
 </script>
