@@ -239,6 +239,38 @@ function generate(){
 
   window.open(link,"_blank");
 }
+  function makeId(){
+  return Math.random().toString(36).slice(2,8);
+}
+
+const shortId = makeId();
+
+const payload = {
+  [shortId]: {
+    title: title.value,
+    subtitle: subtitle.value,
+    desc: desc.value,
+    date: date.value,
+    time: time.value,
+    mode: mode,
+    amount: amount.value,
+    upi: upi.value,
+    img: imageURL,
+    group: waGroupInput.value || ""
+  }
+};
+
+console.log("ADD THIS TO links.json:", payload);
+
+alert(
+  "Short link created!\n\n" +
+  "Now add this data to data/links.json\n\n" +
+  "Short link:\n" +
+  location.origin + "/p.html?id=" + shortId
+);
+
+window.open("/p.html?id=" + shortId, "_blank");
+
 </script>
 
 </body>
