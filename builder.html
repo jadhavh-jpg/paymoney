@@ -2,81 +2,200 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Create Payment Page</title>
+<title>PayMoney – Create Payment Page</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
-body{font-family:system-ui;background:#f1f5f9;margin:0}
-.box{
-  max-width:420px;
-  margin:40px auto;
-  background:#fff;
-  padding:20px;
-  border-radius:20px;
-  box-shadow:0 20px 40px rgba(0,0,0,.15);
+*{box-sizing:border-box;font-family:system-ui}
+body{margin:0;background:#f1f5f9}
+
+/* Header */
+header{
+  position:sticky;top:0;z-index:10;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 20px;background:#fff;border-bottom:1px solid #e5e7eb
 }
-input,textarea{
-  width:100%;
-  padding:12px;
-  margin-top:10px;
-  border-radius:8px;
-  border:1px solid #cbd5e1;
+header img{height:36px}
+header button{
+  padding:10px 18px;border:none;border-radius:999px;
+  background:#22c55e;color:#fff;font-weight:700;cursor:pointer
 }
-button{
-  width:100%;
-  padding:14px;
-  margin-top:16px;
-  border:none;
-  border-radius:999px;
-  background:#22c55e;
-  color:#fff;
-  font-weight:700;
-  cursor:pointer;
+
+/* Layout */
+.wrapper{display:flex;gap:20px;padding:20px}
+.form,.preview{flex:1;background:#fff;border-radius:20px;
+  box-shadow:0 20px 40px rgba(0,0,0,.12);padding:20px}
+@media(max-width:900px){.wrapper{flex-direction:column}}
+
+/* Form */
+label{font-size:13px;font-weight:600}
+input,textarea,select{
+  width:100%;padding:10px;margin:6px 0 14px;
+  border-radius:8px;border:1px solid #cbd5e1
 }
-.note{font-size:13px;color:#64748b;margin-top:10px}
+.radio{display:flex;gap:12px;margin-bottom:14px}
+.primary{
+  width:100%;padding:14px;border:none;border-radius:999px;
+  background:#0ea5e9;color:#fff;font-weight:800;cursor:pointer
+}
+.note{font-size:12px;color:#64748b;margin-top:8px}
+
+/* Preview card */
+.card{
+  max-width:420px;margin:auto;background:#fff;padding:18px;
+  border-radius:22px;box-shadow:0 20px 40px rgba(0,0,0,.15)
+}
+.card img{width:100%;border-radius:16px;display:none;margin-bottom:10px}
+.badge{
+  display:inline-block;padding:4px 10px;border-radius:999px;
+  font-size:12px;font-weight:700;background:#e0f2fe;color:#0369a1
+}
+.amount{font-size:22px;font-weight:900;margin:10px 0}
+.disabled{opacity:.5;pointer-events:none}
 </style>
 </head>
+
 <body>
 
-<div class="box">
-  <h2>Create Payment Link</h2>
+<header>
+  <img src="https://paymoney24.in/pmc.png" alt="PayMoney">
+  <button>Register Now</button>
+</header>
 
-  <input id="title" placeholder="Title (e.g. Yoga Class)">
-  <textarea id="desc" placeholder="Description"></textarea>
-  <input id="amount" type="number" placeholder="Amount">
-  <input id="upi" placeholder="UPI ID">
-  <input id="img" placeholder="Image URL (optional)">
+<div class="wrapper">
 
-  <button onclick="generate()">Generate & Open</button>
+<!-- BUILDER FORM -->
+<div class="form">
+  <h2>Create Payment Page</h2>
 
-  <div class="note">
-    ⚠️ Builder link share mat karo<br>
-    Jo page open hoga wahi share karo
+  <label>Title *</label>
+  <input id="title">
+
+  <label>Sub Title</label>
+  <input id="subtitle">
+
+  <label>Description</label>
+  <textarea id="desc"></textarea>
+
+  <label>Date</label>
+  <input type="date" id="date">
+
+  <label>Time</label>
+  <input type="time" id="time">
+
+  <label>Mode</label>
+  <div class="radio">
+    <label><input type="radio" name="mode" value="Online" checked> Online</label>
+    <label><input type="radio" name="mode" value="Offline"> Offline</label>
+  </div>
+
+  <label>Amount (₹) *</label>
+  <input type="number" id="amount">
+
+  <label>UPI ID *</label>
+  <input id="upi">
+
+  <label>Mobile (optional)</label>
+  <input id="mobile">
+
+  <label>Poster Image *</label>
+  <input type="file" id="image">
+
+  <button class="primary" onclick="generate()">Generate & Open Page</button>
+  <div class="note">⚠️ Share only the opened landing page link</div>
+</div>
+
+<!-- LIVE PREVIEW -->
+<div class="preview">
+  <h3>Live Preview</h3>
+  <div class="card">
+    <img id="pImg">
+    <span class="badge" id="pMode">Online</span>
+    <h3 id="pTitle">Title</h3>
+    <p id="pSub"></p>
+    <p id="pDesc"></p>
+    <p id="pDT"></p>
+    <div class="amount" id="pAmount">₹0</div>
+    <button class="primary disabled">Open UPI App</button>
+    <button class="primary disabled" style="background:#25D366">WhatsApp</button>
   </div>
 </div>
 
-<script>
-function generate(){
-  const title = document.getElementById("title").value.trim();
-  const desc  = document.getElementById("desc").value.trim();
-  const amount = document.getElementById("amount").value;
-  const upi = document.getElementById("upi").value.trim();
-  const img = document.getElementById("img").value.trim();
+</div>
 
-  if(!title || !amount || !upi){
-    alert("Title, Amount aur UPI required hai");
+<script>
+// 🔹 Cloudinary config (CHANGE THESE)
+// 🔹 Cloudinary config
+const CLOUD_NAME = "ddusj34vn";
+const UPLOAD_PRESET = "paymoney_unsigned";
+
+let uploadedImageURL = "";
+
+// Live preview binding
+["title","subtitle","desc","amount","date","time"].forEach(id=>{
+  document.getElementById(id).oninput = updatePreview;
+});
+document.querySelectorAll("input[name=mode]").forEach(r=>{
+  r.onchange = updatePreview;
+});
+
+document.getElementById("image").onchange = async e=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  uploadedImageURL = await uploadImage(file);
+  updatePreview();
+};
+
+function updatePreview(){
+  pTitle.innerText = title.value || "Title";
+  pSub.innerText   = subtitle.value || "";
+  pDesc.innerText  = desc.value || "";
+  pAmount.innerText = "₹ " + (amount.value || 0);
+  pMode.innerText = document.querySelector("input[name=mode]:checked").value;
+  pDT.innerText = (date.value || "") + " " + (time.value || "");
+
+  if(uploadedImageURL){
+    pImg.src = uploadedImageURL;
+    pImg.style.display = "block";
+  }
+}
+
+// Cloudinary upload
+async function uploadImage(file){
+  const fd = new FormData();
+  fd.append("file", file);
+  fd.append("upload_preset", UPLOAD_PRESET);
+
+  const res = await fetch(
+    `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
+    { method:"POST", body:fd }
+  );
+  const data = await res.json();
+  return data.secure_url;
+}
+
+// Generate landing page
+function generate(){
+  if(!title.value || !amount.value || !upi.value || !uploadedImageURL){
+    alert("Title, Amount, UPI & Image required");
     return;
   }
 
-  let link =
-    "/landing.html" +
-    "?title=" + encodeURIComponent(title) +
-    "&desc=" + encodeURIComponent(desc) +
-    "&amount=" + amount +
-    "&upi=" + encodeURIComponent(upi);
+  const mode = document.querySelector("input[name=mode]:checked").value;
 
-  if(img) link += "&img=" + encodeURIComponent(img);
+  const link =
+    "landing.html" +
+    "?title="+encodeURIComponent(title.value)+
+    "&subtitle="+encodeURIComponent(subtitle.value)+
+    "&desc="+encodeURIComponent(desc.value)+
+    "&date="+date.value+
+    "&time="+time.value+
+    "&mode="+mode+
+    "&amount="+amount.value+
+    "&upi="+encodeURIComponent(upi.value)+
+    "&img="+encodeURIComponent(uploadedImageURL);
 
-  window.open(link, "_blank");
+  window.open(link,"_blank");
 }
 </script>
 
