@@ -5,32 +5,117 @@
 <title>Pay Now</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta property="og:title" content="Payment Request">
-<meta property="og:description" content="Pay securely using UPI">
+<!-- WhatsApp / SEO Preview -->
 <meta property="og:type" content="website">
+<meta property="og:title" content="Payment Request">
+<meta property="og:description" content="Secure UPI Payment">
+<meta property="og:image" content="">
 
 <style>
-body{margin:0;background:#f1f5f9;font-family:system-ui}
+*{box-sizing:border-box;font-family:system-ui,-apple-system}
+body{
+  margin:0;
+  background:#f1f5f9;
+}
+
+/* Card */
 .card{
-  max-width:420px;margin:24px auto;background:#fff;padding:20px;
-  border-radius:22px;box-shadow:0 20px 40px rgba(0,0,0,.15)
+  max-width:420px;
+  margin:24px auto;
+  background:#fff;
+  padding:20px;
+  border-radius:26px;
+  box-shadow:0 25px 50px rgba(0,0,0,.15);
 }
-img{width:100%;border-radius:16px;margin-bottom:10px}
+
+/* Image */
+.card img{
+  width:100%;
+  border-radius:18px;
+  margin-bottom:14px;
+}
+
+/* Badges */
+.badges{
+  display:flex;
+  gap:10px;
+  margin-bottom:10px;
+}
 .badge{
-  display:inline-block;padding:4px 10px;border-radius:999px;
-  background:#dcfce7;color:#166534;font-weight:700;font-size:12px
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:4px 12px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:700;
 }
-.amount{font-size:24px;font-weight:900;margin:12px 0}
+.online{background:#dcfce7;color:#166534}
+.offline{background:#fee2e2;color:#991b1b}
+.date{background:#e0e7ff;color:#3730a3}
+
+/* Text */
+h2{margin:6px 0;font-size:22px}
+.sub{color:#475569;font-size:14px;margin-bottom:6px}
+.desc{color:#334155;font-size:14px;margin:10px 0}
+
+/* Info */
+.info{
+  display:flex;
+  gap:16px;
+  font-size:13px;
+  color:#475569;
+  margin-bottom:12px;
+}
+
+/* Amount */
+.amount{
+  font-size:28px;
+  font-weight:900;
+  text-align:center;
+  margin:16px 0;
+}
+
+/* Buttons */
 .btn{
-  width:100%;padding:14px;margin-top:10px;border:none;
-  border-radius:999px;font-weight:800;cursor:pointer
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:999px;
+  font-weight:800;
+  cursor:pointer;
+  transition:.25s;
 }
+.btn:hover{transform:translateY(-1px)}
 .pay{background:#22c55e;color:#fff}
 .wa{background:#25D366;color:#fff}
-.copy{background:#0ea5e9;color:#fff}
-.qr{text-align:center;margin-top:14px}
+.copy{background:#e2e8f0;color:#0f172a}
+
+/* OR */
+.or{
+  text-align:center;
+  margin:14px 0;
+  color:#94a3b8;
+  font-weight:700;
+}
+
+/* QR */
+.qr{text-align:center}
 .qr img{width:180px}
-.error{text-align:center;padding:40px;font-size:18px}
+.note{font-size:12px;color:#64748b;margin-top:6px}
+
+/* Footer */
+.footer{
+  text-align:center;
+  font-size:12px;
+  color:#64748b;
+  margin-top:14px;
+}
+.error{
+  text-align:center;
+  padding:40px;
+  font-size:18px;
+}
 </style>
 </head>
 
@@ -39,73 +124,85 @@ img{width:100%;border-radius:16px;margin-bottom:10px}
 <div id="app"></div>
 
 <script>
-// 🔹 Read URL params ONCE
 const p = new URLSearchParams(location.search);
 
-const title  = p.get("title");
+// Required
+const title = p.get("title");
 const amount = p.get("amount");
-const upi    = p.get("upi");
+const upi = p.get("upi");
 
-// 🔹 Validation
 if(!title || !amount || !upi){
   document.getElementById("app").innerHTML =
     "<div class='error'>❌ Invalid or expired payment link</div>";
-  throw new Error("Invalid link");
+  throw "";
 }
 
-// 🔹 Optional params
-const desc  = p.get("desc") || "";
-const img   = p.get("img") || "";
-const mode  = p.get("mode") || "";
-const date  = p.get("date") || "";
-const time  = p.get("time") || "";
-const group = p.get("group"); // 👈 WhatsApp Group
+// Optional
+const subtitle = p.get("subtitle") || "";
+const desc = p.get("desc") || "";
+const date = p.get("date") || "";
+const time = p.get("time") || "";
+const mode = p.get("mode") || "";
+const img = p.get("img") || "";
+const group = p.get("group") || "";
 
-// 🔹 UPI link
+// UPI link
 const upiLink =
-  `upi://pay?pa=${upi}&am=${amount}&cu=INR&pn=${encodeURIComponent(title)}`;
+  "upi://pay?pa=" + encodeURIComponent(upi) +
+  "&am=" + encodeURIComponent(amount) +
+  "&cu=INR" +
+  "&pn=" + encodeURIComponent(title);
 
-// 🔹 Render HTML ONCE
+// Render
 document.getElementById("app").innerHTML = `
-<div class="card">
-  ${img ? `<img src="${img}">` : ""}
-  ${mode ? `<span class="badge">${mode}</span>` : ""}
-  <h2>${title}</h2>
-  <p>${desc}</p>
-  <p>${date} ${time}</p>
-  <div class="amount">₹ ${amount}</div>
+  <div class="card">
+    ${img ? `<img src="${img}">` : ""}
 
-  <button class="btn pay" onclick="location.href='${upiLink}'">
-    Open UPI App
-  </button>
+    <div class="badges">
+      ${mode ? `<span class="badge ${mode==="Online"?"online":"offline"}">${mode}</span>` : ""}
+      ${date ? `<span class="badge date">📅 ${date}</span>` : ""}
+    </div>
 
-  ${group ? `
-  <button id="groupBtn" class="btn wa">
-    Access WhatsApp Group
-  </button>` : ""}
+    <h2>${title}</h2>
+    <div class="sub">${subtitle}</div>
 
-  <button class="btn wa" onclick="share()">Share on WhatsApp</button>
-  <button class="btn copy" onclick="copy()">Copy Link</button>
+    <div class="desc">${desc.replace(/\n/g,"<br>")}</div>
 
-  <div class="qr">
-    <img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(upiLink)}">
-    <div>Scan if app doesn’t open</div>
+    <div class="info">
+      ${time ? `<span>⏰ ${time}</span>` : ""}
+    </div>
+
+    <div class="amount">₹ ${amount}</div>
+
+    <button class="btn pay" onclick="location.href='${upiLink}'">
+      Open UPI App
+    </button>
+
+    <div class="or">OR</div>
+
+    <div class="qr">
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(upiLink)}">
+      <div class="note">Scan if UPI app doesn’t open</div>
+    </div>
+
+    ${group ? `
+      <button class="btn wa" style="margin-top:14px"
+        onclick="window.open('${group}','_blank')">
+        Access WhatsApp Group
+      </button>` : ""}
+
+    <button class="btn copy" style="margin-top:10px"
+      onclick="copyLink()">
+      Copy Link
+    </button>
+
+    <div class="footer">
+      🔒 Secure UPI Payment · Powered by PayMoney
+    </div>
   </div>
-</div>`;
+`;
 
-// 🔹 Attach group click AFTER render
-if(group){
-  document.getElementById("groupBtn").onclick = () => {
-    window.open(group, "_blank");
-  };
-}
-
-// 🔹 Share & Copy
-function share(){
-  const msg = `${title}\nAmount: ₹${amount}\n\nPay here:\n${location.href}`;
-  window.open("https://wa.me/?text="+encodeURIComponent(msg));
-}
-function copy(){
+function copyLink(){
   navigator.clipboard.writeText(location.href);
   alert("Link copied");
 }
