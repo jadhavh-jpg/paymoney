@@ -38,8 +38,10 @@ input,textarea{
 .radio{display:flex;gap:16px;margin-bottom:14px}
 .primary{
   width:100%;padding:14px;border:none;border-radius:999px;
-  background:#0ea5e9;color:#fff;font-weight:800;cursor:pointer
+  background:#0ea5e9;color:#fff;font-weight:800;
+  cursor:pointer;transition:.25s
 }
+.primary:hover{opacity:.9}
 .disabled{opacity:.5;pointer-events:none}
 
 /* Preview Card */
@@ -47,7 +49,9 @@ input,textarea{
   max-width:420px;margin:auto;background:#fff;padding:18px;
   border-radius:22px;box-shadow:0 20px 40px rgba(0,0,0,.15)
 }
-.card img{width:100%;border-radius:16px;display:none;margin-bottom:10px}
+.card img{
+  width:100%;border-radius:16px;display:none;margin-bottom:10px
+}
 .badge{
   display:inline-block;padding:4px 10px;border-radius:999px;
   background:#dcfce7;color:#166534;font-size:12px;font-weight:700
@@ -65,7 +69,7 @@ input,textarea{
 
 <div class="wrapper">
 
-<!-- LEFT : FORM -->
+<!-- FORM -->
 <div class="form">
   <h3>Create Payment Page</h3>
 
@@ -97,18 +101,17 @@ input,textarea{
   <input id="upi">
 
   <label>WhatsApp Group Link (optional)</label>
-  <input id="waGroup" placeholder="https://chat.whatsapp.com/...">
+  <input id="waGroup">
 
   <label>Upload Logo / Poster *</label>
-  <input type="file" id="image">
+  <input type="file" id="image" accept="image/*">
 
   <button class="primary" onclick="generate()">Generate & Open Page</button>
 </div>
 
-<!-- RIGHT : LIVE PREVIEW -->
+<!-- PREVIEW -->
 <div class="preview">
   <h3>Live Preview</h3>
-
   <div class="card">
     <img id="pImg">
     <span class="badge" id="pMode">Online</span>
@@ -119,10 +122,7 @@ input,textarea{
     <div class="amount" id="pAmount">₹0</div>
 
     <button class="primary disabled">Open UPI App</button>
-
-    <!-- ✅ WhatsApp Group Preview Button -->
-    <button
-      id="pGroupBtn"
+    <button id="pGroupBtn"
       class="primary disabled"
       style="background:#25D366;margin-top:8px">
       Access WhatsApp Group
@@ -133,144 +133,108 @@ input,textarea{
 </div>
 
 <script>
-// 🔴 Cloudinary config (FILLED)
-const CLOUD_NAME = "ddusj34vn";
-const UPLOAD_PRESET = "paymoney_unsigned";
+const CLOUD_NAME="ddusj34vn";
+const UPLOAD_PRESET="paymoney_unsigned";
 
-let imageURL = "";
+let imageURL="";
 
 // Inputs
-const title = document.getElementById("title");
-const subtitle = document.getElementById("subtitle");
-const desc = document.getElementById("desc");
-const date = document.getElementById("date");
-const time = document.getElementById("time");
-const amount = document.getElementById("amount");
-const upi = document.getElementById("upi");
-const waGroupInput = document.getElementById("waGroup");
+const title=document.getElementById("title");
+const subtitle=document.getElementById("subtitle");
+const desc=document.getElementById("desc");
+const date=document.getElementById("date");
+const time=document.getElementById("time");
+const amount=document.getElementById("amount");
+const upi=document.getElementById("upi");
+const waGroup=document.getElementById("waGroup");
+const image=document.getElementById("image");
 
-// Preview elements
-const pTitle = document.getElementById("pTitle");
-const pSub = document.getElementById("pSub");
-const pDesc = document.getElementById("pDesc");
-const pDT = document.getElementById("pDT");
-const pAmount = document.getElementById("pAmount");
-const pMode = document.getElementById("pMode");
-const pImg = document.getElementById("pImg");
-const pGroupBtn = document.getElementById("pGroupBtn");
+// Preview
+const pTitle=document.getElementById("pTitle");
+const pSub=document.getElementById("pSub");
+const pDesc=document.getElementById("pDesc");
+const pDT=document.getElementById("pDT");
+const pAmount=document.getElementById("pAmount");
+const pMode=document.getElementById("pMode");
+const pImg=document.getElementById("pImg");
+const pGroupBtn=document.getElementById("pGroupBtn");
 
-// Live preview binding
-[title, subtitle, desc, date, time, amount, waGroupInput].forEach(el=>{
-  el.oninput = updatePreview;
+// Live preview
+[title,subtitle,desc,date,time,amount,waGroup].forEach(el=>{
+  el.oninput=updatePreview;
 });
 document.querySelectorAll("input[name=mode]").forEach(r=>{
-  r.onchange = updatePreview;
+  r.onchange=updatePreview;
 });
 
 // Image upload
-document.getElementById("image").onchange = async e=>{
-  const file = e.target.files[0];
+image.onchange=async()=>{
+  const file=image.files[0];
   if(!file) return;
-  imageURL = await uploadImage(file);
-  updatePreview();
+
+  const fd=new FormData();
+  fd.append("file",file);
+  fd.append("upload_preset",UPLOAD_PRESET);
+
+  const res=await fetch(
+    `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
+    {method:"POST",body:fd}
+  );
+  const data=await res.json();
+  imageURL=data.secure_url;
+
+  pImg.src=imageURL;
+  pImg.style.display="block";
 };
 
+// Preview update
 function updatePreview(){
-  pTitle.innerText = title.value || "Title";
-  pSub.innerText = subtitle.value || "";
-  pDesc.innerText = desc.value || "";
-  pAmount.innerText = "₹ " + (amount.value || 0);
-  pMode.innerText =
-    document.querySelector("input[name=mode]:checked").value;
-  pDT.innerText = (date.value || "") + " " + (time.value || "");
+  pTitle.innerText=title.value||"Title";
+  pSub.innerText=subtitle.value||"";
+  pDesc.innerText=desc.value||"";
+  pDT.innerText=(date.value||"")+" "+(time.value||"");
+  pAmount.innerText="₹ "+(amount.value||0);
+  pMode.innerText=document.querySelector("input[name=mode]:checked").value;
 
-  if(imageURL){
-    pImg.src = imageURL;
-    pImg.style.display = "block";
-  }
-
-  // ✅ WhatsApp Group button enable / disable
-  if(waGroupInput.value.trim()){
+  if(waGroup.value.trim()){
     pGroupBtn.classList.remove("disabled");
-  } else {
+  }else{
     pGroupBtn.classList.add("disabled");
   }
 }
 
-// Cloudinary upload
-async function uploadImage(file){
-  const fd = new FormData();
-  fd.append("file", file);
-  fd.append("upload_preset", UPLOAD_PRESET);
-
-  const res = await fetch(
-    `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
-    { method:"POST", body:fd }
-  );
-  const data = await res.json();
-  return data.secure_url;
-}
-
-// Generate landing page
-function generate(){
-  if(!title.value || !amount.value || !upi.value || !imageURL){
-    alert("Title, Amount, UPI & Image required");
-    return;
-  }
-
-  const mode =
-    document.querySelector("input[name=mode]:checked").value;
-
-  let link =
-    "/landing.html"+
-    "?title="+encodeURIComponent(title.value)+
-    "&subtitle="+encodeURIComponent(subtitle.value)+
-    "&desc="+encodeURIComponent(desc.value)+
-    "&date="+date.value+
-    "&time="+time.value+
-    "&mode="+mode+
-    "&amount="+amount.value+
-    "&upi="+encodeURIComponent(upi.value)+
-    "&img="+encodeURIComponent(imageURL);
-
- // 🔑 Short ID generator (ONLY ONCE)
+// Short ID
 function makeId(){
   return Math.random().toString(36).slice(2,8);
 }
 
-// 🎯 Generate short ID
-const shortId = makeId();
-
-// 📦 Payload for short link
-const payload = {
-  [shortId]: {
-    title: title.value,
-    subtitle: subtitle.value,
-    desc: desc.value,
-    date: date.value,
-    time: time.value,
-    mode: mode,
-    amount: amount.value,
-    upi: upi.value,
-    img: imageURL,
-    group: waGroupInput.value.trim() || ""
+// Generate
+function generate(){
+  if(!title.value||!amount.value||!upi.value||!imageURL){
+    alert("Title, Amount, UPI & Image required");
+    return;
   }
-};
 
-// 🧾 Console output (for manual save in data/links.json)
-console.log("ADD THIS TO data/links.json:", payload);
+  const shortId=makeId();
 
-// 🔔 User info (optional but useful)
-alert(
-  "Short link created!\n\n" +
-  "Add console data to data/links.json\n\n" +
-  "Short link:\n" +
-  location.origin + "/p.html?id=" + shortId
-);
+  const payload={
+    [shortId]:{
+      title:title.value,
+      subtitle:subtitle.value,
+      desc:desc.value,
+      date:date.value,
+      time:time.value,
+      mode:document.querySelector("input[name=mode]:checked").value,
+      amount:amount.value,
+      upi:upi.value,
+      img:imageURL,
+      group:waGroup.value||""
+    }
+  };
 
-// 🚀 FINAL: Open short link
-window.open("/p.html?id=" + shortId, "_blank");
-
+  console.log("ADD TO data/links.json:",payload);
+  window.open("/p.html?id="+shortId,"_blank");
+}
 </script>
 
 </body>
