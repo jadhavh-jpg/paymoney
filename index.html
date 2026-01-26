@@ -1256,9 +1256,16 @@ nav a{
   opacity:.9;
   letter-spacing:.3px;
 }
+<script>
+document.getElementById("createPaymentLinkBtn").addEventListener("click", function () {
+  gtag('event', 'create_payment_link', {
+    event_category: 'conversion',
+    event_label: 'Create Payment Link Button'
+  });
+});
+</script>
 
 
-</style>
 
 </style>
 </head>
@@ -1296,9 +1303,10 @@ nav a{
         No transaction charges, Free landing page
       </p>
 
-      <a href="builder.html" class="btn-primary">
-        Create Payment Link
-      </a>
+    <a href="builder.html" id="createPaymentLinkBtn" class="btn-primary">
+  Create Payment Link
+</a>
+
 
       <button id="loginBtn" class="btn-primary" style="margin-top:12px;">
         Login with Google
@@ -1977,6 +1985,7 @@ logoutBtn.addEventListener("click", () => {
 
 </body>
 </html>
+
 
 
 
